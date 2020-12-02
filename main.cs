@@ -4,6 +4,6 @@ using advent_2020;
 
 class MainClass {
   public static void Main (string[] args) {
-    AOC_01.Run(args);
+    AOC_02.Run(args);
   }
 }
