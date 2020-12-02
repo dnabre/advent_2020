@@ -10,34 +10,31 @@ using System.Collections.Generic;
 
 namespace advent_2020
 {
-	class AOC_01 {
-		public static string part_1_input = "aoc_01_input_1.txt";
-		public static string part_2_input = "aoc_01_input_2.txt";
+	static class AOC_01 {
+		private const string Part1Input = "aoc_01_input_1.txt";
+		private const string Part2Input = "aoc_01_input_2.txt";
+		private const int TargetSum = 2020;
 
-
-		public static int target_sum = 2020;
-		public static void run (string[] args) {
+		public static void Run (string[] args) {
 			Console.WriteLine ("AoC Problem 01");
-			part1(args);
-			Console.Write("\n\n\n");
-			part2(args);
+			Part1(args);
+			Console.Write("\n");
+			Part2(args);
 		}
 
-
-
-		public static void part1(string[] args) {
+		private static void Part1(string[] args) {
 			Console.WriteLine("   Part 1");
-			string[] lines = System.IO.File.ReadAllLines(part_1_input);
+			string[] lines = System.IO.File.ReadAllLines(Part1Input);
 			Console.Write("\t Read {0} values\n", lines.Length);
 			HashSet<int> val = new HashSet<int>();
 
 			foreach (string s in lines) {
-				int i = Int32.Parse(s);
-				int need_value = target_sum - i;
-				if(val.Contains(need_value)){
-					Console.WriteLine();
-					Console.Write("\t {0} + {1} = {2} \n", i, need_value, target_sum);
-					Console.Write("\t {0} * {1} = {2} \n", i, need_value, i * need_value);
+				int i = int.Parse(s);
+				int needValue = TargetSum - i;
+				if(val.Contains(needValue)){
+					
+					Console.Write("\t {0} + {1} = {2} \n", i, needValue, TargetSum);
+					Console.Write("\t {0} * {1} = {2} \n", i, needValue, i * needValue);
 					return;
 				}
 				val.Add(i);
@@ -46,15 +43,15 @@ namespace advent_2020
 		}
 
 
-		public static void part2(string[] args) {
+		private static void Part2(string[] args) {
 			Console.WriteLine("   Part 2:");
-			string[] lines = System.IO.File.ReadAllLines(part_2_input);
+			string[] lines = System.IO.File.ReadAllLines(Part2Input);
 			Console.Write("\t Read {0} values\n", lines.Length);
 			int[] values = new int[lines.Length];
 			HashSet<int> val = new HashSet<int>();
 			int i =0;
 			foreach(string s in lines) {
-				int x = Int32.Parse(s);
+				int x = int.Parse(s);
 				values[i] = x;
 				val.Add(x);
 				i++;
@@ -63,11 +60,10 @@ namespace advent_2020
 			for(int x=0; x < values.Length; x++){
 				for(int y=0; y < values.Length; y++){
 					if(x==y) continue;
-					int need_value = target_sum - values[x] - values[y];
-					if(val.Contains(need_value)){
-						Console.WriteLine();
-						Console.Write("\t {0} + {1} + {2} = {3} \n", values[x], values[y], need_value, target_sum);
-						Console.Write("\t {0} * {1} * {2} = {3} \n", values[x], values[y], need_value, values[x] * values [y] * need_value);
+					int needValue = TargetSum - values[x] - values[y];
+					if(val.Contains(needValue)){
+						Console.Write("\t {0} + {1} + {2} = {3} \n", values[x], values[y], needValue, TargetSum);
+						Console.Write("\t {0} * {1} * {2} = {3} \n", values[x], values[y], needValue, values[x] * values [y] * needValue);
 						return;
 					}
 				}
