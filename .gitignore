@@ -1,3 +1,4 @@
-*.exe
-.replit
+main.exe
 .idea
+bin
+obj
