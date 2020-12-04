@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 /*
 	Solutions found:
-	Part 1: 191
+	Part 1: 204
 	Part 2: 1478615040
 	
 */
@@ -18,78 +18,129 @@ namespace advent_2020
 		private const string TestInput = "aoc_04_test_1.txt";
 
 		public static void Run (string[] args) {
-			Console.WriteLine ("AoC Problem 03");
+			Console.WriteLine ("AoC Problem 04");
 			Part1(args);
-			Console.Write("\n");
-			Part2(args);
+//			Console.Write("\n");
+//			Part2(args);
 		}
 
 	private static void Part1(string[] args) {
 			Console.WriteLine("   Part 1");
-			(int x,int y) step =(3,1);
-
-			string[] lines =  System.IO.File.ReadAllLines(Part1Input);
+			Console.WriteLine($"\tRequired Fields {required_fields.Length}");
+			String[] lines =  System.IO.File.ReadAllLines(Part1Input);
 			Console.WriteLine("\tRead {0} inputs", lines.Length);
-			char[,] panel = ParsePanel(lines);
-			int tree_count = CheckTreeCount(panel, step);
-			Console.WriteLine($"\n\tPart 1 Solution: {tree_count}");
+			List<HashSet<String>> record_list = ParseRecords(lines);
+			List<Dictionary<String,String>> record_field_list = ParseRecordsWithFields(record_list);
+			Console.WriteLine($"\tFields parsed for {record_field_list.Count} records");
+			
+			int valid_count = 0;
+			foreach(Dictionary<String,String> rec in record_field_list) {
+				if(TestRecord(rec)) {
+					valid_count++;
+				}
+			}
+
+
+
+			Console.WriteLine($"\n\tPart 1 Solution: {valid_count}");
 			
 		}
 
 	private static void Part2(string[] args) {
 			Console.WriteLine("   Part 2:");
-			string[] lines =  System.IO.File.ReadAllLines(Part2Input);
-			Console.WriteLine("\tRead {0} inputs", lines.Length);
-			char[,] panel = ParsePanel(lines);
-			(int x, int y)[] steps = {(1,1), (3,1), (5,1),(7,1),(1,2)};
-
-			int tree_product = 1;
-			foreach((int x,int y) s in steps) {
-				int tree_count = CheckTreeCount(panel,s);
-				tree_product = tree_product * tree_count;
-				Console.WriteLine($"\tStep {s} has tree count={tree_count}");
-			}
+			
+			Console.WriteLine($"\n\tPart 2 Solution: {0}");
+		}	
 		
-			Console.WriteLine($"\n\tPart 2 Solution: {tree_product}");
-	}	
-	
-	private static String PanelToString(char[,] panel) {
-			var sb = new StringBuilder();
-			for(int y=0; y < panel.GetLength(1); y++) {
-				sb.Append('\t');
-				for(int x=0; x < panel.GetLength(0) ; x++) {
-					sb.Append(panel[x,y]);
-				}
-				sb.Append('\n');
-			}
-			return sb.ToString();
-
+	private static String RecordToString(HashSet<String> rec) {
+		StringBuilder sb = new StringBuilder();
+		foreach(String field in rec) {
+			sb.Append(field);
+			sb.Append("|");
 		}
-	private static int CheckTreeCount(char[,] panel, (int x,int y) step) {
-			(int x, int y) loc = (0,0);
-			int tree_count = 0;
-			int height = panel.GetLength(1);
-			int width = panel.GetLength(0);
-			while(loc.y < height) {
-				if(panel[loc.x,loc.y] == '#') {
-					tree_count++;
-				}
-				loc = ((loc.x + step.x) % width, loc.y + step.y);
-			}
-			return tree_count;
+		return sb.ToString();
 	}
 
-	private static char[,] ParsePanel(String[] lines) {
-			int width = lines[0].Length;
-			int height = lines.Length;
-			char[,] panel = new char[width,height];
-			for(int y=0; y < height; y++) {
-				char[] c_array = lines[y].ToCharArray();
-				for(int x=0; x <width; x++) {
-					panel[x,y] = c_array[x];
+	private static bool TestRecord(Dictionary<String,String> fields) {
+		foreach(String req in required_fields) {
+			if(!fields.ContainsKey(req)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static List<Dictionary<String,String>> ParseRecordsWithFields(List<HashSet<String>> record_list) {
+			List<Dictionary<String,String>> field_dicts = new List<Dictionary<String,String>>();
+			foreach(HashSet<String> record in record_list) {
+				Dictionary<String,String> fields;
+				fields = ParseFields(record);
+				if(fields.Count == 0) {
+					Console.WriteLine($"\tRecord without fields {record}");
+					System.Environment.Exit(1);
+				}
+				//Console.WriteLine($"\t\tparsed {fields.Count} fields from record");
+				field_dicts.Add(fields);
+			}
+			return field_dicts;
+	}
+
+	
+
+	private static Dictionary<String,String> ParseFields(HashSet<String> record) {
+		Dictionary<String,String> fields = new Dictionary<String,String>();
+		foreach(String raw_field in record) {
+			//Console.WriteLine($"\t{raw_field}");
+			String[] parts = raw_field.Split(":");
+			if(parts.Length != 2) {
+				Console.WriteLine($"\t error in parsing field {raw_field}. split into {parts.Length} pieces");
+				System.Environment.Exit(0);
+			}
+			fields[parts[0]] = parts[1];
+		}
+		return fields;
+	}
+
+
+
+	private static List<HashSet<String>> ParseRecords(String[] lines) {
+			var records = new List<HashSet<String>>();
+
+			var current_record = new HashSet<String>();
+			for(int i=0; i < lines.Length; i++) {
+				String c_line = lines[i];
+				if(c_line.Equals("")) {
+					records.Add(current_record);
+					current_record = new HashSet<String>();
+				} else {
+					String[] fields = c_line.Split(" ");
+					foreach(String f in fields) {
+						current_record.Add(f);
+					}
+
 				}
 			}
-			return panel;
-		}
+			if(current_record.Count > 0) {
+				records.Add(current_record);
+			}
+			Console.WriteLine($"\tParsed {records.Count} records");
+			return records;
+			}
+
+	private static String[] required_fields = {"byr","iyr","eyr","hgt","hcl","ecl","pid"
+	//											,"cid"
+												};
+	
+
+	/*
+		byr (Birth Year)
+		iyr (Issue Year)
+		eyr (Expiration Year)
+		hgt (Height)
+		hcl (Hair Color)
+		ecl (Eye Color)
+		pid (Passport ID)
+		cid (Country ID)
+	*/
 	}
 }
