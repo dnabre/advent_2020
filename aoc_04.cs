@@ -117,7 +117,7 @@ namespace advent_2020
 			if(Char.IsDigit(ch)) {
 				continue;
 			} else {
-				if("abcdef".Contains(ch)) {
+				if("abcdef".Contains(ch.ToString())) {
 					continue;
 				} else return false;
 			}
@@ -242,7 +242,7 @@ namespace advent_2020
 		Dictionary<String,String> fields = new Dictionary<String,String>();
 		foreach(String raw_field in record) {
 			//Console.WriteLine($"\t{raw_field}");
-			String[] parts = raw_field.Split(":");
+			String[] parts = raw_field.Split(':');
 			if(parts.Length != 2) {
 				Console.WriteLine($"\t error in parsing field {raw_field}. split into {parts.Length} pieces");
 				System.Environment.Exit(0);
@@ -264,7 +264,7 @@ namespace advent_2020
 					records.Add(current_record);
 					current_record = new HashSet<String>();
 				} else {
-					String[] fields = c_line.Split(" ");
+					String[] fields = c_line.Split(' ');
 					foreach(String f in fields) {
 						current_record.Add(f);
 					}
