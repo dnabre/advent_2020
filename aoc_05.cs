@@ -147,7 +147,7 @@ namespace advent_2020
             // PrintSeats(seats);
 
             (int r, int c) my_seat = (-1, -1);
-            for (int r = 0; r <= max_row; r++)
+            for (int r = 0; r <= max_row; r++) 
             {
                 for (int c = 0; c <= max_col; c++)
                 {
