@@ -58,15 +58,16 @@ namespace advent_2020
 
         private static void DecodeSeat(String input, out int row, out int col, out int ID)
         {
-            var wording = new Dictionary<char, string>
+			/*
+		    var wording = new Dictionary<char, string>
             {
                 {'F', "lower half"},
                 {'B', "upper half"},
                 {'R', "upper half"},
                 {'L', "lower half"}
             };
-            //Console.WriteLine($"\tTest input: |{input}| Length: {input.Length}");
-
+            Console.WriteLine($"\tTest input: |{input}| Length: {input.Length}");
+			*/
             (int lo, int hi) row_range = (min_row, max_row);
             (int lo, int hi) col_range = (min_col, max_col);
 
