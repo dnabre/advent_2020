@@ -43,12 +43,19 @@ namespace advent_2020
 
         readonly public String id;
         public HashSet<Node> edges;
+		public Dictionary<Node,int> edge_weights;
 
         public Node(String id)
         {
             this.id = id;
             this.edges = new HashSet<Node>();
+			this.edge_weights = new Dictionary<Node,int>();
         }
+
+		public bool isLeaf() {
+			if(this.edges.Count == 0) return true;
+			else return false;
+		}
 
         public override String ToString()
         {
@@ -87,11 +94,36 @@ namespace advent_2020
                     }
                 }
             }
-
             return false;
-
         }
         
+	public int CountSearch()
+        {
+            if (CanHoldGold()) return true;
+            HashSet<Node> visited = new HashSet<Node>();
+            Queue<Node> queue = new Queue<Node>(edges);
+            while (queue.Count > 0)
+            {
+                Node n = queue.Dequeue();
+                if (visited.Contains(n)) continue;
+                if (n.CanHoldGold()) return true;
+                foreach (Node n_edge in n.edges)
+                {
+                    if (visited.Contains(n))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        queue.Enqueue(n_edge);
+                    }
+                }
+            }
+            return 0;
+        }
+        
+
+
     }
     static class AOC_07
     {
@@ -105,14 +137,51 @@ namespace advent_2020
         public static void Run(string[] args)
         {
             Console.WriteLine("AoC Problem 07");
-            Part1(args);
-            Console.Write("\n");
+  //          Part1(args);
+          Console.Write("\n");
             Part2(args);
         }
 
-        private static SortedSet<String> part1_color_list = new SortedSet<String>();
 
 
+private static String NormalizeInputLine2(String line)
+        {
+            /*
+             * Normalize input:
+             *     bag      -> bags        # switch single bag to bags. will catch bags->bagss
+             *     bagss    -> bags        # fix the bags->bagss->bags
+             *     .$       -> ""          # remove . at the end of the line
+             *
+             *    Discard numbers, don't care about them for Part 1
+             *     ^""      -> ^"1 "       # insert "1 " at the beginning of each line
+             *
+             *    Resulting syntax is then
+             *     Bag_ID -> "# Modifer Color"
+             *     Bag_ID "bags contain" Bag_ID {, Bag_ID}* 
+             *
+             *
+             * 
+             */
+
+          
+            
+  
+            line = line.Replace("bag", "bags");
+            line = line.Replace("bagss", "bags");
+                
+            if (line[line.Length - 1] == '.')
+            {
+                line = line.Remove(line.Length - 1, 1);
+            }
+
+            //line = RemoveAllDigits(line);
+            line = line.Replace(" contain", ",");
+            //line = line.Replace(" bags,  ", "|");
+            line = line.Replace(" bags", "");
+			line = line.Replace(", ", "|");
+            line = line.Replace("no other", "null null");
+            return line;
+        }
 
 
         private static String NormalizeInputLine(String line)
@@ -232,7 +301,7 @@ namespace advent_2020
         private static void Part2(string[] args)
         {
             Console.WriteLine("   Part 2");
-            String[] lines = System.IO.File.ReadAllLines(Part1Input);
+            String[] lines = System.IO.File.ReadAllLines(TestInput1);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 
             
@@ -242,7 +311,8 @@ namespace advent_2020
 
             for (int i = 0; i < lines.Length; i++)
             {
-                lines[i] = NormalizeInputLine(lines[i]);
+                lines[i] = NormalizeInputLine2(lines[i]);
+			//	Console.WriteLine($"\t{lines[i]}");
             }
             
             foreach(String line in lines){
@@ -253,15 +323,17 @@ namespace advent_2020
                 Node_Set.Add(n);
                 Nodes[id] = n;
             }
-
-            /*
+			
+			
              foreach (String s in  Node_names)
              {
                  Node n = Nodes[s];
                  bool in_node_set = Node_Set.Contains(n);
-                 Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
+				 if(!in_node_set){
+                 	Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
+				 }
              }
-            */
+            
                 
             foreach (String line in lines)
             {
@@ -269,29 +341,29 @@ namespace advent_2020
                 String[] parts = line.Split('|');
                 String node_id = parts[0];
                 Node root_node = Nodes[node_id];
+				
                 for (int j = 1; j < parts.Length; j++)
                 {
-                    String leaf_id = parts[j];
+					String[] entry_parts = parts[j].Split(' ');
+				//	Console.WriteLine( $"\t {parts[j]}->{entry_parts[0]}|{entry_parts[1]}|{entry_parts[2]}");
+					int weight = int.Parse(entry_parts[0]);
+                    String leaf_id = $"{entry_parts[1]} {entry_parts[2]}" ;
                     Node leaf_node = Nodes[leaf_id];
                     root_node.edges.Add(leaf_node);
+					root_node.edge_weights[leaf_node] = weight;
                 }
             }
 
-            HashSet<String> shiny = new HashSet<string>();
-            foreach (Node n in Node_Set)
-            {
-                if (n.Search())
-                {
-                    shiny.Add(n.id);
-                    //               Console.WriteLine($"\t{n.id} holds {GOLD}");
-                }
-            }
+            int bag_count = 0;
+			shiny_gold_node = Nodes["shiny gold"]
+            
+			bag_count = shiny_gold_node.CountSearch();
             
             
 
             
             
-            Console.WriteLine($"\n\tPart 2 Solution: {shiny.Count}");
+            Console.WriteLine($"\n\tPart 2 Solution: {bag_count}");
         }
     }
 }
