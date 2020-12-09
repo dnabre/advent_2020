@@ -17,7 +17,7 @@ namespace advent_2020
     {
         public bool Equals(Node other)
         {
-            return id == other.id;
+            return id.Equals(other.id);
         }
 
         public override bool Equals(object obj)
@@ -27,7 +27,10 @@ namespace advent_2020
 
         public override int GetHashCode()
         {
-            return (id != null ? id.GetHashCode() : 0);
+            unchecked
+            {
+                return ((id != null ? id.GetHashCode() : 0) * 397) ^ number;
+            }
         }
 
         public static bool operator ==(Node left, Node right)
@@ -42,20 +45,16 @@ namespace advent_2020
 
 
         readonly public String id;
+        public int number;
         public HashSet<Node> edges;
-		public Dictionary<Node,int> edge_weights;
-
-        public Node(String id)
+        public Dictionary<Node, int> edge_weights;
+        public Node(String id, int count = 0)
         {
             this.id = id;
             this.edges = new HashSet<Node>();
-			this.edge_weights = new Dictionary<Node,int>();
+            this.edge_weights = new Dictionary<Node, int>();
+            this.number = count;
         }
-
-		public bool isLeaf() {
-			if(this.edges.Count == 0) return true;
-			else return false;
-		}
 
         public override String ToString()
         {
@@ -69,6 +68,7 @@ namespace advent_2020
             {
                 if (n.id.Equals(AOC_07.GOLD)) return true;
             }
+
             return false;
         }
 
@@ -94,19 +94,21 @@ namespace advent_2020
                     }
                 }
             }
+
             return false;
         }
-        
-	public int CountSearch()
+
+        public int CountSearch()
         {
-            if (CanHoldGold()) return true;
+            int bag_count = 0;
+
             HashSet<Node> visited = new HashSet<Node>();
             Queue<Node> queue = new Queue<Node>(edges);
             while (queue.Count > 0)
             {
                 Node n = queue.Dequeue();
                 if (visited.Contains(n)) continue;
-                if (n.CanHoldGold()) return true;
+            
                 foreach (Node n_edge in n.edges)
                 {
                     if (visited.Contains(n))
@@ -119,12 +121,11 @@ namespace advent_2020
                     }
                 }
             }
-            return 0;
+
+            return bag_count;
         }
-        
-
-
     }
+
     static class AOC_07
     {
         private const string Part1Input = "aoc_07_input_1.txt";
@@ -137,51 +138,12 @@ namespace advent_2020
         public static void Run(string[] args)
         {
             Console.WriteLine("AoC Problem 07");
-  //          Part1(args);
-          Console.Write("\n");
+            Part1(args);
+            Console.Write("\n");
             Part2(args);
         }
 
-
-
-private static String NormalizeInputLine2(String line)
-        {
-            /*
-             * Normalize input:
-             *     bag      -> bags        # switch single bag to bags. will catch bags->bagss
-             *     bagss    -> bags        # fix the bags->bagss->bags
-             *     .$       -> ""          # remove . at the end of the line
-             *
-             *    Discard numbers, don't care about them for Part 1
-             *     ^""      -> ^"1 "       # insert "1 " at the beginning of each line
-             *
-             *    Resulting syntax is then
-             *     Bag_ID -> "# Modifer Color"
-             *     Bag_ID "bags contain" Bag_ID {, Bag_ID}* 
-             *
-             *
-             * 
-             */
-
-          
-            
-  
-            line = line.Replace("bag", "bags");
-            line = line.Replace("bagss", "bags");
-                
-            if (line[line.Length - 1] == '.')
-            {
-                line = line.Remove(line.Length - 1, 1);
-            }
-
-            //line = RemoveAllDigits(line);
-            line = line.Replace(" contain", ",");
-            //line = line.Replace(" bags,  ", "|");
-            line = line.Replace(" bags", "");
-			line = line.Replace(", ", "|");
-            line = line.Replace("no other", "null null");
-            return line;
-        }
+        private static SortedSet<String> part1_color_list = new SortedSet<String>();
 
 
         private static String NormalizeInputLine(String line)
@@ -203,12 +165,9 @@ private static String NormalizeInputLine2(String line)
              * 
              */
 
-          
-            
-  
             line = line.Replace("bag", "bags");
             line = line.Replace("bagss", "bags");
-                
+
             if (line[line.Length - 1] == '.')
             {
                 line = line.Remove(line.Length - 1, 1);
@@ -222,39 +181,77 @@ private static String NormalizeInputLine2(String line)
             return line;
         }
 
+        private static String NormalizeInputLine2(String line)
+        {
+            /*
+             * Normalize input:
+             *     bag      -> bags        # switch single bag to bags. will catch bags->bagss
+             *     bagss    -> bags        # fix the bags->bagss->bags
+             *     .$       -> ""          # remove . at the end of the line
+             *
+             *    Discard numbers, don't care about them for Part 1
+             *     ^""      -> ^"1 "       # insert "1 " at the beginning of each line
+             *
+             *    Resulting syntax is then
+             *     Bag_ID -> "# Modifer Color"
+             *     Bag_ID "bags contain" Bag_ID {, Bag_ID}* 
+             *
+             *
+             * 
+             */
+
+            line = line.Replace("bag", "bags");
+            line = line.Replace("bagss", "bags");
+
+            if (line[line.Length - 1] == '.')
+            {
+                line = line.Remove(line.Length - 1, 1);
+            }
+
+            //line = RemoveAllDigits(line);
+            line = line.Replace(" contain", ",");
+            line = line.Replace(" bags,  ", "|");
+            line = line.Replace(" bags", "");
+            line = line.Replace(", no other", "|null null");
+            return line;
+        }
+
         private static void Part1(string[] args)
         {
             Console.WriteLine("   Part 1");
             String[] lines = System.IO.File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
-           
-            Dictionary<String,Node> Nodes = new Dictionary<string, Node>();
-            HashSet<Node> Node_Set = new HashSet<Node>();
-            HashSet<String> Node_names = new HashSet<string>();
 
             for (int i = 0; i < lines.Length; i++)
             {
                 lines[i] = NormalizeInputLine(lines[i]);
             }
-            
-            foreach(String line in lines){
+
+
+            Dictionary<String, Node> Nodes = new Dictionary<string, Node>();
+            HashSet<Node> Node_Set = new HashSet<Node>();
+            HashSet<String> Node_names = new HashSet<string>();
+
+
+            foreach (String line in lines)
+            {
                 String[] parts = line.Split('|');
                 String id = parts[0];
                 Node_names.Add(id);
-                Node n =new Node(id);
+                Node n = new Node(id);
                 Node_Set.Add(n);
                 Nodes[id] = n;
             }
 
-           /*
-            foreach (String s in  Node_names)
-            {
-                Node n = Nodes[s];
-                bool in_node_set = Node_Set.Contains(n);
-                Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
-            }
-           */
-                
+            /*
+             foreach (String s in  Node_names)
+             {
+                 Node n = Nodes[s];
+                 bool in_node_set = Node_Set.Contains(n);
+                 Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
+             }
+            */
+
             foreach (String line in lines)
             {
                 if (line.Contains("null null")) continue;
@@ -269,17 +266,16 @@ private static String NormalizeInputLine2(String line)
                 }
             }
 
-                HashSet<String> shiny = new HashSet<string>();
+            HashSet<String> shiny = new HashSet<string>();
             foreach (Node n in Node_Set)
             {
                 if (n.Search())
                 {
                     shiny.Add(n.id);
-     //               Console.WriteLine($"\t{n.id} holds {GOLD}");
+                    //               Console.WriteLine($"\t{n.id} holds {GOLD}");
                 }
             }
-            
-            
+
 
             Console.WriteLine($"\n\tPart 1 Solution: {shiny.Count}");
         }
@@ -304,66 +300,81 @@ private static String NormalizeInputLine2(String line)
             String[] lines = System.IO.File.ReadAllLines(TestInput1);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 
-            
-            Dictionary<String,Node> Nodes = new Dictionary<string, Node>();
+
+            Dictionary<String, Node> Nodes = new Dictionary<string, Node>();
             HashSet<Node> Node_Set = new HashSet<Node>();
             HashSet<String> Node_names = new HashSet<string>();
 
             for (int i = 0; i < lines.Length; i++)
             {
                 lines[i] = NormalizeInputLine2(lines[i]);
-			//	Console.WriteLine($"\t{lines[i]}");
+                //	Console.WriteLine($"\t{lines[i]}");
             }
-            
-            foreach(String line in lines){
+
+            foreach (String line in lines)
+            {
                 String[] parts = line.Split('|');
                 String id = parts[0];
                 Node_names.Add(id);
-                Node n =new Node(id);
+                Node n = new Node(id);
                 Node_Set.Add(n);
                 Nodes[id] = n;
             }
-			
-			
-             foreach (String s in  Node_names)
-             {
-                 Node n = Nodes[s];
-                 bool in_node_set = Node_Set.Contains(n);
-				 if(!in_node_set){
-                 	Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
-				 }
-             }
-            
-                
+
+
+            foreach (String s in Node_names)
+            {
+                Node n = Nodes[s];
+                bool in_node_set = Node_Set.Contains(n);
+                if (!in_node_set)
+                {
+                    Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
+                }
+            }
+
+
             foreach (String line in lines)
             {
                 if (line.Contains("null null")) continue;
                 String[] parts = line.Split('|');
                 String node_id = parts[0];
                 Node root_node = Nodes[node_id];
-				
+
                 for (int j = 1; j < parts.Length; j++)
                 {
-					String[] entry_parts = parts[j].Split(' ');
-				//	Console.WriteLine( $"\t {parts[j]}->{entry_parts[0]}|{entry_parts[1]}|{entry_parts[2]}");
-					int weight = int.Parse(entry_parts[0]);
-                    String leaf_id = $"{entry_parts[1]} {entry_parts[2]}" ;
+                    String[] entry_parts = parts[j].Split(' ');
+                    //	Console.WriteLine( $"\t {parts[j]}->{entry_parts[0]}|{entry_parts[1]}|{entry_parts[2]}");
+                    int weight = int.Parse(entry_parts[0]);
+                    String leaf_id = $"{entry_parts[1]} {entry_parts[2]}";
                     Node leaf_node = Nodes[leaf_id];
                     root_node.edges.Add(leaf_node);
-					root_node.edge_weights[leaf_node] = weight;
+                    root_node.edge_weights[leaf_node] = weight;
                 }
             }
 
+            foreach (Node n in Node_Set)
+            {
+                Console.WriteLine($"\t{n}");
+            }
+            
             int bag_count = 0;
-			shiny_gold_node = Nodes["shiny gold"]
-            
-			bag_count = shiny_gold_node.CountSearch();
-            
-            
+            Node shiny_gold_node;
+            if (Nodes.ContainsKey(GOLD))
+            {
+                shiny_gold_node = Nodes[GOLD];   
+            }
+            else 
+            {
+                Console.WriteLine($"\t{GOLD} node not found");
+                System.Environment.Exit(0);
+                shiny_gold_node = Nodes[GOLD];
+            }
 
-            
-            
+            bag_count = shiny_gold_node.CountSearch();
+
+
             Console.WriteLine($"\n\tPart 2 Solution: {bag_count}");
         }
     }
 }
+
