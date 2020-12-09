@@ -32,6 +32,33 @@ namespace advent_2020
 
         }
 
+        public (int, String) testFlipedOp()
+        {
+            
+            int target_pc = instructions.Length;
+            for (int i = 0; i < instructions.Length; i++)
+            {
+                String instruct = instructions[i];
+                if (i.Equals("acc")) continue;
+
+                if (i.Equals("nop"))
+                {
+                    int a = arguments[i];
+                    if (i + a == target_pc)
+                    {
+                        return (i, "jmp");
+                    }
+                } else if (i.Equals("jmp")){
+                    int a = arguments[i];
+                    if (i + 1 == target_pc)
+                    {
+                        return (i, "nop");
+                    }
+                } 
+            }
+
+            return (-1, "not found");
+        }
 
         static public (String, int) parseInstruction(String line)
         {
@@ -220,13 +247,11 @@ namespace advent_2020
         
         // Console.Write(machine);
 
-        int last_accum = machine.RunUntilLoop();
+        (int i, String s) result = machine.testFlipedOp();
         
+        Console.WriteLine(result);
         
-        
-        
-        
-        Console.WriteLine($"\n\tPart 2 Solution: {last_accum}");
+        Console.WriteLine($"\n\tPart 2 Solution: {0}");
     }
 }
 
