@@ -143,7 +143,6 @@ namespace advent_2020
             Part2(args);
         }
 
-        private static SortedSet<String> part1_color_list = new SortedSet<String>();
 
 
         private static String NormalizeInputLine(String line)
