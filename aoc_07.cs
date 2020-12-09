@@ -323,13 +323,13 @@ namespace advent_2020
 
 
             foreach (String s in Node_names)
-            {
+            {/*
                 Node n = Nodes[s];
                 bool in_node_set = Node_Set.Contains(n);
                 if (!in_node_set)
                 {
                     Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
-                }
+                } */
             }
 
 
@@ -352,28 +352,9 @@ namespace advent_2020
                 }
             }
 
-            foreach (Node n in Node_Set)
-            {
-                Console.WriteLine($"\t{n}");
-            }
-            
-            int bag_count = 0;
-            Node shiny_gold_node;
-            if (Nodes.ContainsKey(GOLD))
-            {
-                shiny_gold_node = Nodes[GOLD];   
-            }
-            else 
-            {
-                Console.WriteLine($"\t{GOLD} node not found");
-                System.Environment.Exit(0);
-                shiny_gold_node = Nodes[GOLD];
-            }
-
-            bag_count = shiny_gold_node.CountSearch();
 
 
-            Console.WriteLine($"\n\tPart 2 Solution: {bag_count}");
+            Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
     }
 }
