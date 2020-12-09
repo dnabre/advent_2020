@@ -2,12 +2,13 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 
 /*
 	Solutions found:
 	Part 1: 2051
-	Part 2: 3640
+	Part 2: 2304
 	
 */
 
@@ -23,6 +24,7 @@ namespace advent_2020
 
         public int PC;
         public int accumulator;
+
         public IntCode08(String[] instructions, int[] arguments)
         {
             this.instructions = instructions;
@@ -32,33 +34,7 @@ namespace advent_2020
 
         }
 
-        public (int, String) testFlipedOp()
-        {
-            
-            int target_pc = instructions.Length;
-            for (int i = 0; i < instructions.Length; i++)
-            {
-                String instruct = instructions[i];
-                if (i.Equals("acc")) continue;
-
-                if (i.Equals("nop"))
-                {
-                    int a = arguments[i];
-                    if (i + a == target_pc)
-                    {
-                        return (i, "jmp");
-                    }
-                } else if (i.Equals("jmp")){
-                    int a = arguments[i];
-                    if (i + 1 == target_pc)
-                    {
-                        return (i, "nop");
-                    }
-                } 
-            }
-
-            return (-1, "not found");
-        }
+        
 
         static public (String, int) parseInstruction(String line)
         {
@@ -67,14 +43,15 @@ namespace advent_2020
             int r_arg;
 
             r_string = p[0];
-            if(!isValidInstruction(r_string)) Console.WriteLine($"Invalid instruction {r_string} in {line}");
+            if (!isValidInstruction(r_string)) Console.WriteLine($"Invalid instruction {r_string} in {line}");
 
             r_arg = int.Parse(p[1]);
             return (r_string, r_arg);
-            
+
         }
 
-        static readonly String[] valid = { "acc","jmp","nop" };
+        static readonly String[] valid = {"acc", "jmp", "nop"};
+
         static bool isValidInstruction(String instruct)
         {
             foreach (String v in IntCode08.valid)
@@ -84,10 +61,106 @@ namespace advent_2020
                     return true;
                 }
             }
+
             return false;
         }
 
-        public override String ToString()
+        public (int new_pc, int new_accum) OneStep(int pc, int accum)
+        {
+            String i = this.instructions[pc];
+            int a = this.arguments[pc];
+            if (i.Equals("acc"))
+            {
+                accum += a;
+                pc++;
+            } else if (i.Equals("jmp"))
+            {
+                
+                pc += a;
+                
+            } else if (i.Equals("nop"))
+            {
+                pc++;
+            }
+
+            return (pc, accum);
+        }
+
+        private bool[] seen;
+        public int last_accum=0;
+        
+        public void FindFlip()
+        {
+            seen = new bool[instructions.Length];
+            String[] orig_program = new String[instructions.Length];
+            //Save
+            for (int i = 0; i < instructions.Length; i++)
+            {
+                orig_program[i] = instructions[i];
+                // set all seen to false while we're looping
+                seen[i] = false;
+            }
+
+            terminates(0, 0, true);
+
+            
+            
+            
+            
+
+            //Restore
+            for (int i = 0; i < instructions.Length; i++)
+            {
+                instructions[i] = orig_program[i];
+            }
+
+
+        }
+
+        public bool terminates(int index, int accum, bool can_swap)
+        {
+            int new_index;
+            int new_accum;
+            if (index == instructions.Length)
+            {
+                this.last_accum = accum;
+                Console.WriteLine($"\t found good flip, terminated with accumulator: {accum}");
+                return true;
+            }
+
+            if (seen[index])
+                return false;
+            seen[index] = true;
+            ( new_index, new_accum) = OneStep(index, accum);
+            if (terminates(new_index, new_accum, can_swap))
+            {
+                return true;
+            }
+
+            if (can_swap && (instructions[index].Equals("jmp") || instructions[index].Equals("nop")))
+            {
+                if (instructions[index].Equals("jmp"))
+                {
+                    instructions[index] = "nop";
+                }
+                else
+                {
+                    instructions[index] = "jmp";
+                }
+
+                (new_index, new_accum) = OneStep(index, accum);
+
+                if (terminates(new_index, new_accum, false)) return true;
+            }
+
+            return false;
+        }
+        
+        
+        
+
+
+    public override String ToString()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"\tPC={PC} \t Accumulator={accumulator}");
@@ -227,7 +300,7 @@ namespace advent_2020
     private static void Part2(string[] args)
     {
         Console.WriteLine("   Part 2");
-        String[] lines = System.IO.File.ReadAllLines(TestInput1);
+        String[] lines = System.IO.File.ReadAllLines(Part2Input);
         Console.WriteLine("\tRead {0} inputs", lines.Length);
 
         
@@ -247,11 +320,23 @@ namespace advent_2020
         
         // Console.Write(machine);
 
-        (int i, String s) result = machine.testFlipedOp();
+      
+        /*
+         *
+         *     INSIGHT
+         *     Assume that for all swap, the program only ever does two things: loop or terminate
+         *     If an instruction is encountered twice (the pc repeats) a loop has started. 
+         * 
+         */
+
+        machine.FindFlip();
         
-        Console.WriteLine(result);
         
-        Console.WriteLine($"\n\tPart 2 Solution: {0}");
+        int last_accum = machine.last_accum; 
+        
+        
+        
+        Console.WriteLine($"\n\tPart 2 Solution: {last_accum}");
     }
 }
 
