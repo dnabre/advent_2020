@@ -13,47 +13,119 @@ using System.Diagnostics;
 
 namespace advent_2020
 {
-    public struct Node : IEquatable<Node>
+    public class WNode : Node, IEquatable<WNode>
     {
-        public bool Equals(Node other)
+        public bool Equals(WNode other)
         {
-            return id.Equals(other.id);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return base.Equals(other) && Equals(edge_weights, other.edge_weights);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is Node other && Equals(other);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((WNode) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((id != null ? id.GetHashCode() : 0) * 397) ^ number;
+                return (base.GetHashCode() * 397) ^ (edge_weights != null ? edge_weights.GetHashCode() : 0);
             }
+        }
+
+        public static bool operator ==(WNode left, WNode right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(WNode left, WNode right)
+        {
+            return !Equals(left, right);
+        }
+
+
+        public WNode(string id, Dictionary<Node, int> edgeWeights) : base(id)
+        {
+            edge_weights = edgeWeights;
+           
+            
+        }
+
+        public Dictionary<Node, int> edge_weights;        
+        public int CountSearch()
+        {
+            int bag_count = 0;
+
+            HashSet<Node> visited = new HashSet<Node>();
+            Queue<Node> queue = new Queue<Node>(edges);
+            while (queue.Count > 0)
+            {
+                Node n = queue.Dequeue();
+                if (visited.Contains(n)) continue;
+            
+                foreach (Node n_edge in n.edges)
+                {
+                    if (visited.Contains(n))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        queue.Enqueue(n_edge);
+                    }
+                }
+            }
+
+            return bag_count;
+        }
+    }
+    
+    public class Node : IEquatable<Node>
+    {
+        public bool Equals(Node other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return id == other.id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Node) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (id != null ? id.GetHashCode() : 0);
         }
 
         public static bool operator ==(Node left, Node right)
         {
-            return left.Equals(right);
+            return Equals(left, right);
         }
 
         public static bool operator !=(Node left, Node right)
         {
-            return !left.Equals(right);
+            return !Equals(left, right);
         }
 
-
         readonly public String id;
-        public int number;
+ 
         public HashSet<Node> edges;
-        public Dictionary<Node, int> edge_weights;
-        public Node(String id, int count = 0)
+       
+        public Node(String id)
         {
             this.id = id;
             this.edges = new HashSet<Node>();
-            this.edge_weights = new Dictionary<Node, int>();
-            this.number = count;
+
         }
 
         public override String ToString()
@@ -98,32 +170,6 @@ namespace advent_2020
             return false;
         }
 
-        public int CountSearch()
-        {
-            int bag_count = 0;
-
-            HashSet<Node> visited = new HashSet<Node>();
-            Queue<Node> queue = new Queue<Node>(edges);
-            while (queue.Count > 0)
-            {
-                Node n = queue.Dequeue();
-                if (visited.Contains(n)) continue;
-            
-                foreach (Node n_edge in n.edges)
-                {
-                    if (visited.Contains(n))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        queue.Enqueue(n_edge);
-                    }
-                }
-            }
-
-            return bag_count;
-        }
     }
 
     static class AOC_07
@@ -331,7 +377,7 @@ namespace advent_2020
                 } */
             }
 
-
+            /*
             foreach (String line in lines)
             {
                 if (line.Contains("null null")) continue;
@@ -350,7 +396,7 @@ namespace advent_2020
                     root_node.edge_weights[leaf_node] = weight;
                 }
             }
-
+            */
 
 
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
