@@ -99,7 +99,7 @@ namespace advent_2020
             String[] lines = System.IO.File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 
-
+            // Dynamic programming -> sum_range(nums[], start a, end b)
 
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
