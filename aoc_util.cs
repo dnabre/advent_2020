@@ -73,5 +73,32 @@ namespace advent_2020
 
 				return min.ToString();
 			}
+
+			public static long IntPow(long e_base, long power)
+			{
+				if (power < 0)
+				{
+					throw new ArgumentException($"power {power} must be greater than 0");
+				}
+
+				if (power == 0) return 1;
+				long a = 1;
+				while (power > 1)
+				{
+					if (power % 2 == 0)
+					{
+						e_base = e_base * e_base;
+						power = power / 2;
+					}
+					else
+					{
+						a = e_base * a;
+						e_base = e_base * e_base;
+						power = (power - 1) / 2;
+					}
+				}
+
+				return e_base * a;
+			}
 	}
 }
