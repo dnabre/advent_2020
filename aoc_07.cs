@@ -13,77 +13,7 @@ using System.Diagnostics;
 
 namespace advent_2020
 {
-    public class WNode : Node, IEquatable<WNode>
-    {
-        public bool Equals(WNode other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return base.Equals(other) && Equals(edge_weights, other.edge_weights);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((WNode) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (base.GetHashCode() * 397) ^ (edge_weights != null ? edge_weights.GetHashCode() : 0);
-            }
-        }
-
-        public static bool operator ==(WNode left, WNode right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(WNode left, WNode right)
-        {
-            return !Equals(left, right);
-        }
-
-
-        public WNode(string id, Dictionary<Node, int> edgeWeights) : base(id)
-        {
-            edge_weights = edgeWeights;
-           
-            
-        }
-
-        public Dictionary<Node, int> edge_weights;        
-        public int CountSearch()
-        {
-            int bag_count = 0;
-
-            HashSet<Node> visited = new HashSet<Node>();
-            Queue<Node> queue = new Queue<Node>(edges);
-            while (queue.Count > 0)
-            {
-                Node n = queue.Dequeue();
-                if (visited.Contains(n)) continue;
-            
-                foreach (Node n_edge in n.edges)
-                {
-                    if (visited.Contains(n))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        queue.Enqueue(n_edge);
-                    }
-                }
-            }
-
-            return bag_count;
-        }
-    }
+    
     
     public class Node : IEquatable<Node>
     {
@@ -125,9 +55,11 @@ namespace advent_2020
         {
             this.id = id;
             this.edges = new HashSet<Node>();
+            this.edge_weights = new Dictionary<Node,int>();
 
         }
 
+        public Dictionary<Node, int> edge_weights; 
         public override String ToString()
         {
             return $"{id}: {edges.Count} edges";
@@ -257,7 +189,8 @@ namespace advent_2020
             line = line.Replace(" contain", ",");
             line = line.Replace(" bags,  ", "|");
             line = line.Replace(" bags", "");
-            line = line.Replace(", no other", "|null null");
+            line = line.Replace("no other", "null null");
+            line = line.Replace(", ", "|");
             return line;
         }
 
@@ -353,7 +286,7 @@ namespace advent_2020
             for (int i = 0; i < lines.Length; i++)
             {
                 lines[i] = NormalizeInputLine2(lines[i]);
-                //	Console.WriteLine($"\t{lines[i]}");
+             //   Console.WriteLine($"\t{lines[i]}");
             }
 
             foreach (String line in lines)
@@ -368,36 +301,52 @@ namespace advent_2020
 
 
             foreach (String s in Node_names)
-            {/*
+            {
                 Node n = Nodes[s];
                 bool in_node_set = Node_Set.Contains(n);
                 if (!in_node_set)
                 {
                     Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
-                } */
+                }
+              
             }
 
-            /*
+            
             foreach (String line in lines)
             {
+               // Console.WriteLine($"\t{line}");
                 if (line.Contains("null null")) continue;
                 String[] parts = line.Split('|');
+                foreach (String p in parts)
+                {
+                    Console.Write($"{p}- ");
+                }
+                Console.WriteLine();
+                
                 String node_id = parts[0];
                 Node root_node = Nodes[node_id];
-
+                
+                Console.WriteLine($"\t {root_node}");
+                
+                
                 for (int j = 1; j < parts.Length; j++)
                 {
                     String[] entry_parts = parts[j].Split(' ');
-                    //	Console.WriteLine( $"\t {parts[j]}->{entry_parts[0]}|{entry_parts[1]}|{entry_parts[2]}");
                     int weight = int.Parse(entry_parts[0]);
                     String leaf_id = $"{entry_parts[1]} {entry_parts[2]}";
                     Node leaf_node = Nodes[leaf_id];
                     root_node.edges.Add(leaf_node);
                     root_node.edge_weights[leaf_node] = weight;
+                    Console.WriteLine( $"\t >{parts[j]}->{entry_parts[0]}|{entry_parts[1]}|{entry_parts[2]}");
                 }
+                
             }
-            */
 
+            Console.WriteLine("==========\n");
+            foreach (Node n in Node_Set)
+            {
+                Console.WriteLine($"\t{n}");
+            }
 
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
