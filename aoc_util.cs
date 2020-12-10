@@ -52,5 +52,26 @@ namespace advent_2020
 
 				return result;
 			}
+
+			public static String MaxIntOfString(String[] inputs)
+			{
+				int max = int.Parse(inputs[0]);
+				foreach(String i in inputs)
+				{
+					max = Math.Max(max, int.Parse(i));
+				}
+
+				return max.ToString();
+			}
+			public static String MinIntOfString(String[] inputs)
+			{
+				int min = int.Parse(inputs[0]);
+				foreach(String i in inputs)
+				{
+					min = Math.Max(min, int.Parse(i));
+				}
+
+				return min.ToString();
+			}
 	}
 }
