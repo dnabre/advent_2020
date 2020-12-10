@@ -26,7 +26,31 @@ namespace advent_2020
 				return true;
 			}
 
-			
-			
+			public static int[] StringArrayToIntArray(String[] lines)
+			{
+				int[] result = new int[lines.Length];
+				for (int i = 0; i < lines.Length; i++)
+				{
+					result[i] = int.Parse(lines[i]);
+				}
+
+				return result;
+			}
+
+			public static string[] AddToArray(string[] lines, string[] o)
+			{
+				String[] result = new String[lines.Length + o.Length];
+				for (int i = o.Length; i < lines.Length + o.Length; i++)
+				{
+					result[i] = lines[i - o.Length];
+				}
+
+				for (int i = 0; i < o.Length; i++)
+				{
+					result[i] = o[i];
+				}
+
+				return result;
+			}
 	}
 }
