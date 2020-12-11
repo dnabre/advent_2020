@@ -100,5 +100,33 @@ namespace advent_2020
 
 				return e_base * a;
 			}
+
+		public static void PrintMap(Char[,] map, bool tab=true) {
+				int width = map.GetLength(0);
+			int height = map.GetLength(1);
+			for(int y=0; y < height; y++) {
+				if(tab) Console.Write("\t");
+				for(int x=0; x < width; x++) {
+					Console.Write(map[x,y]);
+					
+				}
+				Console.WriteLine();
+			}
+			return;
+		}
+		public static void PrintMap(String[] lines, bool tab=true) {
+
+			int width = lines[0].Length;
+			int height = lines.Length;
+			for(int y=0; y < height; y++) {
+				if(tab) Console.Write("\t");
+				for(int x=0; x < width; x++) {
+					char c  = lines[y][x];
+					Console.Write(c);
+									}
+				Console.WriteLine();
+			}
+				return;
+		}
 	}
 }
