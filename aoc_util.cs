@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Drawing;
 
 
 /**
@@ -100,7 +101,8 @@ namespace advent_2020
 
 				return e_base * a;
 			}
-
+			
+			
 		public static void PrintMap(Char[,] map, bool tab=true) {
 				int width = map.GetLength(0);
 			int height = map.GetLength(1);
