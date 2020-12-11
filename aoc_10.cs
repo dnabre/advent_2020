@@ -24,7 +24,7 @@ namespace advent_2020
         public static void Run(string[] args)
         {
             Console.WriteLine("AoC Problem 10");
-           Part1(args);
+            Part1(args);
             Console.Write("\n");
             Part2(args);
         }
