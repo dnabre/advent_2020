@@ -7,337 +7,290 @@ using System.Runtime.CompilerServices;
 
 /*
 	Solutions found:
-	Part 1: 2051
-	Part 2: 2304
+	Part 1: 1424
+	Part 2: 63447
 	
 */
 
 namespace advent_2020
 {
-
-
-
-    class IntCode08
+    public class FlosserWhip
     {
-        public String[] instructions;
-        public int[] arguments;
+        public int x;
+        public int y;
+        public int heading = 90;
 
-        public int PC;
-        public int accumulator;
-
-        public IntCode08(String[] instructions, int[] arguments)
+        public void Translate(char direction, int amount)
         {
-            this.instructions = instructions;
-            this.arguments = arguments;
-            this.PC = 0;
-            this.accumulator = 0;
-
-        }
-
-        
-
-        static public (String, int) parseInstruction(String line)
-        {
-            String[] p = line.Split(' ');
-            String r_string;
-            int r_arg;
-
-            r_string = p[0];
-            if (!isValidInstruction(r_string)) Console.WriteLine($"Invalid instruction {r_string} in {line}");
-
-            r_arg = int.Parse(p[1]);
-            return (r_string, r_arg);
-
-        }
-
-        static readonly String[] valid = {"acc", "jmp", "nop"};
-
-        static bool isValidInstruction(String instruct)
-        {
-            foreach (String v in IntCode08.valid)
+            if (direction == 'N')
             {
-                if (instruct.Equals(v))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public (int new_pc, int new_accum) OneStep(int pc, int accum)
-        {
-            String i = this.instructions[pc];
-            int a = this.arguments[pc];
-            if (i.Equals("acc"))
+                y += amount;
+            } else if (direction == 'S')
             {
-                accum += a;
-                pc++;
-            } else if (i.Equals("jmp"))
+                y -= amount;
+            } else if (direction == 'E')
             {
-                
-                pc += a;
-                
-            } else if (i.Equals("nop"))
+                x += amount;
+            } else if (direction == 'W')
             {
-                pc++;
-            }
-
-            return (pc, accum);
-        }
-
-        private bool[] seen;
-        public int last_accum=0;
-        
-        public void FindFlip()
-        {
-            seen = new bool[instructions.Length];
-            String[] orig_program = new String[instructions.Length];
-            //Save
-            for (int i = 0; i < instructions.Length; i++)
-            {
-                orig_program[i] = instructions[i];
-                // set all seen to false while we're looping
-                seen[i] = false;
-            }
-
-            terminates(0, 0, true);
-
-            
-            
-            
-            
-
-            //Restore
-            for (int i = 0; i < instructions.Length; i++)
-            {
-                instructions[i] = orig_program[i];
-            }
-
-
-        }
-
-        public bool terminates(int index, int accum, bool can_swap)
-        {
-            int new_index;
-            int new_accum;
-            if (index == instructions.Length)
-            {
-                this.last_accum = accum;
-                Console.WriteLine($"\t found good flip, terminated with accumulator: {accum}");
-                return true;
-            }
-
-            if (seen[index])
-                return false;
-            seen[index] = true;
-            ( new_index, new_accum) = OneStep(index, accum);
-            if (terminates(new_index, new_accum, can_swap))
-            {
-                return true;
-            }
-
-            if (can_swap && (instructions[index].Equals("jmp") || instructions[index].Equals("nop")))
-            {
-                if (instructions[index].Equals("jmp"))
-                {
-                    instructions[index] = "nop";
-                }
-                else
-                {
-                    instructions[index] = "jmp";
-                }
-
-                (new_index, new_accum) = OneStep(index, accum);
-
-                if (terminates(new_index, new_accum, false)) return true;
-            }
-
-            return false;
-        }
-        
-        
-        
-
-
-    public override String ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"\tPC={PC} \t Accumulator={accumulator}");
-            for (int i = 0; i < instructions.Length; i++)
-            {
-                sb.Append($"\t\t{instructions[i]}: {arguments[i].ToString().PadLeft(6)}  \n");
-            }
-            
-
-            return sb.ToString();
-        }
-
-        private void executeStep()
-        {
-            string   s = $"\tpc: {this.PC.ToString().PadLeft(3)}\t acc: {this.accumulator.ToString().PadLeft(5)}" +
-                         $"|\t {instructions[PC].PadLeft(7)} {arguments[PC].ToString().PadLeft(5)}\t";
-            Console.WriteLine(s);
-           // Console.WriteLine(s);
-            String i = instructions[PC];
-            int a = arguments[PC];
-
-            if (i.Equals("acc"))
-            {
-                accumulator += a;
-                PC++;
-            } else if (i.Equals("jmp"))
-            {
-                
-                PC += a;
-                if (PC > instructions.Length)
-                {
-                    Console.WriteLine("\t jmp to invalid PC={pc}");
-                    PC = PC - a;
-                    Console.WriteLine(
-                        $"\tpc: {this.PC.ToString().PadLeft(3)} acc: {this.accumulator.ToString().PadLeft(5)}" +
-                        $"\t {instructions[PC].PadLeft(7)} {arguments[PC].ToString().PadLeft(5)}");
-                    PC = PC + a;
-                    System.Environment.Exit(0); 
-                }
-            } else if (i.Equals("nop"))
-            {
-                PC++;
+                x -= amount;
             }
             else
             {
-                Console.WriteLine($"\t invalid instruction {i}");
-                System.Environment.Exit(0);
+                throw new ArgumentException($"Direction {direction} not recognized");
             }
-            s = $"\tpc: {this.PC.ToString().PadLeft(3)}\t acc: {this.accumulator.ToString().PadLeft(5)}" +
-                       $"|\t {instructions[PC].PadLeft(7)} {arguments[PC].ToString().PadLeft(5)}\t";
-        //    Console.WriteLine(s);
-            Console.WriteLine();
-            return;
         }
-        
-        public int RunUntilLoop()
+
+        public void Rotate(char left_or_right, int degrees)
         {
-           
-            PC = 0;
-            bool[] ran = new bool[instructions.Length];
-            for (int i = 0; i < instructions.Length; i++)
+            if (left_or_right == 'L')
             {
-                ran[i] = false;
+                degrees = -degrees;
+            } else if (left_or_right != 'R')
+            {
+                throw new ArgumentException($"Rotate direction {left_or_right} not recognized");
+            }
+            heading = (heading + 360 + degrees) % 360;
+        }
+
+        public void Forward(int amount)
+        {
+            switch (heading)
+            {
+                case 0:
+                    y += amount;
+                    break;
+                case 90:
+                    x += amount;
+                    break;
+                case 180:
+                    y -= amount;
+                    break;
+                case 270:
+                    x -= amount;
+                    break;
+                default:
+                    Console.WriteLine($"\t heading {heading} not handled");
+                    System.Environment.Exit(0);
+                    break;
             }
 
-            do
+            
+        }
+        
+        
+        
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"Location: ({x},{y}) Heading: {heading} Distance: {getManhattanDistance()}");
+            return sb.ToString();
+        }
+
+        public int getManhattanDistance(int s_x = 0, int s_y = 0)
+        {
+            return Math.Abs(s_x + x) + Math.Abs(s_y + y);
+        }
+    }
+    
+    public class FlosserWhip2
+    {
+        public int x=0;
+        public int y=0;
+       
+        public int waypoint_x = 10;
+        public int waypoint_y = 1;
+        
+        public void Translate(char direction, int amount)
+        {
+            if (direction == 'N')
             {
-           
-                ran[PC] = true;
-                executeStep();
-                
-                if (PC >= instructions.Length)
-                {
-                    Console.WriteLine($"\tProgram Reached End (PC={PC})");
+                waypoint_y += amount;
+            } else if (direction == 'S')
+            {
+                waypoint_y -= amount;
+            } else if (direction == 'E')
+            {
+                waypoint_x += amount;
+            } else if (direction == 'W')
+            {
+                waypoint_x -= amount;
+            }
+            else
+            {
+                throw new ArgumentException($"Direction {direction} not recognized");
+            }
+        }
+
+        public void Rotate(char left_or_right, int degrees)
+        {
+            int heading;
+            if (left_or_right == 'L')
+            {
+                heading = 360 - degrees;
+            } else if (left_or_right != 'R')
+            {
+                throw new ArgumentException($"Rotate direction {left_or_right} not recognized");
+            }
+            else
+            {
+                heading = degrees;
+            }
+            
+            
+            
+            int w_x = waypoint_x;
+            int w_y = waypoint_y;
+            switch (heading)
+            {
+                case 0:
+                    break;
+                case 90:
+                    waypoint_x = w_y;
+                    waypoint_y = -w_x;
+                    break;
+                case 180:
+                    waypoint_x = -w_x;
+                    waypoint_y = -w_y;
+                    break;
+                case 270:
+                    waypoint_x = -w_y;
+                    waypoint_y = w_x;
+                    break;
+                default:
+                    Console.WriteLine($"\t heading {heading} not handled");
                     System.Environment.Exit(0);
+                    break;
+            }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        }
+
+        public void Forward(int amount)
+        {
+            x = amount * waypoint_x + x;
+            y = amount * waypoint_y + y;
+   
+        }
+        
+        
+        
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"Location: ({x},{y})  Waypoint: ({waypoint_x},{waypoint_y})  Distance: {getManhattanDistance()}");
+            return sb.ToString();
+        }
+
+        public int getManhattanDistance(int s_x = 0, int s_y = 0)
+        {
+            return Math.Abs(s_x + x) + Math.Abs(s_y + y);
+        }
+    }
+  
+    static class AOC_12
+    {
+   
+        private const string Part1Input = "aoc_12_input_1.txt";
+        private const string Part2Input = "aoc_12_input_2.txt";
+        private const string TestInput1 = "aoc_12_test_1.txt";
+        private const string TestInput2 = "aoc_12_test_2.txt";
+
+    
+
+        public static void Run(string[] args)
+        {
+            Console.WriteLine("AoC Problem 12");
+            Part1(args);
+            Console.Write("\n");
+            Part2(args);
+        }
+
+
+        private static void Part1(string[] args)
+        {
+            Console.WriteLine("   Part 1");
+            String[] lines = System.IO.File.ReadAllLines(Part1Input);
+            Console.WriteLine("\tRead {0} inputs", lines.Length);
+            char letter;
+            int amount;
+            FlosserWhip turtle = new FlosserWhip();
+            
+            foreach (String ln in lines)
+            {
+                letter = ln[0];
+                amount = int.Parse(ln.Substring(1));
+                if((letter == 'R') || (letter == 'L'))
+                {
+                    turtle.Rotate(letter, amount);
+                } else if ("NSWE".Contains(Char.ToString(letter)))
+                {
+                    turtle.Translate(letter, amount);
+                } else if (letter == 'F')
+                {
+                    turtle.Forward(amount);
                 }
-            } while (ran[PC] == false);
-
-
-            return this.accumulator;
-
+                else
+                {
+                    Console.WriteLine($"\t Bad parse!  {ln} letter:{letter} amount:{amount}");
+                }
+                
+                
+              //  Console.Write($"\t {ln} \t {letter}:{amount}\n");
+            }
+          //  Console.WriteLine($"\t{turtle.ToString()}");
+        
+            Console.WriteLine($"\n\tPart 1 Solution: {turtle.getManhattanDistance()}");
         }
-    }
-    
-    
-    
-    static class AOC_08
-{
-    
-    
-    
-    
-    private const string Part1Input = "aoc_08_input_1.txt";
-    private const string Part2Input = "aoc_08_input_2.txt";
-    private const string TestInput1 = "aoc_08_test_1.txt";
-    private const string TestInput2 = "aoc_08_test_2.txt";
-
-    
-
-    public static void Run(string[] args)
-    {
-        Console.WriteLine("AoC Problem 08");
-  //      Part1(args);
-          Console.Write("\n");
-          Part2(args);
-    }
 
 
-    private static void Part1(string[] args)
-    {
-        Console.WriteLine("   Part 1");
-        String[] lines = System.IO.File.ReadAllLines(Part1Input);
-        Console.WriteLine("\tRead {0} inputs", lines.Length);
+        private static void Part2(string[] args)
+        {
+            Console.WriteLine("   Part 2");
+            String[] lines = System.IO.File.ReadAllLines(Part2Input);
+            Console.WriteLine("\tRead {0} inputs", lines.Length);
 
-        (String s, int i) instruct;
+            char letter;
+            int amount;
+            FlosserWhip2 turtle = new FlosserWhip2();
+           // Console.WriteLine($"\t{turtle.ToString()}\n\n");
+            foreach (String ln in lines)
+            {
+                letter = ln[0];
+                amount = int.Parse(ln.Substring(1));
+                if((letter == 'R') || (letter == 'L'))
+                {
+                    turtle.Rotate(letter, amount);
+                } else if ("NSWE".Contains(Char.ToString(letter)))
+                {
+                    turtle.Translate(letter, amount);
+                } else if (letter == 'F')
+                {
+                    turtle.Forward(amount);
+                }
+                else
+                {
+                    Console.WriteLine($"\t Bad parse!  {ln} letter:{letter} amount:{amount}");
+                }
+                
+                
+                //Console.Write($"\t {ln} \t {letter}:{amount}\n");
+               // Console.WriteLine($"\t{turtle.ToString()}");
+            }
+              Console.WriteLine($"\t{turtle.ToString()}");
 
-        String[] prog = new String[lines.Length];
-        int[] iargs = new int[lines.Length];
-        
-        
-        for(int i=0; i < lines.Length; i++) {
-            instruct = IntCode08.parseInstruction(lines[i]);
-            prog[i] = instruct.s;
-            iargs[i] = instruct.i;
-        }
-        
-        IntCode08 machine = new IntCode08(prog,iargs);
-        
-       // Console.Write(machine);
-
-        int count = machine.RunUntilLoop();
-        
-        Console.WriteLine($"\n\tPart 1 Solution: {count}");
-    }
-
-
-    private static void Part2(string[] args)
-    {
-        Console.WriteLine("   Part 2");
-        String[] lines = System.IO.File.ReadAllLines(Part2Input);
-        Console.WriteLine("\tRead {0} inputs", lines.Length);
-
-        
-        (String s, int i) instruct;
-
-        String[] prog = new String[lines.Length];
-        int[] iargs = new int[lines.Length];
-        
-        
-        for(int i=0; i < lines.Length; i++) {
-            instruct = IntCode08.parseInstruction(lines[i]);
-            prog[i] = instruct.s;
-            iargs[i] = instruct.i;
-        }
-        
-        IntCode08 machine = new IntCode08(prog,iargs);
-        
-        // Console.Write(machine);
 
       
-        /*
-         *
-         *     INSIGHT
-         *     Assume that for all swap, the program only ever does two things: loop or terminate
-         *     If an instruction is encountered twice (the pc repeats) a loop has started. 
-         * 
-         */
-
-        machine.FindFlip();
         
-        
-        int last_accum = machine.last_accum; 
-        
-        
-        
-        Console.WriteLine($"\n\tPart 2 Solution: {last_accum}");
+            Console.WriteLine($"\n\tPart 2 Solution: {turtle.getManhattanDistance()}");
+        }
     }
-}
 
 }
