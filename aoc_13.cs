@@ -7,7 +7,7 @@ using System.Globalization;
 /*
 	Solutions found:
 	Part 1: 2238
-	Part 2: 
+	Part 2: 560214575859998
 	
 */
 
@@ -71,23 +71,30 @@ namespace advent_2020
             string[] lines =  System.IO.File.ReadAllLines(Part2Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 			Console.WriteLine($"\t{lines[0]}");
-			long target;
-			long x_count = 0;
-			target = long.Parse(lines[0]);
-			target = 1068781;
+
+			/*
+			 * Stop being smart. No CRT or junk like that brute force it
+			 *
+			 * Brute forcing too slow; How can we speed it up? 
+			 * 
+			 */
+
+			long target = 1;
+			long answer  = - 1;
+			
 			Console.WriteLine($"\t target = {target}");
 			String inputs = lines[1];
 			Console.WriteLine($"\t{lines[1]}");
+			
+			long timestamp_n = -1;
 			List<long> buses = new List<long>();
 			List<long> minute_after = new List<long>();
 			String[] parts = inputs.Split(',');
-			long timestamp_n = -1;
 			foreach(String p in parts)
 			{
 				timestamp_n++;
 				if(p.Equals("x"))
 				{
-					x_count++;
 					continue;
 					
 				}
@@ -99,54 +106,44 @@ namespace advent_2020
 
 			long[] bus_id = buses.ToArray();
 			long[] minutes = minute_after.ToArray();
-			long answer = -1;
 
-			
-			long increment = 1;
-			
-			
-			
 			while (answer < 0)
 			{
-				int good_count = 0;
-				for (int i = 0; i < bus_id.Length; i++)
-				{
-					long r = WhichTime(bus_id[i], target);
-			//		Console.WriteLine($"\t{target} % {bus_id[i]} = {r}   {minutes[i]}"); 
-					if (r == minutes[i])
-					{
-						good_count++;
-									
-						
-					}
-					
-				}
-			//		Console.WriteLine();
+				long increment = 1;
+				bool valid = true;
 
-				
-				if (good_count == bus_id.Length)
+				for (int j = 0; j < minutes.Length; j++)
+				{
+					if ((target + minutes[j]) % bus_id[j] != 0)
+					{
+						valid = false;
+						break;
+
+					}
+					/* Here! by incrementing by multiple of the LCM of all bus_ids we've matched we search the space 
+					 * much faster.
+					 */
+					increment *= bus_id[j];
+				}
+
+				if (valid)
 				{
 					answer = target;
-					break;
 				}
-				else
-				{
-					target += increment;
-					if (target <= 0)
-					{
-						Console.WriteLine($"Overflow on target = {target}");
-						System.Environment.Exit(0);
-					}
-				}
-				
+
+				target += increment;
+
 			}
 			
 			
 			
+			/* It works after a few brute force rewrites. Flow control is a mess from changing code around a bunch of
+			 times. Leave it  
+			
+			 */
 			
 			
-			
-			Console.WriteLine($"\n\tPart 2 Solution: {target}");
+			Console.WriteLine($"\n\tPart 2 Solution: {answer}");
         }
 
 		private static long GetNextStopAfter(long bus, long target) {
