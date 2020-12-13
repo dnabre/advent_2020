@@ -60,9 +60,28 @@ namespace advent_2020
         }
 
         public Dictionary<Node, int> edge_weights; 
+        
+  
+        
         public override String ToString()
         {
-            return $"{id}: {edges.Count} edges";
+            
+            String result, end;
+            result = $"{id}: {edges.Count} edges";
+            foreach (Node e in edges)
+            {
+                if (edge_weights.ContainsKey(e))
+                {
+                    end = $"\n\t\t{edge_weights[e]} {e.id}";
+                }
+                else
+                {
+                    end = $"\n\t\t{0} {e.id}";
+                }
+                result = result + end;
+            }
+           
+            return result;
         }
 
         public bool CanHoldGold()
@@ -98,10 +117,40 @@ namespace advent_2020
                     }
                 }
             }
-
             return false;
         }
 
+        public int CountSearch()
+        {
+            if (edge_weights.Count == 0) return 1;
+            List<int> path = new List<int>();
+            HashSet<Node> visited = new HashSet<Node>();
+            Stack<Node> stack = new Stack<Node>();
+            stack.Push(this);
+
+            
+            
+            
+            /*             
+            HashSet<Node> visited = new HashSet<Node>();
+            Queue<Node> queue = new Queue<Node>(edges);
+            while (queue.Count > 0)
+            {
+                Node n = queue.Dequeue();
+                if (visited.Contains(n)) continue;
+                foreach (Node n_edge in n.edges)
+                {
+                    if (visited.Contains(n)) continue;
+                    else queue.Enqueue(n_edge);
+                }
+            } */
+
+            
+            
+            
+            
+            return 0;
+        }
     }
 
     static class AOC_07
