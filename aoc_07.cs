@@ -2,12 +2,13 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 
 /*
 	Solutions found:
 	Part 1: 289
-	Part 2: 3640
+	Part 2: 30055
 	
 */
 
@@ -66,8 +67,9 @@ namespace advent_2020
         public override String ToString()
         {
             
-            String result, end;
+            String result;
             result = $"{id}: {edges.Count} edges";
+           /*
             foreach (Node e in edges)
             {
                 if (edge_weights.ContainsKey(e))
@@ -80,6 +82,7 @@ namespace advent_2020
                 }
                 result = result + end;
             }
+            */
            
             return result;
         }
@@ -120,37 +123,26 @@ namespace advent_2020
             return false;
         }
 
-        public int CountSearch()
+        public int BagCount()
         {
-            if (edge_weights.Count == 0) return 1;
-            //List<int> path = new List<int>();
-            //HashSet<Node> visited = new HashSet<Node>();
-            Stack<Node> stack = new Stack<Node>();
-            stack.Push(this);
+            if (this.edges.Count == 0) return 1;
+                
+            
+            int result = 1;  // this bag
 
-            
-            
-            
-            /*             
-            HashSet<Node> visited = new HashSet<Node>();
-            Queue<Node> queue = new Queue<Node>(edges);
-            while (queue.Count > 0)
+            foreach (Node n in edges)
             {
-                Node n = queue.Dequeue();
-                if (visited.Contains(n)) continue;
-                foreach (Node n_edge in n.edges)
-                {
-                    if (visited.Contains(n)) continue;
-                    else queue.Enqueue(n_edge);
-                }
-            } */
-
-            
-            
-            
-            
-            return 0;
+                int node_count;
+                int multi;
+                node_count = n.BagCount();
+                multi = edge_weights[n];
+                result += multi * node_count;
+            }
+           
+           
+            return result;
         }
+         
     }
 
     static class AOC_07
@@ -165,9 +157,16 @@ namespace advent_2020
         public static void Run(string[] args)
         {
             Console.WriteLine("AoC Problem 07");
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             Part1(args);
+            watch.Stop();
+            long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
+            watch = System.Diagnostics.Stopwatch.StartNew();
             Part2(args);
+            watch.Stop();
+            long time_part_2 = watch.ElapsedMilliseconds;
+            Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
         }
 
 
@@ -324,7 +323,7 @@ namespace advent_2020
         private static void Part2(string[] args)
         {
             Console.WriteLine("   Part 2");
-            String[] lines = System.IO.File.ReadAllLines(TestInput1);
+            String[] lines = System.IO.File.ReadAllLines(Part2Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 
 
@@ -335,7 +334,6 @@ namespace advent_2020
             for (int i = 0; i < lines.Length; i++)
             {
                 lines[i] = NormalizeInputLine2(lines[i]);
-             //   Console.WriteLine($"\t{lines[i]}");
             }
 
             foreach (String line in lines)
@@ -357,27 +355,24 @@ namespace advent_2020
                 {
                     Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
                 }
-              
+
             }
 
-            
+
             foreach (String line in lines)
             {
-               // Console.WriteLine($"\t{line}");
+                // Console.WriteLine($"\t{line}");
                 if (line.Contains("null null")) continue;
                 String[] parts = line.Split('|');
-                foreach (String p in parts)
-                {
-                    Console.Write($"{p}- ");
-                }
-                Console.WriteLine();
-                
+
+                //Console.WriteLine();
+
                 String node_id = parts[0];
                 Node root_node = Nodes[node_id];
-                
-                Console.WriteLine($"\t {root_node}");
-                
-                
+
+                //Console.WriteLine($"\t {root_node}");
+
+
                 for (int j = 1; j < parts.Length; j++)
                 {
                     String[] entry_parts = parts[j].Split(' ');
@@ -386,19 +381,24 @@ namespace advent_2020
                     Node leaf_node = Nodes[leaf_id];
                     root_node.edges.Add(leaf_node);
                     root_node.edge_weights[leaf_node] = weight;
-                    Console.WriteLine( $"\t >{parts[j]}->{entry_parts[0]}|{entry_parts[1]}|{entry_parts[2]}");
+                    //   Console.WriteLine( $"\t >{parts[j]}->{entry_parts[0]}|{entry_parts[1]}|{entry_parts[2]}");
                 }
-                
+
             }
 
-            Console.WriteLine("==========\n");
-            foreach (Node n in Node_Set)
-            {
-                Console.WriteLine($"\t{n}");
-            }
+            int bag_count = Nodes[GOLD].BagCount()-1;
+         
+          
+           
+            Console.WriteLine($"\n\tPart 2 Solution: {bag_count}");
+        }
 
-            Console.WriteLine($"\n\tPart 2 Solution: {0}");
+
         }
     }
-}
+
+
+
+
+
 
