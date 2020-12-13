@@ -21,9 +21,17 @@ namespace advent_2020
 
         public static void Run (string[] args) {
             Console.WriteLine ("AoC Problem 13");
-            //Part1(args);
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            Part1(args);
+            watch.Stop();
+            long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
-           Part2(args);
+            watch = System.Diagnostics.Stopwatch.StartNew();
+            Part2(args);
+            watch.Stop();
+            long time_part_2 = watch.ElapsedMilliseconds;
+            Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
+
         }
 
         private static void Part1(string[] args) {
