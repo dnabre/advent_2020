@@ -123,8 +123,8 @@ namespace advent_2020
         public int CountSearch()
         {
             if (edge_weights.Count == 0) return 1;
-            List<int> path = new List<int>();
-            HashSet<Node> visited = new HashSet<Node>();
+            //List<int> path = new List<int>();
+            //HashSet<Node> visited = new HashSet<Node>();
             Stack<Node> stack = new Stack<Node>();
             stack.Push(this);
 
