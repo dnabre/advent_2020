@@ -37,7 +37,7 @@ namespace advent_2020
 			String inputs = lines[1];
 			//Console.WriteLine($"\t{lines[1]}");
 			List<long> buses = new List<long>();
-			String[] parts = inputs.Split(",");
+			String[] parts = inputs.Split(',');
 			foreach(String p in parts) {
 				if(p.Equals("x"))	continue;
 				long n = long.Parse(p);
@@ -67,7 +67,7 @@ namespace advent_2020
 
         private static void Part2(string[] args) {
             Console.WriteLine("   Part2");
-            string[] lines =  System.IO.File.ReadAllLines(TestInput2);
+            string[] lines =  System.IO.File.ReadAllLines(TestInput1);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 //Console.WriteLine($"\t{lines[0]}");
 			long target;
@@ -76,7 +76,7 @@ namespace advent_2020
 			String inputs = lines[1];
 			//Console.WriteLine($"\t{lines[1]}");
 			List<long> buses = new List<long>();
-			String[] parts = inputs.Split(",");
+			String[] parts = inputs.Split(',');
 			foreach(String p in parts) {
 				if(p.Equals("x"))	continue;
 				long n = long.Parse(p);
