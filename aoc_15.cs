@@ -65,7 +65,7 @@ namespace advent_2020
             Console.WriteLine("\tRead {0} inputs", lines.Length);
             Console.WriteLine("\tProcessing {0} turns", end_turn);
             
-            TurnLastSpoke = new Dictionary<long, long>();
+            TurnLastSpoke = new Dictionary<long, long>(385);
             String[] nums = lines[0].Split(',');
             long current_turn = 0;
             first_time = true;
@@ -109,7 +109,7 @@ namespace advent_2020
             Console.WriteLine("\tRead {0} inputs", lines.Length);
             Console.WriteLine("\tProcessing {0} turns", end_turn2);
             
-            TurnLastSpoke = new Dictionary<long, long>();
+            TurnLastSpoke = new Dictionary<long, long>(3611738);
             
             String[] nums = lines[0].Split(',');
             long current_turn = 0;
@@ -144,6 +144,7 @@ namespace advent_2020
                 last_spoke = number;
                 Speak(current_turn, number);
                 current_turn++;
+              
             }
             Console.WriteLine($"\n\tPart 2 Solution: {last_spoke}");
         }
