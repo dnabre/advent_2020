@@ -1,10 +1,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Drawing.Imaging;
-using System.Xml;
-using Microsoft.CSharp;
+
 
 
 /*
@@ -261,10 +258,13 @@ namespace advent_2020
                 List<char> results = new List<char>();
                 int min_x, max_x;
                 int min_y, max_y;
+			
                 (min_x, max_x) = (0, map.GetLength(1)-1);
-                (int, int) x_range = (min_x, max_x);
+                var x_range = (min_x, max_x);
                 (min_y, max_y) = (0, map.GetLength(0)-1);
-                (int, int) y_range = (min_y, max_y);
+				
+                var y_range = (min_y, max_y);
+				
                 if (!this.IsBetween(x_range, y_range))
                 {
                     Console.WriteLine($"Point {this} is outside map range {x_range}, {y_range} ");
