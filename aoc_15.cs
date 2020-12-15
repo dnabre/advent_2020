@@ -98,6 +98,7 @@ namespace advent_2020
                 Speak(current_turn, number);
                 current_turn++;
             }
+           
             Console.WriteLine($"\n\tPart 1 Solution: {last_spoke}");
         }
         
@@ -146,6 +147,9 @@ namespace advent_2020
                 current_turn++;
               
             }
+
+           
+           
             Console.WriteLine($"\n\tPart 2 Solution: {last_spoke}");
         }
 
