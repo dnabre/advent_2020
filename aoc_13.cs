@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using static System.Diagnostics.Stopwatch;
 
 
 /*
@@ -23,12 +23,12 @@ namespace advent_2020
         public static void Run(string[] args)
         {
             Console.WriteLine("AoC Problem 13");
-            var watch = Stopwatch.StartNew();
+            var watch = StartNew();
             Part1(args);
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
-            watch = Stopwatch.StartNew();
+            watch = StartNew();
             Part2(args);
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
