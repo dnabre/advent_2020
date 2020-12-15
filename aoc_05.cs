@@ -1,7 +1,5 @@
 using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 
 
 /*
@@ -49,7 +47,7 @@ namespace advent_2020
             else
             {
                 Console.WriteLine($"Unknown partition direction {ch}");
-                System.Environment.Exit(-1);
+                Environment.Exit(-1);
             }
 
 
@@ -58,8 +56,8 @@ namespace advent_2020
 
         private static void DecodeSeat(String input, out int row, out int col, out int ID)
         {
-			/*
-		    var wording = new Dictionary<char, string>
+            /*
+            var wording = new Dictionary<char, string>
             {
                 {'F', "lower half"},
                 {'B', "upper half"},
@@ -67,7 +65,7 @@ namespace advent_2020
                 {'L', "lower half"}
             };
             Console.WriteLine($"\tTest input: |{input}| Length: {input.Length}");
-			*/
+            */
             (int lo, int hi) row_range = (min_row, max_row);
             (int lo, int hi) col_range = (min_col, max_col);
 
@@ -99,7 +97,7 @@ namespace advent_2020
         private static void Part1(string[] args)
         {
             Console.WriteLine("   Part 1");
-            String[] lines = System.IO.File.ReadAllLines(Part1Input);
+            String[] lines = File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 
 
@@ -119,7 +117,7 @@ namespace advent_2020
         private static void Part2(string[] args)
         {
             Console.WriteLine("   Part 2:");
-            String[] lines = System.IO.File.ReadAllLines(Part2Input);
+            String[] lines = File.ReadAllLines(Part2Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
             bool[,] seats = new bool[128, 8];
 
@@ -148,7 +146,7 @@ namespace advent_2020
             // PrintSeats(seats);
 
             (int r, int c) my_seat = (-1, -1);
-            for (int r = 0; r <= max_row; r++) 
+            for (int r = 0; r <= max_row; r++)
             {
                 for (int c = 0; c <= max_col; c++)
                 {

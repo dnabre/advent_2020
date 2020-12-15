@@ -1,8 +1,5 @@
 using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+using System.IO;
 
 
 /*
@@ -28,16 +25,15 @@ namespace advent_2020
             Console.Write("\n");
             Part2(args);
         }
-        
-        
+
 
         private static void Part1(string[] args)
         {
             Console.WriteLine("   Part 1");
-            String[] lines = System.IO.File.ReadAllLines(Part1Input);
+            String[] lines = File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
-            String[] add_these = {"0",Utility.MaxIntOfString(lines)};
-            lines = Utility.AddToArray(lines,add_these);
+            String[] add_these = {"0", Utility.MaxIntOfString(lines)};
+            lines = Utility.AddToArray(lines, add_these);
 
             int[] adapters = Utility.StringArrayToIntArray(lines);
             int max = adapters[0];
@@ -46,11 +42,9 @@ namespace advent_2020
                 max = Math.Max(max, i);
             }
 
-            adapters[1] = max+3;
+            adapters[1] = max + 3;
             Array.Sort(adapters);
-            
 
-            
 
             int one_count = 0;
             int three_count = 0;
@@ -62,17 +56,15 @@ namespace advent_2020
                 if (diffs[i] == 3) three_count++;
             }
 
-            
-         
-            
-            
-            Console.WriteLine($"\n\tPart 1 Solution: {one_count * three_count}  (one: {one_count} three: {three_count})");
+
+            Console.WriteLine(
+                $"\n\tPart 1 Solution: {one_count * three_count}  (one: {one_count} three: {three_count})");
         }
 
         private static void Part2(string[] args)
         {
             Console.WriteLine("   Part 2:");
-            String[] lines = System.IO.File.ReadAllLines(Part2Input);
+            String[] lines = File.ReadAllLines(Part2Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
             String[] add_these = {"0", Utility.MaxIntOfString(lines)};
 
