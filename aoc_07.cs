@@ -1,8 +1,8 @@
 using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 
 /*
@@ -14,8 +14,6 @@ using System.IO;
 
 namespace advent_2020
 {
-    
-    
     public class Node : IEquatable<Node>
     {
         public bool Equals(Node other)
@@ -49,41 +47,38 @@ namespace advent_2020
         }
 
         readonly public String id;
- 
+
         public HashSet<Node> edges;
-       
+
         public Node(String id)
         {
             this.id = id;
             this.edges = new HashSet<Node>();
-            this.edge_weights = new Dictionary<Node,int>();
-
+            this.edge_weights = new Dictionary<Node, int>();
         }
 
-        public Dictionary<Node, int> edge_weights; 
-        
-  
-        
+        public Dictionary<Node, int> edge_weights;
+
+
         public override String ToString()
         {
-            
             String result;
             result = $"{id}: {edges.Count} edges";
-           /*
-            foreach (Node e in edges)
-            {
-                if (edge_weights.ContainsKey(e))
-                {
-                    end = $"\n\t\t{edge_weights[e]} {e.id}";
-                }
-                else
-                {
-                    end = $"\n\t\t{0} {e.id}";
-                }
-                result = result + end;
-            }
-            */
-           
+            /*
+             foreach (Node e in edges)
+             {
+                 if (edge_weights.ContainsKey(e))
+                 {
+                     end = $"\n\t\t{edge_weights[e]} {e.id}";
+                 }
+                 else
+                 {
+                     end = $"\n\t\t{0} {e.id}";
+                 }
+                 result = result + end;
+             }
+             */
+
             return result;
         }
 
@@ -120,15 +115,16 @@ namespace advent_2020
                     }
                 }
             }
+
             return false;
         }
 
         public int BagCount()
         {
             if (this.edges.Count == 0) return 1;
-                
-            
-            int result = 1;  // this bag
+
+
+            int result = 1; // this bag
 
             foreach (Node n in edges)
             {
@@ -138,11 +134,10 @@ namespace advent_2020
                 multi = edge_weights[n];
                 result += multi * node_count;
             }
-           
-           
+
+
             return result;
         }
-         
     }
 
     static class AOC_07
@@ -157,18 +152,17 @@ namespace advent_2020
         public static void Run(string[] args)
         {
             Console.WriteLine("AoC Problem 07");
-            var watch = System.Diagnostics.Stopwatch.StartNew();
+            var watch = Stopwatch.StartNew();
             Part1(args);
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
-            watch = System.Diagnostics.Stopwatch.StartNew();
+            watch = Stopwatch.StartNew();
             Part2(args);
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
         }
-
 
 
         private static String NormalizeInputLine(String line)
@@ -245,7 +239,7 @@ namespace advent_2020
         private static void Part1(string[] args)
         {
             Console.WriteLine("   Part 1");
-            String[] lines = System.IO.File.ReadAllLines(Part1Input);
+            String[] lines = File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 
             for (int i = 0; i < lines.Length; i++)
@@ -323,7 +317,7 @@ namespace advent_2020
         private static void Part2(string[] args)
         {
             Console.WriteLine("   Part 2");
-            String[] lines = System.IO.File.ReadAllLines(Part2Input);
+            String[] lines = File.ReadAllLines(Part2Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 
 
@@ -355,7 +349,6 @@ namespace advent_2020
                 {
                     Console.WriteLine($"Node ID: {s}, Node_Set: {in_node_set}, Node: {n}");
                 }
-
             }
 
 
@@ -383,22 +376,12 @@ namespace advent_2020
                     root_node.edge_weights[leaf_node] = weight;
                     //   Console.WriteLine( $"\t >{parts[j]}->{entry_parts[0]}|{entry_parts[1]}|{entry_parts[2]}");
                 }
-
             }
 
-            int bag_count = Nodes[GOLD].BagCount()-1;
-         
-          
-           
+            int bag_count = Nodes[GOLD].BagCount() - 1;
+
+
             Console.WriteLine($"\n\tPart 2 Solution: {bag_count}");
         }
-
-
-        }
     }
-
-
-
-
-
-
+}
