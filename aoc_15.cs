@@ -25,25 +25,25 @@ namespace advent_2020
         {
             Console.WriteLine("AoC Problem 15");
             var watch = System.Diagnostics.Stopwatch.StartNew();
-             Part1(args);
+            Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
             watch = System.Diagnostics.Stopwatch.StartNew();
-            Part2(args);
+            Part2();
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
         }
 
-        private static Dictionary<long, long> TurnLastSpoke;
+        private static Dictionary<int, int> TurnLastSpoke;
         private static bool first_time;
-        private static long previous_turn_needed;
+        private static int previous_turn_needed;
         
-        private static long end_turn = 2020;
-        private static long end_turn2 = 30000000;
+        private static int end_turn = 2020;
+        private static int end_turn2 = 30000000;
         
-        private static void Speak(long turn, long speak_number)
+        private static void Speak(int turn, int speak_number)
         {
             if (TurnLastSpoke.ContainsKey(speak_number))
             {
@@ -58,32 +58,32 @@ namespace advent_2020
             }
         }
 
-        private static void Part1(string[] args)
+        private static void Part1()
         {
             Console.WriteLine("   Part 1");
             string[] lines = System.IO.File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
             Console.WriteLine("\tProcessing {0} turns", end_turn);
             
-            TurnLastSpoke = new Dictionary<long, long>(385);
+            TurnLastSpoke = new Dictionary<int, int>(385);
             String[] nums = lines[0].Split(',');
-            long current_turn = 0;
+            int current_turn = 0;
             first_time = true;
             
             for (int i = 0; i < nums.Length; i++)
             {
                 current_turn++;
-                long n = int.Parse(nums[i]);
+                int n = int.Parse(nums[i]);
                 Speak(current_turn, n);
             }
 
-            long last_spoke = int.Parse(nums[nums.Length - 1]);
+            int last_spoke = int.Parse(nums[nums.Length - 1]);
             current_turn++;
         
             while (current_turn <= end_turn)
             {
                 
-                long number = -1;
+                int number = -1;
                 if (first_time)
                 {
                     number = 0;
@@ -91,7 +91,7 @@ namespace advent_2020
                 }
                 else
                 {
-                    long when_last_spoke = TurnLastSpoke[last_spoke];
+                    int when_last_spoke = TurnLastSpoke[last_spoke];
                     number = when_last_spoke - previous_turn_needed;
                 }
                 last_spoke = number;
@@ -102,7 +102,7 @@ namespace advent_2020
             Console.WriteLine($"\n\tPart 1 Solution: {last_spoke}");
         }
         
-        private static void Part2(string[] args)
+        private static void Part2()
         {
             
             Console.WriteLine("   Part 2");
@@ -110,17 +110,17 @@ namespace advent_2020
             Console.WriteLine("\tRead {0} inputs", lines.Length);
             Console.WriteLine("\tProcessing {0} turns", end_turn2);
             
-            TurnLastSpoke = new Dictionary<long, long>(3611738);
+            TurnLastSpoke = new Dictionary<int, int>(3611738);
             
             String[] nums = lines[0].Split(',');
-            long current_turn = 0;
-            long last_spoke = int.Parse(nums[0]);
+            int current_turn = 0;
+            int last_spoke = int.Parse(nums[0]);
             first_time = true;
             
             for (int i = 0; i < nums.Length; i++)
             {
                 current_turn++;
-                long n = int.Parse(nums[i]);
+                int n = int.Parse(nums[i]);
                 Speak(current_turn, n);
             }
 
@@ -130,7 +130,7 @@ namespace advent_2020
             while (current_turn <= end_turn2)
             {
                 
-                long number = -1;
+                int number = -1;
                 if (first_time)
                 {
                     number = 0;
@@ -138,7 +138,7 @@ namespace advent_2020
                 }
                 else
                 {
-                    long when_last_spoke = TurnLastSpoke[last_spoke];
+                    int when_last_spoke = TurnLastSpoke[last_spoke];
                     number = when_last_spoke - previous_turn_needed;
                     
                 }
