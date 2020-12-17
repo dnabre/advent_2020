@@ -41,7 +41,7 @@ namespace advent_2020
             Console.WriteLine("   Part 1");
             string[] lines = System.IO.File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
-            Console.WriteLine($"\n\tPart 1 Solution: {last_spoke}");
+            Console.WriteLine($"\n\tPart 1 Solution: {0}");
         }
         
         private static void Part2()
@@ -52,7 +52,7 @@ namespace advent_2020
             Console.WriteLine("\tRead {0} inputs", lines.Length);
            
            
-            Console.WriteLine($"\n\tPart 2 Solution: {last_spoke}");
+            Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
 
         

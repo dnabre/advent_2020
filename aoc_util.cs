@@ -193,5 +193,56 @@ namespace advent_2020
 
             return (result % N);
         }
+        
+        public static String ListToStringLine<T>(List<T> lst)
+        {
+            if (lst.Count == 0) return "[]";
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            foreach(T e in lst)
+            {
+                sb.Append(e.ToString());
+                sb.Append(",");
+            }
+            
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append("]");
+            return sb.ToString();
+        }
+        
+        public static void PrintList<T>(List<T> lines)
+        {
+            
+            foreach (T ln in lines)
+            {
+                String s;
+                s = ln.ToString();
+                Console.WriteLine($"\t {s}");
+            }
+            
+        }
+
+        public static long ListProduct(List<long> l_list)
+        {
+            long result = 0;
+            foreach (long i in l_list)
+            {
+                result += i;
+            }
+
+            return result;
+        }
+
+        public static int ListProduct(List<int> i_list)
+        {
+            int result = 0;
+            foreach (int i in i_list)
+            {
+                result += i;
+            }
+
+            return result;
+        }
+        
     }
 }
