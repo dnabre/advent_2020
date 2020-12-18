@@ -217,7 +217,7 @@ namespace advent_2020
 
         private static Point[] Directions;
 
-        public struct Point
+        private struct Point
         {
             public int x;
             public int y;
