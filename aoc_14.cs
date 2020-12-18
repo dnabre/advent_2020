@@ -284,17 +284,17 @@ namespace advent_2020
 
         private static void AssignToRam(long index, long value, Mask m)
         {
-            String m_string;
+            
             long value_to_use = 0;
             if (m == null)
             {
                 value_to_use = value;
-                m_string = "none";
+                
             }
             else
             {
                 value_to_use = m.Apply(value);
-                m_string = m.ToString();
+                
             }
 
             RAM[index] = value_to_use;
@@ -308,18 +308,18 @@ namespace advent_2020
 
         private static void AssignToRam2(long index, long value, Mask2 m)
         {
-            String m_string;
+            
             HashSet<long> indexes = new HashSet<long>(1);
 
             if (m == null)
             {
                 indexes.Add(index);
-                m_string = "none";
+                
             }
             else
             {
                 indexes = m.Apply(index);
-                m_string = m.ToString();
+                
             }
 
             //   Console.WriteLine($"index: {index}, value: {value}, address number: {indexes.Count} mask: {m}");
