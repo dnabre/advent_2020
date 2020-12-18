@@ -19,7 +19,7 @@
 | [Day 14: Docking Data](https://adventofcode.com/2020/day/14)  | String Manipulation/Bit-twiddling  |[*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_14.cs)   | [*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_14.cs) |
 | [Day 15: Rambunctious Recitation](https://adventofcode.com/2020/day/15)  | Minimizing Off by One Errors  |[*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_15.cs)   | [*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_15.cs) |
 | [Day 16: Ticket Translation](https://adventofcode.com/2020/day/16)  | Parsing and Basic Deduction  |[*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_16.cs)   | [*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_16.cs) |
-| [Day 17: Conway Cubes](https://adventofcode.com/2020/day/17)  |Cellular Automata     |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_17.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_17.cs) |
+| [Day 17: Conway Cubes](https://adventofcode.com/2020/day/17)  |3D Cellular Automata     |[*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_17.cs)   | [*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_17.cs) |
 | [Day 18:](https://adventofcode.com/2020/day/18)  |   |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_18.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_18.cs) |
 | [Day 19:](https://adventofcode.com/2020/day/19)  |   |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_19.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_19.cs) |
 | [Day 20:](https://adventofcode.com/2020/day/20)  |   |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_20.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_20.cs) |
@@ -31,8 +31,4 @@
 
 
 
-Learning C# as I go, so pardon the ugly code and style.
-
-
- 
-[![Run on Repl.it](https://repl.it/badge/github/dnabre/advent_2020)](https://repl.it/github/dnabre/advent_2020)
+Learning C# as I go, so pardon the ugly code and style. [![Run on Repl.it](https://repl.it/badge/github/dnabre/advent_2020)](https://repl.it/github/dnabre/advent_2020)

@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 
 /**
@@ -143,6 +144,14 @@ namespace advent_2020
 
             return;
         }
+        
+        
+
+
+        
+         
+        
+        
 
         public static long ModuloInverse(long a, long m)
         {
