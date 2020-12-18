@@ -15,6 +15,7 @@ using System.Text;
 
 namespace advent_2020
 {
+	
     static class AOC_16
     {
         private const string Part1Input = "aoc_16_input_1.txt";
