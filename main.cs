@@ -6,6 +6,6 @@ class MainClass
 {
     public static void Main(string[] args)
     {
-        AOC_18.Run(args);
+        AOC_19.Run(args);
     }
 }
