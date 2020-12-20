@@ -15,209 +15,99 @@ using System.Runtime.InteropServices;
 namespace advent_2020
 {
 
-    abstract class Term
+    public class Term
     {
-        public abstract int GetValue();
-        public abstract bool IsOp();
-
-    }
-	
-    class ValueTerm : Term, IEquatable<ValueTerm>
-    {
-        public bool Equals(ValueTerm other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return value == other.value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ValueTerm) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return value;
-        }
-
-        public static bool operator ==(ValueTerm left, ValueTerm right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ValueTerm left, ValueTerm right)
-        {
-            return !Equals(left, right);
-        }
-
-        public int value;
-
-        public override int GetValue()
-        {
-            return value;
-        }
-
-        public override string ToString()
-        {
-            return value.ToString();
-        }
-
-        public ValueTerm(int value)
-        {
-            this.value = value;
-        }
-        public override bool IsOp()
-        {
-            return false;
-        }
-
-    }
-
-    class OpTerm : Term, IEquatable<OpTerm>
-    {
-        public override bool IsOp()
-        {
-            return true;
-        }
-
-        public static OType ParseOp(String op) 
-        {
-            
-            if(op.Equals("+"))
-            {
-                return OType.add;
-            }
-            if(op.Equals("-"))
-            {
-                return OType.sub;
-            }
-            if(op.Equals("*"))
-            {
-                return OType.mult;
-                
-            }
-            if(op.Equals("/"))
-                return OType.div;
-           
-            throw new ArgumentException($"Invalid operation string {op}");
-        }
-        
-        public bool Equals(OpTerm other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(left, other.left) && Equals(right, other.right) && op == other.op;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((OpTerm) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = (left != null ? left.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (right != null ? right.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (int) op;
-                return hashCode;
-            }
-        }
-
-        public static bool operator ==(OpTerm left, OpTerm right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(OpTerm left, OpTerm right)
-        {
-            return !Equals(left, right);
-        }
-
+        public String value;
+        public PType type;
         public Term left;
         public Term right;
-        public OType op;
+      
 
-        public OpTerm(OType op)
-        {
-            this.op = op;
-        }
-
-        public OpTerm(Term left, Term right, OpTerm op_term)
-        {
-            this.left = left;
-            this.right = right;
-            this.op = op_term.op;
-        }
-        public OpTerm(Term left, Term right, OType op)
-        {
-            this.left = left;
-            this.right = right;
-            this.op = op;
-        }
-
-        public override int GetValue()
-        {
-            int l, r;
-            l = left.GetValue();
-            r = right.GetValue();
-            switch (op)
+       public void insertLeft(Term value) 
             {
-                case OType.add:
-                    return l + r;
-                case OType.div:
-                    return l / r;
-                case OType.mult:
-                    return l * r;
-                case OType.sub:
-                    return l - r;
+                if (this.left == null)
+                {
+                    left = value;
+                }
+                else
+                {
+                    Term t = value;
+                    t.left = left;
+                    left = t;
+                }
             }
+        
 
-            throw new Exception($"Invalid operator {op}");
+        public void insertRight(Term value) 
+            {
+                if (right == null)
+                {
+                    right= value;
+                }
+                else
+                {
+                    Term t = value;
+                    t.right = this.right;
+                    this.right = t;
+                }
+                
+            }
+        
+        
+        
+        public Term(String s)
+        {
+            type = PType.undefined;
+            left = null;
+            right = null;
+            value = s;
+        }
+        
+        
+        public Term()
+        {
+            type = PType.undefined;
+            left = null;
+            right = null;
+            value = "";
+        }
+        public Term(String value, PType type)
+        {
+            this.value = value;
+            this.type = type;
+        }
+
+        public Term(String value, PType type, Term left, Term right)
+        {
+            this.value = value;
+            this.type = type;
+            this.left = left;
+            this.right = right;
+        }
+        public Term(Term left, Term right)
+        {
+            this.value = "";
+            this.type = PType.undefined;
+            this.left = left;
+            this.right = right;
         }
 
         public override string ToString()
         {
-            String o_s;
-            switch (op)
-            {
-                case OType.add:
-                    o_s = "+";
-                    break;
-                case OType.div:
-                    o_s = "/";
-                    break;
-                case OType.mult:
-                    o_s = "*";
-                    break;
-                case OType.sub:
-                    o_s = "-";
-                    break;
-                default:
-                    o_s = "#";
-                    break;
-            }
-
-            return $"{left} {o_s} {right}";
+            return $"{value} ({left}, {right})";
         }
     }
-    enum PType
+
+    public enum PType
     {
         op,
         l_paren,
         r_paren,
-        number
+        number,
+        undefined
     };
 
-    enum OType
+    public enum OType
     {
         add,
         sub,
@@ -251,7 +141,7 @@ namespace advent_2020
 
 
 
-        private static Stack<(PType t, String s)> EqQueueToStack(Queue<(PType t, String s)> equation)
+        private static Stack<(PType t, String s)> EqListToStack(List<(PType t, String s)> equation)
         {
             
             Stack<(PType t, String s)> s_equation = new Stack<(PType t, String s)>(equation.Count);
@@ -259,7 +149,8 @@ namespace advent_2020
             int index =0;
             while(equation.Count > 0) {
                 (PType t, String s) e;
-                e = equation.Dequeue();
+                e = equation[0];
+                equation.RemoveAt(0);
                 eq_a[index] = e;
                 index++;
             }
@@ -277,7 +168,7 @@ namespace advent_2020
             string[] lines = System.IO.File.ReadAllLines(TestInput1);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 
-            Queue<(PType, String)> equation = ParseToQueue(lines[1]);
+            List<(PType, String)> equation = ParseToList(lines[0]);
             Console.Write("\n\tparse: ");
             foreach((PType t,String s) q in equation ) {
                 if((q.t == PType.l_paren) || (q.t == PType.r_paren)) {
@@ -288,136 +179,102 @@ namespace advent_2020
             }
             Console.WriteLine();
 
-            Stack<(PType t, String s)> s_equation = EqQueueToStack(equation);
-
-
-            Term result = Eval(s_equation);
-           // int result = Eval(s_equation);
+            Term tree = BuildTree(equation);
+            
+            int result = Eval(tree);
             Console.WriteLine($"\t {result}");
 
             Console.WriteLine($"\n\tPart 1 Solution: {0}");
         }
 
-        private static Term Eval(Stack<(PType t, String s)> equation)
+        private static Term BuildTree(List<(PType t, String s)> equation)
         {
-            Console.WriteLine($"\t {Utility.StackToStringLine(equation)}");
-	        
-            Term top = null;
-            Stack<Term> push_left = new Stack<Term>();
-            Stack<(PType top, String s)> left_parens = new Stack<(PType top, string s)>();
-            Stack<(PType top, String s)> right_parens;
-            Term left, right,op;
-            (PType t, String s) e;
-            (PType t, String s) s_term;
-            int acc;
-            while(equation.Count > 0) {
+            //Stack<(PType, String )> pStack = new Stack<(PType, string)>();
+            Stack<Term> pStack = new Stack<Term>();
+            Term eTree = new Term("");
+            pStack.Push(eTree);
+            Term currentTree = eTree;
+            foreach((PType t, String s) i in equation)
+            {
+                if (i.t == PType.l_paren)
+                {
+                    currentTree.insertLeft(new Term("("));
+                    pStack.Push(currentTree);
+                    currentTree = currentTree.left;
 
-                s_term = equation.Pop();
-                switch(s_term.t) {
-                    case PType.number:
-                        //	Console.WriteLine($"\t number {term}");
-                        acc = int.Parse(s_term.s);
-                        left = new ValueTerm(acc);
-                        push_left.Push(left);
-                        top = left;
-                        break;
-                    case PType.l_paren:
-                        Console.WriteLine($"\t l_paren {s_term}");
-                        Term v;
-                        v = Eval(equation);
-                        //equation.Push( (PType.number, v.ToString()));
-                        push_left.Push(v);
-                        break;
-                    case PType.r_paren:
-                        Console.WriteLine($"\t r_paren {s_term}");
-                        return top; 
-	
-                    case PType.op:
-                        op = new OpTerm(OpTerm.ParseOp(s_term.s));
-                                
-                        /*
-                        (PType t, String s) next_term = equation.Peek();
-                        if(next_term.t == PType.number) {
-                            next_term = equation.Pop();
-                            
-                            
-                            value = ApplyOp(s_term.s, acc , next_term.s);
-                            Console.WriteLine($"\t value: {value} acc: {acc} -> {value}, {acc} {term.s} {next_term.s}");
-                          */  
-                
-                        break;
-					
+                } else if (i.t == PType.op)
+                {
+                    currentTree.type = PType.op;
+                    currentTree.value = i.s;
+                    currentTree.insertRight(new Term(""));
+                    pStack.Push(currentTree);
+                    currentTree = currentTree.right;
+                } else if (i.t == PType.r_paren)
+                {
+                    currentTree = pStack.Pop();
+                }
+                else
+                {
+                    currentTree.value = i.s;
+                    currentTree.type = PType.number;
+                    Term parent = pStack.Pop();
+                    currentTree = parent;
                 }
 
+                return eTree;
+            }
+            
+            
+            return null;
+        }
+
+        private static int Eval(Term parseTree)
+        {
+            
+            Term leftC = parseTree.left;
+            Term rightC = parseTree.right;
+            
+            
+            if ((parseTree.type == PType.l_paren) ||
+                (parseTree.type == PType.r_paren) || (parseTree.type == PType.undefined))
+            {
+                Console.WriteLine($"Got type {parseTree.type} in eval tree");
+                System.Environment.Exit(0);
             }
 
-
-            return top;
+            if ((leftC != null) && (rightC != null))
+            {
+                int l, r;
+                l = Eval(leftC);
+                r = Eval(rightC);
+                return ApplyOp(parseTree.value, l, r);
+            }
+            else
+            {
+                return int.Parse(parseTree.value);
+            }
         }
         
-        /*
-        private static int Eval(Stack<(PType t, String s)> equation) {
-            int acc = 0;
-			
-            (PType t, String s) term;
-            while(equation.Count > 0) {
 
-                term = equation.Pop();
-                switch(term.t) {
-                    case PType.number:
-                        //	Console.WriteLine($"\t number {term}");
-                        acc = int.Parse(term.s);
-
-                        break;
-                    case PType.l_paren:
-                        Console.WriteLine($"\t l_paren {term}");
-                        int v;
-                        v = Eval(equation);
-                        equation.Push( (PType.number, v.ToString()));
-                        break;
-                    case PType.r_paren:
-                        Console.WriteLine($"\t r_paren {term}");
-						
-                        return acc;
-	
-                    case PType.op:
-                        //	Console.WriteLine($"\t op {term}");
-                        (PType t, String s) next_term = equation.Peek();
-                        if(next_term.t == PType.number) {
-                            next_term = equation.Pop();
-                            int value;
-                            value = ApplyOp(term.s, acc , next_term.s);
-                            //Console.WriteLine($"\t value: {value} acc: {acc} -> {value}, {acc} {term.s} {next_term.s}");
-                            acc = value;
-                        }
-                        break;
-					
-                }
-
-            }
-            return acc;
-        }
-        */
+        private static int ApplyOp(String op, int left, int right)
+        {
 
 
-        private static int ApplyOp(String op, int acc, String right) {
-			
-
-            int r_num = int.Parse(right);
+            int r_num = right;
             int result=-1;
             if(op.Equals("+")){
-                result = acc + r_num;
+                result = left + r_num;
             }
             if(op.Equals("-")){
-                result = acc - r_num;
+                result = left - r_num;
             }
             if(op.Equals("*")){
-                result =acc * r_num;
+                result =left * r_num;
             }
             if(op.Equals("/")){
-                result = acc / r_num;
+                result = left / r_num;
             }
-            Console.WriteLine($"\tEval {acc} {op} {right} = {result}");
+            Console.WriteLine($"\tEval {left} {op} {right} = {result}");
             return result;
 
         }
@@ -432,9 +289,11 @@ namespace advent_2020
            
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
-        private static Queue<(PType, String)> ParseToQueue(String ln)
+        
+        
+        private static List<(PType, String)> ParseToList(String ln)
         {
-            Queue<(PType,String)> equation = new Queue<(PType,String)>();
+            List<(PType,String)> equation = new List<(PType,String)>();
 	     
 			
 		 
@@ -450,7 +309,7 @@ namespace advent_2020
                 String p = to_process.Pop();
                 if(p.Equals(")")) {
                     e = (PType.r_paren, ")");
-                    equation.Enqueue(e); 
+                    equation.Add(e); 
                     continue;
                 }
 					
@@ -458,7 +317,7 @@ namespace advent_2020
                     String other = p.Remove(0,1);
                     if(other.Length > 0 ) to_process.Push(other);
                     e = (PType.l_paren,"(");
-                    equation.Enqueue(e);
+                    equation.Add(e);
 						
                     continue;
                 } else if (p.EndsWith(")")) {
@@ -469,7 +328,7 @@ namespace advent_2020
                 }
                 if((p.Length == 1) && ("+-*/".Contains(p[0].ToString()))) {
                     e = (PType.op, p);
-                    equation.Enqueue(e);
+                    equation.Add(e);
 			
                     continue;
                 }
@@ -477,7 +336,7 @@ namespace advent_2020
                 bool good_num = int.TryParse(p, out num);
                 if(good_num) {
                     e = (PType.number,p);
-                    equation.Enqueue(e);
+                    equation.Add(e);
 					
                 }
             }
