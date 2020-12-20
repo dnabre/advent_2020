@@ -30,7 +30,7 @@ namespace advent_2020
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
             watch = System.Diagnostics.Stopwatch.StartNew();
-            Part2();
+    //     Part2();
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
@@ -41,6 +41,26 @@ namespace advent_2020
             Console.WriteLine("   Part 1");
             string[] lines = System.IO.File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
+
+			List<String> rule_strings = new List<String>();
+			List<String> message_strings = new List<String>();
+
+
+			int line_number = 0;
+			while(!lines[line_number].Equals("")) {
+				rule_strings.Add(lines[line_number]);
+				line_number++;
+			}	
+			Console.WriteLine($"\tRead {rule_strings.Length} rules");
+			//Console.WriteLine($"\t {line_number.ToString().PadLeft(4)}: \t |{lines[line_number]}|");
+			line_number++;
+			while(line_number < lines.Length) {
+				message_strings.Add(lines[line_number]);
+				line_number++;
+			}
+			Console.WriteLine($"\tRead {message_strings.Length} messages");
+
+
             Console.WriteLine($"\n\tPart 1 Solution: {0}");
         }
         
