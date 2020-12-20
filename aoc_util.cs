@@ -230,6 +230,22 @@ namespace advent_2020
             s.Push(two);
         }
         
+public static String HashSetToStringLine<T>(HashSet<T> lst)
+        {
+            if (lst.Count == 0) return "[]";
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            foreach(T e in lst)
+            {
+                sb.Append(e.ToString());
+                sb.Append(",");
+            }
+            
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append("]");
+            return sb.ToString();
+        }
+
         public static String ListToStringLine<T>(List<T> lst)
         {
             if (lst.Count == 0) return "[]";
