@@ -7,8 +7,8 @@ using System.Runtime.InteropServices;
 
 /*
 	Solutions found:
-	Part 1: 
-	Part 2: 
+	Part 1: 69490582260
+	Part 2: 362464596624526
 	
 */
 
@@ -48,12 +48,12 @@ namespace advent_2020
         {
             Console.WriteLine("AoC Problem 18");
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            Part1();
+         //   Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
             watch = System.Diagnostics.Stopwatch.StartNew();
-            //       Part2();
+                 Part2();
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
@@ -137,34 +137,89 @@ namespace advent_2020
             List<String> result = new List<String>(output_queue);
             return result;
         }
+
+
+        private static bool GreaterP(OType a, OType b)
+        {
+            if (a == b) return true;
+            if ((a == OType.add) || (a == OType.sub)) return true;
+            if ((a == OType.mult) || (a == OType.div))
+            {
+                if ((b == OType.mult) || (b == OType.div)) return true;
+                else return false;
+            }
+
+            return false;
+        }
             
-            
-            
+        private static List<String> EquationToRPN2(List<(PType t, String s)> equation)
+        {
+            Stack<OType> o_stack = new Stack<OType>();
+            Queue<String> output_queue = new Queue<String>();
+            foreach ((PType t, String s) e in equation)
+            {
+                if (e.t == PType.number)
+                {
+                    output_queue.Enqueue(e.s);
+                }
+                else if (e.t == PType.op)
+                {
+                    while ((o_stack.Count > 0) 
+                           && ( GreaterP(o_stack.Peek(), ConvertPType(e.s)))
+                           && (o_stack.Peek() != OType.left_p)
+                    )
+                    {
+                        OType otp = o_stack.Pop();
+                        output_queue.Enqueue(OTypeToString(otp));
+                        
+                        
+                    }
+                    o_stack.Push(ConvertPType(e.s));
+                    
+                    
+                    
+                    /*
+                    while ((o_stack.Count > 0) && (o_stack.Peek() != OType.left_p))
+                    {
+                        OType otp = o_stack.Pop();
+                        output_queue.Enqueue(OTypeToString(otp));
+                    }
+                    o_stack.Push(ConvertPType(e.s));
+                    */
+                }
+                
+                
+                else if (e.t == PType.l_paren)
+                {
+                    o_stack.Push(OType.left_p);
+                }
+                else if (e.t == PType.r_paren)
+                {
+                    while ((o_stack.Count > 0) && (!(o_stack.Peek() == OType.left_p)))
+                    {
+                        OType otp = o_stack.Pop();
+                        output_queue.Enqueue(OTypeToString(otp));
+                    }
+
+                    if ((o_stack.Count > 0) && (o_stack.Peek() == OType.left_p))
+                    {
+                        o_stack.Pop();
+                    }
+                }
+            }
+
+            while (o_stack.Count > 0)
+            {
+                OType otp = o_stack.Pop();
+                output_queue.Enqueue(OTypeToString(otp));
+            }
+
+            List<String> result = new List<String>(output_queue);
+            return result;
+        }
             
             
         
-
-        private static Stack<(PType t, String s)> EqListToStack(List<(PType t, String s)> equation)
-        {
-            
-            Stack<(PType t, String s)> s_equation = new Stack<(PType t, String s)>(equation.Count);
-            var  eq_a = new (PType t, String s)[equation.Count];
-            int index =0;
-            while(equation.Count > 0) {
-                (PType t, String s) e;
-                e = equation[0];
-                equation.RemoveAt(0);
-                eq_a[index] = e;
-                index++;
-            }
-			
-            for(int k=eq_a.Length-1; k >= 0; k--) {
-                s_equation.Push(eq_a[k]);
-            }
-
-            return s_equation;
-        }  
-
         private static void Part1()
         {
             Console.WriteLine("   Part 1");
@@ -198,14 +253,14 @@ namespace advent_2020
             Console.WriteLine($"\n\tPart 1 Solution: {result}");
         }
 
-        private static int EvalRPN(List<String> rpn)
+        private static long EvalRPN(List<String> rpn)
         {
-            Stack<int> eval_stack = new Stack<int>();
+            Stack<long> eval_stack = new Stack<long>();
             foreach (String s in rpn)
             {
                 if ("+-*/".Contains(s))
                 {
-                    int left, right, result;
+                    long left, right, result;
                     left = eval_stack.Pop();
                     right = eval_stack.Pop();
                     result = ApplyOp(s, left, right);
@@ -223,9 +278,9 @@ namespace advent_2020
             }
             else
             {
-                int last = -1;
+                long last = -1;
                 Console.Write("\t");
-                foreach (int i in eval_stack)
+                foreach (long i in eval_stack)
                 {
                     last = i;
                     Console.Write($"i, ");
@@ -238,81 +293,13 @@ namespace advent_2020
         }
         
         
-        private static Term BuildTree(List<(PType t, String s)> equation)
-        {
-            //Stack<(PType, String )> pStack = new Stack<(PType, string)>();
-            Stack<Term> pStack = new Stack<Term>();
-            Term eTree = new Term("");
-            pStack.Push(eTree);
-            Term currentTree = eTree;
-            foreach((PType t, String s) i in equation)
-            {
-                if (i.t == PType.l_paren)
-                {
-                    currentTree.insertLeft(new Term("("));
-                    pStack.Push(currentTree);
-                    currentTree = currentTree.left;
-
-                } else if (i.t == PType.op)
-                {
-                    currentTree.type = PType.op;
-                    currentTree.value = i.s;
-                    currentTree.insertRight(new Term(""));
-                    pStack.Push(currentTree);
-                    currentTree = currentTree.right;
-                } else if (i.t == PType.r_paren)
-                {
-                    currentTree = pStack.Pop();
-                }
-                else
-                {
-                    currentTree.value = i.s;
-                    currentTree.type = PType.number;
-                    Term parent = pStack.Pop();
-                    currentTree = parent;
-                }
-
-                return eTree;
-            }
-            
-            
-            return null;
-        }
-
-        private static int Eval(Term parseTree)
-        {
-            
-            Term leftC = parseTree.left;
-            Term rightC = parseTree.right;
-            
-            
-            if ((parseTree.type == PType.l_paren) ||
-                (parseTree.type == PType.r_paren) || (parseTree.type == PType.undefined))
-            {
-                Console.WriteLine($"Got type {parseTree.type} in eval tree");
-                System.Environment.Exit(0); 
-            }
-
-            if ((leftC != null) && (rightC != null))
-            {
-                int l, r;
-                l = Eval(leftC);
-                r = Eval(rightC);
-                return ApplyOp(parseTree.value, l, r);
-            }
-            else
-            {
-                return int.Parse(parseTree.value);
-            }
-        }
-        
-
-        private static int ApplyOp(String op, int left, int right)
+      
+        private static long ApplyOp(String op, long left, long right)
         {
 
 
-            int r_num = right;
-            int result=-1;
+            long r_num = right;
+            long result=-1;
             if(op.Equals("+")){
                 result = left + r_num;
             }
@@ -337,8 +324,33 @@ namespace advent_2020
             string[] lines = System.IO.File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
            
-           
-            Console.WriteLine($"\n\tPart 2 Solution: {0}");
+            long result = 0;
+            
+            for(int i=0; i < lines.Length; i++) {
+            
+                List<(PType, String)> equation = ParseToList(lines[i]);
+                /*
+                Console.Write("\n\tparse: ");
+                foreach((PType t,String s) q in equation ) {
+                    if((q.t == PType.l_paren) || (q.t == PType.r_paren)) {
+                        Console.Write($" {q.s}");
+                    } else {
+                        Console.Write($" {q.s}");
+                    }
+                }
+                Console.WriteLine();
+                */
+                List<String> rpn  = EquationToRPN2(equation);
+                long t = EvalRPN(rpn);
+                result += t;
+                Console.WriteLine($"\t {Utility.ListToStringLine(rpn)} \t = \t {t}");
+                
+            }
+            
+            //        Console.WriteLine($"\t {result}");
+
+            Console.WriteLine($"\n\tPart 2 Solution: {result}");
+            
         }
         
         
@@ -383,8 +395,8 @@ namespace advent_2020
 			
                     continue;
                 }
-                int num;
-                bool good_num = int.TryParse(p, out num);
+                long num;
+                bool good_num = long.TryParse(p, out num);
                 if(good_num) {
                     e = (PType.number,p);
                     equation.Add(e);
