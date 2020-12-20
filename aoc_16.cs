@@ -359,17 +359,7 @@ namespace advent_2020
 
             int ticket_count = a_tickets.GetLength(1);
             int field_count = a_tickets.GetLength(0);
-            for (int t = 0; t < a_tickets.GetLength(1); t++)
-            {
-              //  Console.Write("\t tick[{t}] = [");
-                for (int f = 0; f < a_tickets.GetLength(0); f++)
-                {
-                    int v;
-                    v = a_tickets[f, t];
-             //       Console.Write($"{v}, ");
-                }
-           //     Console.Write("]\n");
-            } 
+          
 
             int[,] valid_rule_by_field_count = new int[rule_count, field_count];
             for (int r = 0; r < rule_set.Length; r++)
@@ -390,29 +380,8 @@ namespace advent_2020
                 }
             }
 
-            Rule[] p_rules = (Rule[]) rule_set.Clone();
-            HashSet<int> fields_matched = new HashSet<int>();
+           
 
-            HashSet<int>[] rule_field_matches = new HashSet<int>[rule_count];
-
-            for (int r = 0; r < p_rules.Length; r++)
-            {
-                Rule rule = p_rules[r];
-
-              //  Console.Write($"\t\t {rule.name.PadLeft(20)}: ");
-                for (int f = 0; f < field_count; f++)
-                {
-                    ;
-                    int v = valid_rule_by_field_count[r, f];
-
-                    String vs = v.ToString();
-               //     Console.Write(vs.PadLeft(5));
-              //      Console.Write("  ");
-                }
-
-
-              //  Console.WriteLine();
-            }
 
             for (int r = 0; r < rule_count; r++)
             {
@@ -456,11 +425,10 @@ namespace advent_2020
                     rule_to_field_number[rule] = field_num;
                     matched_fields.Add(field_num);
                     final_ruleset.Add(rule);
-                    //     Console.WriteLine($"Rule {rule.name} applies to only to field {field_num}");
-
+                 
                 }
                
-                    List<int> applies = new List<int>(rule.possible_fields);
+                 
                    
                 
              }
@@ -516,7 +484,7 @@ namespace advent_2020
                     if (rule_set[r].field_num == i)
                     {
                         String rule_name = rule_set[r].name;
-                        int field_num = rule_set[r].field_num;
+                       // int field_num = rule_set[r].field_num;
                
                         if (rule_name.StartsWith("departure"))
                         {
