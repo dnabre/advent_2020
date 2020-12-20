@@ -15,89 +15,7 @@ using System.Runtime.InteropServices;
 namespace advent_2020
 {
 
-    public class Term
-    {
-        public String value;
-        public PType type;
-        public Term left;
-        public Term right;
-      
-
-       public void insertLeft(Term value) 
-            {
-                if (this.left == null)
-                {
-                    left = value;
-                }
-                else
-                {
-                    Term t = value;
-                    t.left = left;
-                    left = t;
-                }
-            }
-        
-
-        public void insertRight(Term value) 
-            {
-                if (right == null)
-                {
-                    right= value;
-                }
-                else
-                {
-                    Term t = value;
-                    t.right = this.right;
-                    this.right = t;
-                }
-                
-            }
-        
-        
-        
-        public Term(String s)
-        {
-            type = PType.undefined;
-            left = null;
-            right = null;
-            value = s;
-        }
-        
-        
-        public Term()
-        {
-            type = PType.undefined;
-            left = null;
-            right = null;
-            value = "";
-        }
-        public Term(String value, PType type)
-        {
-            this.value = value;
-            this.type = type;
-        }
-
-        public Term(String value, PType type, Term left, Term right)
-        {
-            this.value = value;
-            this.type = type;
-            this.left = left;
-            this.right = right;
-        }
-        public Term(Term left, Term right)
-        {
-            this.value = "";
-            this.type = PType.undefined;
-            this.left = left;
-            this.right = right;
-        }
-
-        public override string ToString()
-        {
-            return $"{value} ({left}, {right})";
-        }
-    }
-
+  
     public enum PType
     {
         op,
@@ -112,7 +30,9 @@ namespace advent_2020
         add,
         sub,
         mult,
-        div
+        div,
+        left_p,
+        right_p
     }
 	
     static class AOC_18
@@ -139,7 +59,90 @@ namespace advent_2020
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
         }
 
+        private static OType ConvertPType(String op) 
+        {
+            if(op.Equals("+"))
+            {
+                return OType.add;
+            }
+            if(op.Equals("-"))
+            {
+                return OType.sub;
+            }
+            if(op.Equals("*"))
+            {
+                return OType.mult;
+            }
+            if(op.Equals("/"))
+            {
+                return OType.div;
+            }
+            throw new ArgumentException($"Expected PType String, received {op}");
+        }
 
+
+        private static String OTypeToString(OType otp)
+        {
+            if(otp == OType.add) return "+";
+            if(otp == OType.sub) return "-";
+            if(otp == OType.div) return "/";
+            if(otp == OType.mult) return "*";
+            return "unknown operator";
+        }
+        private static List<String> EquationToRPN(List<(PType t, String s)> equation)
+        {
+            Stack<OType> o_stack = new Stack<OType>();
+            Queue<String> output_queue = new Queue<String>();
+            foreach ((PType t, String s) e in equation)
+            {
+                if (e.t == PType.number)
+                {
+                    output_queue.Enqueue(e.s);
+                }
+                else if (e.t == PType.op)
+                {
+                    while ((o_stack.Count > 0) && (o_stack.Peek() != OType.left_p))
+                    {
+                        OType otp = o_stack.Pop();
+                        output_queue.Enqueue(OTypeToString(otp));
+                    }
+
+                    o_stack.Push(ConvertPType(e.s));
+                }
+                else if (e.t == PType.l_paren)
+                {
+                    o_stack.Push(OType.left_p);
+                }
+                else if (e.t == PType.r_paren)
+                {
+                    while ((o_stack.Count > 0) && (!(o_stack.Peek() == OType.left_p)))
+                    {
+                        OType otp = o_stack.Pop();
+                        output_queue.Enqueue(OTypeToString(otp));
+                    }
+
+                    if ((o_stack.Count > 0) && (o_stack.Peek() == OType.left_p))
+                    {
+                        o_stack.Pop();
+                    }
+                }
+            }
+
+            while (o_stack.Count > 0)
+            {
+                OType otp = o_stack.Pop();
+                output_queue.Enqueue(OTypeToString(otp));
+            }
+
+            List<String> result = new List<String>(output_queue);
+            return result;
+        }
+            
+            
+            
+            
+            
+        
 
         private static Stack<(PType t, String s)> EqListToStack(List<(PType t, String s)> equation)
         {
@@ -165,28 +168,76 @@ namespace advent_2020
         private static void Part1()
         {
             Console.WriteLine("   Part 1");
-            string[] lines = System.IO.File.ReadAllLines(TestInput1);
+            string[] lines = System.IO.File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
-
-            List<(PType, String)> equation = ParseToList(lines[0]);
-            Console.Write("\n\tparse: ");
-            foreach((PType t,String s) q in equation ) {
-                if((q.t == PType.l_paren) || (q.t == PType.r_paren)) {
-                    Console.Write($" {q.s}");
-                } else {
-                    Console.Write($" {q.s}");
-                }
-            }
-            Console.WriteLine();
-
-            Term tree = BuildTree(equation);
+            long result = 0;
             
-            int result = Eval(tree);
-            Console.WriteLine($"\t {result}");
+            for(int i=0; i < lines.Length; i++) {
+            
+                List<(PType, String)> equation = ParseToList(lines[i]);
+                /*
+                Console.Write("\n\tparse: ");
+                foreach((PType t,String s) q in equation ) {
+                    if((q.t == PType.l_paren) || (q.t == PType.r_paren)) {
+                        Console.Write($" {q.s}");
+                    } else {
+                        Console.Write($" {q.s}");
+                    }
+                }
+                Console.WriteLine();
+                */
+                List<String> rpn  = EquationToRPN(equation);
+                long t = EvalRPN(rpn);
+                result += t;
+                Console.WriteLine($"\t {Utility.ListToStringLine(rpn)} \t = \t {t}");
+                
+            }
+            
+            //        Console.WriteLine($"\t {result}");
 
-            Console.WriteLine($"\n\tPart 1 Solution: {0}");
+            Console.WriteLine($"\n\tPart 1 Solution: {result}");
         }
 
+        private static int EvalRPN(List<String> rpn)
+        {
+            Stack<int> eval_stack = new Stack<int>();
+            foreach (String s in rpn)
+            {
+                if ("+-*/".Contains(s))
+                {
+                    int left, right, result;
+                    left = eval_stack.Pop();
+                    right = eval_stack.Pop();
+                    result = ApplyOp(s, left, right);
+                    eval_stack.Push(result);
+                }
+                else
+                {
+                    eval_stack.Push(int.Parse(s));
+                }
+            }
+
+            if (eval_stack.Count == 1)
+            {
+                return eval_stack.Pop();
+            }
+            else
+            {
+                int last = -1;
+                Console.Write("\t");
+                foreach (int i in eval_stack)
+                {
+                    last = i;
+                    Console.Write($"i, ");
+                }
+
+                Console.WriteLine();
+                return last;
+            }
+            
+        }
+        
+        
         private static Term BuildTree(List<(PType t, String s)> equation)
         {
             //Stack<(PType, String )> pStack = new Stack<(PType, string)>();
@@ -239,7 +290,7 @@ namespace advent_2020
                 (parseTree.type == PType.r_paren) || (parseTree.type == PType.undefined))
             {
                 Console.WriteLine($"Got type {parseTree.type} in eval tree");
-                System.Environment.Exit(0);
+                System.Environment.Exit(0); 
             }
 
             if ((leftC != null) && (rightC != null))
@@ -274,7 +325,7 @@ namespace advent_2020
             if(op.Equals("/")){
                 result = left / r_num;
             }
-            Console.WriteLine($"\tEval {left} {op} {right} = {result}");
+         //   Console.WriteLine($"\tEval {left} {op} {right} = {result}");
             return result;
 
         }
