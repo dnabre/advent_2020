@@ -3,7 +3,7 @@ using System.CodeDom;
 using System.Collections;
 using System.Text;
 using System.Collections.Generic;
-using System.Data;
+
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -69,7 +69,7 @@ namespace advent_2020
             }
             Console.WriteLine($"\tRead {message_strings.Count} messages");
             rule_array = new String[rule_strings.Count];
-            String[] message_array = message_strings.ToArray();
+           
 
             String[] p_process = rule_strings.ToArray();
             for(int i=0; i < p_process.Length; i++) {
@@ -134,7 +134,7 @@ namespace advent_2020
             }
             Console.WriteLine($"\tRead {message_strings.Count} messages");
             rule_array = new String[rule_strings.Count];
-            String[] message_array = message_strings.ToArray();
+            
 
 	        
 	        
@@ -180,8 +180,7 @@ namespace advent_2020
         
         private static String[] rule_array;
         private static HashSet<String> valid_messages;
-        private static int d_count= 20;
-       
+        
         private static HashSet<String> GenMessages(String s_rule, int i_rule)
         {
             
@@ -308,67 +307,7 @@ namespace advent_2020
 
         return right;
         
-        
-        HashSet<String> first;
-        HashSet<String> second;
-        HashSet<String> third;
-        rule.Trim();
-        
-        int i_first, i_second, i_third;
-        int n_t = t_num.Length;
-        t_num[0].Trim();
-        i_first = int.Parse(t_num[0]);
-        first = GenMessages(rule_array[i_first], i_first);
-        
-        if (n_t == 1)
-        {
-            foreach (String o_s in first)
-            {
-                    result.Add(o_s);
-        
             }
-
-            return result;
-
-        }
-
-        t_num[1].Trim();
-        i_second = int.Parse(t_num[1]);
-        second = GenMessages(rule_array[i_second], i_second);
-        
-        result = new HashSet<string>();
-        if (n_t == 2)
-        {
-            foreach (String f in first)
-            {
-                foreach (String s in second)
-                {
-                    String q = f + s;
-        
-                        result.Add(q);
-                }
-            }
-            return result;
-        }
-			
-        t_num[2].Trim();
-        i_third = int.Parse(t_num[2]);
-        third = GenMessages(rule_array[i_third], i_third);
-        
-        foreach (String f in first)
-        {
-            foreach (String s in second)
-            {
-                foreach (String t in third)
-                { 
-						
-                    String q = f + s + t;
-                    result.Add(q);
-                }
-            }
-        }
-        return result;
-    }
 
     private static List<String> CrossProduct(List<String> one, List<String> two)
     {

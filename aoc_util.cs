@@ -13,6 +13,14 @@ namespace advent_2020
 {
     static class Utility
     {
+
+		public static T[] HashSetToArray<T>(HashSet<T> h_set) {
+			T[] arr = new T[h_set.Count];
+			h_set.CopyTo(arr);
+			return arr;
+		}
+
+
         public static bool Array2DEqual<T>(T[,] a, T[,] b)
         {
             (int w, int h) size_a = (a.GetLength(0), a.GetLength(1));

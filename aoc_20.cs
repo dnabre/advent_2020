@@ -3,7 +3,7 @@ using System.CodeDom;
 using System.Text;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
+using System.Diagnostics;
 
 /*
 	Solutions found:
@@ -23,14 +23,15 @@ namespace advent_2020
 
         public static void Run(string[] args)
         {
-            Console.WriteLine("AoC Problem 20");
+
+	        Console.WriteLine("AoC Problem 20");
             var watch = System.Diagnostics.Stopwatch.StartNew();
             Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
             watch = System.Diagnostics.Stopwatch.StartNew();
-            Part2();
+    //        Part2();
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
@@ -39,7 +40,7 @@ namespace advent_2020
         private static void Part1()
         {
             Console.WriteLine("   Part 1");
-            string[] lines = System.IO.File.ReadAllLines(Part1Input);
+            string[] lines = System.IO.File.ReadAllLines(TestInput1);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
             Console.WriteLine($"\n\tPart 1 Solution: {0}");
         }
