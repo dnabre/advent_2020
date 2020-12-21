@@ -210,6 +210,24 @@ namespace advent_2020
 
             return (result % N);
         }
+
+        public static List<T> MergeList<T>(List<T> a, List<T> b)
+        {
+            HashSet<T> h_set = new HashSet<T>(a.Count + b.Count);
+            foreach(T aa in a)
+            {
+                h_set.Add(aa);
+            }
+
+            foreach (T bb in b)
+            {
+                h_set.Add(bb);
+
+            }
+
+            List<T> result = new List<T>(h_set);
+            return result;
+        }
         
         public static String StackToStringLine<T>(Stack<T> lst)
         {
