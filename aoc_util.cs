@@ -14,11 +14,11 @@ namespace advent_2020
     static class Utility
     {
 
-		public static T[] HashSetToArray<T>(HashSet<T> h_set) {
-			T[] arr = new T[h_set.Count];
-			h_set.CopyTo(arr);
-			return arr;
-		}
+        public static T[] HashSetToArray<T>(HashSet<T> h_set) {
+            T[] arr = new T[h_set.Count];
+            h_set.CopyTo(arr);
+            return arr;
+        }
 
 
         public static bool Array2DEqual<T>(T[,] a, T[,] b)
@@ -256,7 +256,7 @@ namespace advent_2020
             s.Push(two);
         }
         
-public static String HashSetToStringLine<T>(HashSet<T> lst)
+        public static String HashSetToStringLine<T>(HashSet<T> lst)
         {
             if (lst.Count == 0) return "[]";
             StringBuilder sb = new StringBuilder();
@@ -271,6 +271,24 @@ public static String HashSetToStringLine<T>(HashSet<T> lst)
             sb.Append("]");
             return sb.ToString();
         }
+
+     
+        public static String QueueToStringLine<T>(Queue<T> lst)
+        {
+            if (lst.Count == 0) return "[]";
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            foreach(T e in lst)
+            {
+                sb.Append(e.ToString());
+                sb.Append(",");
+            }
+            
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append("]");
+            return sb.ToString();
+        }
+
 
         public static String ListToStringLine<T>(List<T> lst)
         {
