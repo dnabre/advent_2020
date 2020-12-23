@@ -22,10 +22,10 @@ namespace advent_2020
         private const string TestInput2 = "aoc_21_test_2.txt";
 
         private static int line_number;
-        private static int ingred_number;
+       // private static int ingred_number;
         private static int all_number;
 
-        private static int unmatched_alls;
+        //private static int unmatched_alls;
         private static HashSet<String> all_ingreds;
         private static HashSet<String> all_all;
         
@@ -66,20 +66,22 @@ namespace advent_2020
             //  Console.WriteLine($"\tData[{data.GetLength(0)},{data.GetLength(1)}]:");
             for (int i = 0; i < line_number; i++)
             {
-                String a, b;
+               /*
+			    String a, b;
                 a = Utility.HashSetToStringLine(data[i, 0]);
                 b = Utility.HashSetToStringLine(data[i, 1]);
-                // Console.WriteLine($"\t\t ingred: {a} alls {b}");
-
+                
+				 Console.WriteLine($"\t\t ingred: {a} alls {b}");
+				*/
                 all_ingreds.UnionWith(data[i, 0]);
                 all_all.UnionWith(data[i, 1]);
             }
 
             allergens = new List<String>(all_all).ToArray();
 
-            ingred_number = all_ingreds.Count;
+//            ingred_number = all_ingreds.Count;
             all_number = all_all.Count;
-            unmatched_alls = all_number;
+  //          unmatched_alls = all_number;
 
             //Console.WriteLine($"\t All Ingredients[{ingred_number}] {Utility.HashSetToStringLine(all_ingreds)}");
             HashSet<String>[] possible_foods = new HashSet<string>[allergens.Length];
@@ -151,10 +153,12 @@ namespace advent_2020
             //  Console.WriteLine($"\tData[{data.GetLength(0)},{data.GetLength(1)}]:");
             for (int i = 0; i < line_number; i++)
             {
+				/*
                 String a, b;
                 a = Utility.HashSetToStringLine(data[i, 0]);
                 b = Utility.HashSetToStringLine(data[i, 1]);
-                // Console.WriteLine($"\t\t ingred: {a} alls {b}");
+                 Console.WriteLine($"\t\t ingred: {a} alls {b}");
+				*/
 
                 all_ingreds.UnionWith(data[i, 0]);
                 all_all.UnionWith(data[i, 1]);
@@ -163,9 +167,9 @@ namespace advent_2020
           //  Console.WriteLine($"\tAllergens: \n\t{Utility.HashSetToStringLine(all_all)}");
             allergens = new List<String>(all_all).ToArray();
 
-            ingred_number = all_ingreds.Count;
+           // ingred_number = all_ingreds.Count;
             all_number = all_all.Count;
-            unmatched_alls = all_number;
+           // unmatched_alls = all_number;
 
             //Console.WriteLine($"\t All Ingredients[{ingred_number}] {Utility.HashSetToStringLine(all_ingreds)}");
             Dictionary<String, HashSet<String>> possible_foods = new Dictionary<string, HashSet<string>>();
@@ -205,7 +209,7 @@ namespace advent_2020
 
             HashSet<String> bad_foods = new HashSet<String>();
             Dictionary<String, String> allergen_to_food = new Dictionary<string, string>();
-            Dictionary<String, String> food_to_allergen = new Dictionary<string, string>();
+           // Dictionary<String, String> food_to_allergen = new Dictionary<string, string>();
 
 
             while (possible_foods.Count > 0)

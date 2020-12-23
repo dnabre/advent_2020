@@ -14,12 +14,12 @@ using System.Numerics;
 
 namespace advent_2020
 {
-    static class AOC_22
+    static class AOC_23
     {
-        private const string Part1Input = "aoc_22_input_1.txt";
-        private const string Part2Input = "aoc_22_input_2.txt";
-        private const string TestInput1 = "aoc_22_test_1.txt";
-        private const string TestInput2 = "aoc_22_test_2.txt";
+        private const string Part1Input = "aoc_23_input_1.txt";
+        private const string Part2Input = "aoc_23_input_2.txt";
+        private const string TestInput1 = "aoc_23_test_1.txt";
+        private const string TestInput2 = "aoc_23_test_2.txt";
 
 
         public static void Run(string[] args)
@@ -44,7 +44,7 @@ namespace advent_2020
             string[] lines = File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
 
-            Console.WriteLine($"\n\tPart 1 Solution: {score}");
+            Console.WriteLine($"\n\tPart 1 Solution: {0}");
         }
 
 
