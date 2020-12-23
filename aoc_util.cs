@@ -228,7 +228,35 @@ namespace advent_2020
             List<T> result = new List<T>(h_set);
             return result;
         }
-        
+
+	    public static String ArrayToStringLine<T>(T[] lst)
+        {
+            if (lst.Length == 0) return "[]";
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            foreach(T e in lst)
+            {
+                sb.Append(e.ToString());
+                sb.Append(",");
+            }
+            
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append("]");
+            return sb.ToString();
+        }
+
+		public static int[] StringToIntArray(String s) {
+			int length = s.Length;
+			int[] result = new int[length];
+			for(int i=0; i < length;i++) {
+				char c = s[i];
+				result[i] = (int)(Char.GetNumericValue(c));
+			}
+			return result;
+		}
+
+
+
         public static String StackToStringLine<T>(Stack<T> lst)
         {
             if (lst.Count == 0) return "[]";
