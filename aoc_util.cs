@@ -229,15 +229,39 @@ namespace advent_2020
             return result;
         }
 
-	    public static String ArrayToStringLine<T>(T[] lst)
+	    public static String ArrayToStringLine<T>(T[] lst, int skip =0, int num=-1)
         {
             if (lst.Length == 0) return "[]";
             StringBuilder sb = new StringBuilder();
+            int times_to_print;
+            if (num == -1)
+            {
+                times_to_print = lst.Length - skip;
+            }
+            else
+            {
+                times_to_print = num;
+            }
             sb.Append("[");
             foreach(T e in lst)
             {
+                if (skip > 0)
+                {
+                    skip--;
+                    continue;
+                }
+
+                if (num == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    num--;
+                }
                 sb.Append(e.ToString());
                 sb.Append(",");
+                
             }
             
             sb.Remove(sb.Length - 1, 1);
