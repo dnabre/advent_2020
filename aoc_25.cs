@@ -83,7 +83,6 @@ namespace advent_2020 {
 	}
 	
 	
-	private static long max_loop_size= 500;
 	private static long find_loop_size(long target) {
 		long value =1;
 		int count = 0;
@@ -91,11 +90,9 @@ namespace advent_2020 {
 			count++;
 			value = value * subject_number;
 			value = value % divider;
-		//	Console.WriteLine($"\t\t value = {value.ToString().PadLeft(12)} target = {target.ToString().PadLeft(12)}");
+		
 			if(value == target) return count;
 		}
-	//	if(count ==max_loop_size) throw new Exception($"couldn't find loop size for {target} {value}");
-		return value;
 	}
 
 
