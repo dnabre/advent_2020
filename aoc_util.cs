@@ -233,15 +233,7 @@ namespace advent_2020
         {
             if (lst.Length == 0) return "[]";
             StringBuilder sb = new StringBuilder();
-            int times_to_print;
-            if (num == -1)
-            {
-                times_to_print = lst.Length - skip;
-            }
-            else
-            {
-                times_to_print = num;
-            }
+         
             sb.Append("[");
             foreach(T e in lst)
             {
