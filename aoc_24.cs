@@ -32,7 +32,39 @@ namespace advent_2020 {
       Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
     }
 
-	public struct Hex {
+	public struct Hex : IEquatable<Hex>
+	{
+		public bool Equals(Hex other)
+		{
+			return x == other.x && y == other.y && z == other.z;
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is Hex other && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = x;
+				hashCode = (hashCode * 397) ^ y;
+				hashCode = (hashCode * 397) ^ z;
+				return hashCode;
+			}
+		}
+
+		public static bool operator ==(Hex left, Hex right)
+		{
+			return left.Equals(right);
+		}
+
+		public static bool operator !=(Hex left, Hex right)
+		{
+			return !left.Equals(right);
+		}
+
 		public int x,y,z;
 		public Hex(int x_, int y_, int z_) {
 			x = x_;
@@ -59,8 +91,8 @@ namespace advent_2020 {
 		Console.WriteLine($"\t {h2}");
 		Console.WriteLine(h3);
 
-		Console.WriteLine(h1.Equals( h3));
-		Console.WriteLine(h2.Equals( h3));
+		Console.WriteLine(h1 == h3);
+		Console.WriteLine(h2== h3);
 		
 
 
