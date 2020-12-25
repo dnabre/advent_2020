@@ -51,7 +51,7 @@ namespace advent_2020 {
       int turn;
       int current_cup;
       int[] pickups = new int[3]; ;
-      int[] old_values = new int[3];
+      
       int dest_value = -1;
       int dest_place = -1;
     ;
