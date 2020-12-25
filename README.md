@@ -25,9 +25,9 @@
 | [Day 20: Jurassic Jigsaw](https://adventofcode.com/2020/day/20)  |  Image Processing |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_20.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_20.cs) |
 | [Day 21: Allergen Assessment](https://adventofcode.com/2020/day/21)  | Set Manipulation  |[*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_21.cs)   | [*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_21.cs) |
 | [Day 22: Crab Combat](https://adventofcode.com/2020/day/22)  | Recursion  |[*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_22.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_22.cs) |
-| [Day 23: Crab Cups](https://adventofcode.com/2020/day/23)  |   |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_23.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_23.cs) |
-| [Day 24:](https://adventofcode.com/2020/day/24)  |   |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_24.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_24.cs) |
-| [Day 25:](https://adventofcode.com/2020/day/25)  |   |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_25.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_25.cs) |
+| [Day 23: Crab Cups](https://adventofcode.com/2020/day/23)  | Simulate Game  |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_23.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_23.cs) |
+| [Day 24: Lobby Layout](https://adventofcode.com/2020/day/24)  | Hex Grid  |[ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_24.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_24.cs) |
+| [Day 25: Combo Breaker](https://adventofcode.com/2020/day/25)  | Simple Crypto  |[*](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_25.cs)   | [ ](https://raw.githubusercontent.com/dnabre/advent_2020/master/aoc_25.cs) |
 
 
 

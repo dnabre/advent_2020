@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 /*
 	Solutions found:
-	Part 1:
-	Part 2: 
+	Part 1: 2679568 
 	
 */
 
@@ -36,10 +36,11 @@ namespace advent_2020 {
 	private static long door_public; 
     
 	private static long divider =20201227L;
+	private static long subject_number = 7L;
 
     private static void Part1() {
       Console.WriteLine($"   Part 1");
-      string[] lines = File.ReadAllLines(TestInput1);
+      string[] lines = File.ReadAllLines(Part1Input);
       Console.WriteLine($"\tRead {0} inputs", lines.Length);
 	
 	  card_public = long.Parse(lines[0]);
@@ -47,37 +48,57 @@ namespace advent_2020 {
 	  Console.WriteLine($"\tCard Public Key: {card_public.ToString().PadLeft(32)}");
 	  Console.WriteLine($"\tDoor Public Key: {door_public.ToString().PadLeft(32)}\n");
 
+		long ls;
+		ls = find_loop_size(card_public);
+		Console.WriteLine($"\tCard Public Key, loop: {ls.ToString().PadLeft(5)}  key: {card_public.ToString().PadLeft(12)}");
+		long ls2;
+		ls2 = find_loop_size(door_public);
+		Console.WriteLine($"\tDoor Public Key, loop: {ls2.ToString().PadLeft(5)}  key: {door_public.ToString().PadLeft(12)}");
 
-		for(int i = 5; i < 10; i++) {
-			for(int s = 5; s < 10; s++) {
-				long t = loop_key(i,s);
-				long q = loop_key2(i,s);
-			if(t==5764801L) Console.WriteLine($"\t\t {t} is loop {i} subject {s}");
-			Console.WriteLine($"\t loop {i}, subject {s} = {t.ToString().PadLeft(16)} \t {q.ToString().PadLeft(16)}");
+		long r1;
+		r1 = apply_loop(ls2, card_public);
+		Console.WriteLine($"\tApplying loop size = {ls2.ToString().PadLeft(5)} to Card Public Key = " + 
+			$"{card_public.ToString().PadLeft(12)} yields: {r1.ToString().PadLeft(12)}");
+		
+		long r2;
+		r2 = apply_loop(ls, door_public);
+		Console.WriteLine($"\tApplying loop size = {ls.ToString().PadLeft(5)} to Door Public Key = " +
+ 			$"{door_public.ToString().PadLeft(12)} yields: {r2.ToString().PadLeft(12)}");
 
-			}
-		}
 
 
-      Console.WriteLine($"\n\tPart 1 Solution: {0}");
+
+      Console.WriteLine($"\n\tPart 1 Solution: {r2}");
     }
 
-	private static long loop_key(long n,long subject) {
+
+	private static long apply_loop(long loop_size, long subject) {
+			long value = 1;
+			for(int i=0; i< loop_size;i++) {
+				value = value * subject;
+				value = value % divider;
+			}
+			return value;
+
+	}
+	
+	
+	private static long max_loop_size= 500;
+	private static long find_loop_size(long target) {
 		long value =1;
-		for(long i=0; i<n; i++) {
-			value = value*subject;
+		int count = 0;
+		while (true) {
+			count++;
+			value = value * subject_number;
 			value = value % divider;
+		//	Console.WriteLine($"\t\t value = {value.ToString().PadLeft(12)} target = {target.ToString().PadLeft(12)}");
+			if(value == target) return count;
 		}
+	//	if(count ==max_loop_size) throw new Exception($"couldn't find loop size for {target} {value}");
 		return value;
 	}
-	private static long loop_key2(long n, long s) {
-		BigInteger v = new BitInteger(n);
-		BigInteger subject = new BigInteger(s);
-		BigInteger r;
 
-		r = subject.ModPower(n, divider);
-		return (long)r;
-	}
+
 
     private static void Part2() {
       Console.WriteLine("   Part 2");
