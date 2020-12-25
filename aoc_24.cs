@@ -21,26 +21,57 @@ namespace advent_2020 {
     public static void Run(string[] args) {
       Console.WriteLine("AoC Problem 24");
       var watch = Stopwatch.StartNew();
-      Part1();
+     Part1();
       watch.Stop();
       long time_part_1 = watch.ElapsedMilliseconds;
       Console.Write("\n");
       watch = Stopwatch.StartNew();
-      Part2();
+  //    Part2();
       watch.Stop();
       long time_part_2 = watch.ElapsedMilliseconds;
       Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
     }
 
+	public struct Hex {
+		public int x,y,z;
+		public Hex(int x_, int y_, int z_) {
+			x = x_;
+			y = y_;
+			z = z_;
+		}
+		public override string  ToString() {
+			return $"({x},{y},{z})";
+		}
+	}
+
     
-    
+	
+
     private static void Part1() {
-      Console.WriteLine($"   Part 1");
+    Console.WriteLine($"   Part 1");
       string[] lines = File.ReadAllLines(TestInput1);
-      Console.WriteLine($"\tRead {0} inputs", lines.Length);
-  
+      Console.WriteLine($"\tRead {lines.Length} inputs");
+
+		Hex h1 = new Hex(1,2,3);
+		Hex h2 = new Hex(4,2,4);
+		Hex h3 = new Hex(1,2,3);
+		Console.WriteLine(h1);
+		Console.WriteLine($"\t {h2}");
+		Console.WriteLine(h3);
+
+		Console.WriteLine(h1.Equals( h3));
+		Console.WriteLine(h2.Equals( h3));
+		
+
+
+		
+
       Console.WriteLine($"\n\tPart 1 Solution: {0}");
     }
+
+
+
+
 
     private static void Part2() {
       Console.WriteLine("   Part 2");
