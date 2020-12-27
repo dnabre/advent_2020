@@ -21,17 +21,17 @@ namespace advent_2020
         private const string TestInput1 = "aoc_23_test_1.txt";
         private const string TestInput2 = "aoc_23_test_2.txt";
         private const int MOD_VALUE = 9;
-
+        private const int MAX_CUPS = 1000000;
         public static void Run(string[] args)
         {
             Console.WriteLine("AoC Problem 23");
             var watch = Stopwatch.StartNew();
-            Part1();
+           // Part1();
             watch.Stop();
             var time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
             watch = Stopwatch.StartNew();
-            //       Part2();
+                Part2();
             watch.Stop();
             var time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
@@ -317,7 +317,170 @@ namespace advent_2020
             var lines = File.ReadAllLines(Part1Input);
             Console.WriteLine("$\tRead {0} inputs", lines.Length);
 
-            Console.WriteLine($"\n\tPart 2 Solution: {0}");
+            Console.WriteLine($"\tRead: {lines[0]}");
+
+            char[] input_chars = lines[0].ToCharArray();
+            int[] input_numbers = input_chars.Select(c => (int) Char.GetNumericValue(c)).ToArray();
+            turn = 1;
+            current_cup = 0;
+            pickup = new int[3];
+            dest = -1;
+
+            Stack<int> right = new Stack<int>();
+            Stack<int> left = new Stack<int>();
+            foreach (int i in input_numbers)
+            {
+                left.Push(i);
+            }
+
+            while (left.Count > 0)
+            {
+                right.Push(left.Pop());
+            }
+
+            int temp;
+            current_cup = right.Peek();
+            
+            int last_turn = 100;
+
+            int[] l_array;
+            while (turn <= last_turn)
+            {
+        
+
+                l_array = left.ToArray();
+                for (int j = l_array.Length - 1; j >= 0; j--)
+                {
+                    int i = l_array[j];
+       
+                }
+
+                left.Push(right.Pop()); ;
+                if (right.Count >= 3)
+                {
+                    pickup[0] = right.Pop();
+                    pickup[1] = right.Pop();
+                    pickup[2] = right.Pop();
+                }
+                else
+                {
+                    Stack<int> pick = new Stack<int>();
+                    int picked = 0;
+                    while (right.Count > 0)
+                    {
+                        pick.Push(right.Pop());
+                        picked++;
+
+                    }
+              
+
+                    int[] left_array = left.ToArray();
+                    
+
+                    int l_index = left_array.Length;
+                    
+                    l_index--;
+                       for (int i = 3 - picked; i > 0; i--)
+                    {
+                       
+                        pick.Push(left_array[l_index]);
+
+                        l_index--;
+                    }
+
+                    l_index++;
+                    left = new Stack<int>();
+                    for (int i = l_index - 1; i >= 0; i--)
+                    {
+                        left.Push(left_array[i]);
+                    }
+                    
+                    pickup[2] = pick.Pop();
+                    pickup[1] = pick.Pop();
+                    pickup[0] = pick.Pop();
+
+
+
+                }
+
+
+       dest = current_cup - 1;
+                if (dest == 0) dest = 9;
+            
+                while ((dest == pickup[0]) || (dest == pickup[1]) || (dest == pickup[2]))
+                {
+                    dest--;
+                    if (dest == 0) dest = 9;
+    
+                }
+
+              //  
+                while (left.Count > 0)
+                {
+                    temp = left.Pop();
+                    right.Push(temp);
+                }
+
+         ;
+                while (right.Peek() != dest)
+                {
+                    temp = right.Pop();
+                    left.Push(temp);
+                }
+
+       
+                left.Push(right.Pop());
+      
+                left.Push(pickup[0]);
+                left.Push(pickup[1]);
+                left.Push(pickup[2]);
+      ;
+                while (right.Count > 0)
+                {
+                    left.Push(right.Pop());
+                }
+
+
+                right.Push(left.Pop());
+          
+                while ((right.Peek() != current_cup) && (left.Count > 0))
+                {
+                    right.Push(left.Pop());
+                }
+
+                if (right.Count == 0)
+                {
+                    left.Push(PopBottomOfStack(left));
+                }
+                else
+                {
+                    left.Push(right.Pop());
+                }
+
+                if (right.Count == 0)
+                {
+                    right.Push(PopBottomOfStack(left));
+                }
+
+                current_cup = right.Peek();
+   
+
+                turn++;
+
+            }
+
+        
+
+     
+            String final;
+            final = CupsAfterOne(left, right);
+            
+            
+            
+            
+            
+            
+            Console.WriteLine($"\n\tPart 2 Solution: {final}");
         }
 
         private static void PrintBothStacks(Stack<int> left, Stack<int> right, int current_cup)
@@ -408,12 +571,12 @@ namespace advent_2020
             }
             if (left.Contains(1))
             {
-                PrintBothStacks(left, right, current_cup);
+              
                 while (left.Peek() != 1)
                 {
                     right.Push(left.Pop());
                 }
-                PrintBothStacks(left, right, current_cup);
+            
 
                 while (right.Count > 0)
                 {
