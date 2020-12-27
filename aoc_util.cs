@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 
@@ -274,8 +275,44 @@ namespace advent_2020
             sb.Append("]");
             return sb.ToString();
         }
+        public  static int mod(int x, int m)
+        {
+            // mod that handles negative numbers sensablely 
 
+            return (x % m + m) % m;
+        }
+        public static string DictToStringLine<K, V>(Dictionary<K, V> dict)
+        {    if (dict.Count == 0) return "[]";
 
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            K index;
+            V value;
+
+            K[] key_a = dict.Keys.ToArray();
+            Array.Sort(key_a);
+            
+            for (int i = 0; i < dict.Count; i++)
+            {
+                index = key_a[i];
+                if (dict.ContainsKey(index))
+                {
+                    value = dict[index];
+                    sb.Append($"({index}:{value}), ");
+            
+                }
+            }
+
+            sb.Remove(sb.Length - 2, 2);
+
+            sb.Append("]");
+
+            return $"{sb}";
+        
+        }
+        
+        
+        
         public static string ListToStringLine<T>(List<T> lst)
         {
             if (lst.Count == 0) return "[]";
