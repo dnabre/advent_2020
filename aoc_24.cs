@@ -46,7 +46,7 @@ namespace advent_2020
             Console.WriteLine($"\tRead {lines.Length} inputs");
 
             Dictionary<Hex, bool> map = new Dictionary<Hex, bool>();
-
+			(int w, int b) counts = (-1,-1);
             foreach (String l in lines)
             {
                 Hex h = new Hex(0, 0, 0);
@@ -76,11 +76,11 @@ namespace advent_2020
                 }
             }
 
-            (int white_count, int black_count) = CountMap(map);
+           // (int white_count, int black_count) = CountMap(map);
+			counts = CountMap(map);
+            Console.WriteLine($"\t final map  black: {counts.b} white: {counts.w} ");
 
-            Console.WriteLine($"\t final map  black: {black_count} white: {white_count} ");
-
-            Console.WriteLine($"\n\tPart 1 Solution: {black_count}");
+            Console.WriteLine($"\n\tPart 1 Solution: {counts.b}");
         }
 
 
@@ -92,7 +92,7 @@ namespace advent_2020
             Console.Write("\tRead ");
             Console.Write(lines.Length);
             Console.WriteLine(" inputs");
-
+			(int w, int b) counts = (-1,-1);
             Dictionary<Hex, bool> map = new Dictionary<Hex, bool>();
 
             foreach (String l in lines)
@@ -123,14 +123,13 @@ namespace advent_2020
                     map[h] = false;
                 }
             }
-
-            (int white_count, int black_count) = CountMap(map);
+			//(int white_count, int black_count) = CountMap(map);
             //Console.WriteLine($"\t final map  black: {black_count} white: {white_count} ");
             //Console.WriteLine($"\t map has {map.Count} total tiles\n");
 
             int steps = 100;
             int done_steps = 0;
-
+			
             while (steps > 0)
             {
                 steps--;
@@ -157,22 +156,23 @@ namespace advent_2020
                     map[n] = true;
                 }
 
-                (white_count, black_count) = CountMap(map);
+               // (white_count, black_count) = CountMap(map);
                 //Console.WriteLine($"\t final map  black: {black_count} white: {white_count} ");
                 //Console.WriteLine($"\t map has {map.Count} total tiles\n");
                 // Map read for automata
 
                 map = Step(map);
 
-                (white_count, black_count) = CountMap(map);
-                //  Console.WriteLine($"\t final map  black: {black_count} white: {white_count} ");
+                //(white_count, black_count) = CountMap(map);
+                counts = CountMap(map);
+				//  Console.WriteLine($"\t final map  black: {black_count} white: {white_count} ");
                 //Console.WriteLine($"\t map has {map.Count} total tiles\n");
                 if ((done_steps < 4) || (done_steps > (96)))
-                    Console.WriteLine($"\t Day  {done_steps.ToString().PadLeft(5)}: {black_count}");
+                    Console.WriteLine($"\t Day  {done_steps.ToString().PadLeft(5)}: {counts.b}");
             }
 
 
-            Console.WriteLine($"\n\tPart 2 Solution: {black_count}");
+            Console.WriteLine($"\n\tPart 2 Solution: {counts.b}");
         }
 
         [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
