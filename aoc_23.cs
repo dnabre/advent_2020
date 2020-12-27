@@ -368,43 +368,11 @@ namespace advent_2020
 
         }
 
-        private static void DisplayTurn(int turn, int[] cups, int[] pickups, int current_cup, int dest_value,
-            int dest_place)
-        {
-            Console.WriteLine($"\n\t -- move {turn} --");
-            Console.Write("\t cups: ");
-            for (var i = 1; i <= 9; i++)
-            {
-                Console.Write(" ");
-                if (i == current_cup % 10)
-                    Console.Write("  " + $"({cups[i]})".PadLeft(3));
-                else
-                    Console.Write($"{cups[i]}".PadLeft(4));
-            }
+        
 
-            Console.WriteLine();
-            Console.Write("\t pick up:");
-            for (var i = 0; i < pickups.Length; i++)
-            {
-                Console.Write($" {pickups[i]}");
-                if (i < 2) Console.Write(",");
-            }
+   
 
-            Console.Write("\n");
-            Console.WriteLine($"\t destination: {dest_value} place={dest_place}");
-            Console.WriteLine("\n");
-        }
-
-        private static int mod(int x)
-        {
-
-            return Utility.mod(x - 1, MOD_VALUE) + 1;
-        }
-
-        private static int inc(int x)
-        {
-            return Utility.mod(x, MOD_VALUE);
-        }
+      
 
         private static int PopBottomOfStack(Stack<int> left)
         {
