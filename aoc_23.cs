@@ -23,8 +23,8 @@ namespace advent_2020
         private const string Part2Input = "aoc_23_input_2.txt";
         private const string TestInput1 = "aoc_23_test_1.txt";
         private const string TestInput2 = "aoc_23_test_2.txt";
-        private const int MOD_VALUE = 9;
-        private const int MAX_CUPS = 1000000;
+        private const long MOD_VALUE = 9;
+        private const long MAX_CUPS = 1000000;
         public static void Run(string[] args)
         {
             Console.WriteLine("AoC Problem 23");
@@ -41,9 +41,9 @@ namespace advent_2020
         }
 
         
-        private static int turn;
-        private static int[] pickup;
-        private static int dest;
+        private static long turn;
+        private static long[] pickup;
+        private static long dest;
         private static ListNode Head;
         private static void Part1()
         {
@@ -54,20 +54,20 @@ namespace advent_2020
             Console.WriteLine($"\tRead: {lines[0]}");
 
             char[] input_chars = lines[0].ToCharArray();
-            int[] input_numbers = input_chars.Select(c => (int) Char.GetNumericValue(c)).ToArray();
+            long[] input_numbers = input_chars.Select(c => (long) Char.GetNumericValue(c)).ToArray();
             turn = 1;
             ListNode current_node;
             ListNode dest_node;
-            pickup = new int[3];
+            pickup = new long[3];
             dest = -1;
 
             Head = new ListNode();
             Head.val = input_numbers[0];
             Head.next = null;
-
+            
 
             ListNode c_node = Head;
-            for (int i = 1; i < input_numbers.Length; i++)
+            for (long i = 1; i < input_numbers.Length; i++)
             {
                 InsertAfter(c_node, input_numbers[i]);
                 c_node = c_node.next;
@@ -81,7 +81,7 @@ namespace advent_2020
 
             current_node = Head;
             
-            int last_turn = 100;
+            long last_turn = 100;
 
          
             while (turn <= last_turn)
@@ -153,44 +153,49 @@ namespace advent_2020
             Console.WriteLine($"\n\tPart 1 Solution: {sfinal}");
         }
 
+        private static Dictionary<long, ListNode> lookup;
         private static void Part2()
         {
             Console.WriteLine("   Part 2");
-            var lines = File.ReadAllLines(Part1Input);
+            var lines = File.ReadAllLines(Part2Input);
             Console.WriteLine($"\tRead {0} inputs", lines.Length);
 
             Console.WriteLine($"\tRead: {lines[0]}");
 
+            lookup = new Dictionary<long, ListNode>();
+            
             char[] input_chars = lines[0].ToCharArray();
-            int[] input_numbers = input_chars.Select(c => (int) Char.GetNumericValue(c)).ToArray();
+            long[] input_numbers = input_chars.Select(c => (long) Char.GetNumericValue(c)).ToArray();
             turn = 1;
-            pickup = new int[3];
+            pickup = new long[3];
             dest = -1;
           
             
             turn = 1;
             ListNode current_node;
             ListNode dest_node;
-            pickup = new int[3];
+            pickup = new long[3];
             dest = -1;
 
             Head = new ListNode();
             Head.val = input_numbers[0];
             Head.next = null;
-
+            lookup[1] = Head;
 
             ListNode c_node = Head;
-            for (int i = 1; i < input_numbers.Length; i++)
+            for (long i = 1; i < input_numbers.Length; i++)
             {
                 InsertAfter(c_node, input_numbers[i]);
+                
                 c_node = c_node.next;
             }
-
-            for (int i = 10; i <= 1000000; i++)
+/*
+            for (long i = 10; i <= 1000000; i++)
             {
                 InsertAfter(c_node, i);
                 c_node = c_node.next;
             }
+  */
             c_node.next = Head;
             Console.WriteLine("\tInital List Built");
             
@@ -199,7 +204,7 @@ namespace advent_2020
 
             current_node = Head;
             
-            int last_turn = 10000000;
+            long last_turn = 100;
 
          
             while (turn <= last_turn)
@@ -220,7 +225,9 @@ namespace advent_2020
                 c_node = c_node.next;
                 pickup[2] = c_node.val;
                 current_node.next = c_node.next;
-               
+                lookup.Remove(pickup[0]);
+                lookup.Remove(pickup[1]);
+                lookup.Remove(pickup[2]);
 
                 dest = current_node.val - 1;
                 if (dest == 0) dest = 9;
@@ -233,9 +240,16 @@ namespace advent_2020
                 }
 
                 dest_node = current_node;
-                while (dest_node.val != dest)
+                if (lookup.ContainsKey(dest))
                 {
-                    dest_node = dest_node.next;
+                    dest_node = lookup[dest];
+                } else {
+                    while (dest_node.val != dest)
+                    {
+                        dest_node = dest_node.next;
+                    }
+
+                    lookup[dest] = dest_node;
                 }
               
                 InsertAfter(dest_node, pickup[2]);
@@ -250,7 +264,7 @@ namespace advent_2020
             Console.WriteLine($"\t -- final --");
             Console.Write($"\t cups: ");
 
-  /*        
+       
             c_node = current_node;
             do
             {
@@ -266,8 +280,8 @@ namespace advent_2020
                 
             } while (c_node.next != current_node);
             
-*/
-  (int one, int two) = LLFinalPart2(current_node);
+
+  (long one, long two) = LLFinalPart2(current_node);
          //   final = LLFinalPart1(current_node);
 
          // 901620 243600 
@@ -282,131 +296,25 @@ namespace advent_2020
             
         }
 
-        private static void PrintBothStacks(Stack<int> left, Stack<int> right, int current_cup)
-        {
-            int w;
-            Console.Write($"\t\t [");
-            int[] l_array = left.ToArray();
-            for (int i = l_array.Length - 1; i >= 0; i--)
-            {
-                w = l_array[i];
-                if (w == current_cup)
-                {
-                    Console.Write($" ({w}) ");
-                }
-                else
-                {
-                    Console.Write($" {w} ");
-                }
-            }
-
-            Console.Write(" | ");
-            foreach (int i in right)
-            {
-                w = i;
-                if (w == current_cup)
-                {
-                    Console.Write($" ({w}) ");
-                }
-                else
-                {
-                    Console.Write($" {w} ");
-                }
-            }
-
-            Console.WriteLine($" ] \t\t\t dest = {dest}");
-        }
-
-
-        private static void PrintState(Stack<int> left, Stack<int> right, int current_cup)
-        {
-            const String empty = "[empty]";
-            Console.WriteLine($"\t current cup: {current_cup}");
-            Console.WriteLine(
-                $"\tleft  :{Utility.StackToStringLine(left)}\t Top: {((left.Count > 0) ? left.Peek().ToString() : empty)}");
-            Console.WriteLine(
-                $"\tright :{Utility.StackToStringLine(right)})\t Top: {((right.Count > 0) ? right.Peek().ToString() : empty)}");
-
-
-        }
-
         
-
-   
-
-      
-
-        private static int PopBottomOfStack(Stack<int> left)
-        {
-            Stack<int> r = new Stack<int>();
-            while (left.Count > 1)
-            {
-                r.Push(left.Pop());
-            }
-
-            int result = left.Pop();
-            while (r.Count > 0)
-            {
-                left.Push(r.Pop());
-            }
-
-            return result;
-
-        }
-
-
-        private static String CupsAfterOne(Stack<int> left, Stack<int> right)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            if (right.Contains(1))
-            {
-                while (right.Peek() !=1)
-                {
-                    left.Push(right.Pop());
-                }
-
-                left.Push(right.Pop()); // shift 1 over
-            }
-            if (left.Contains(1))
-            {
-              
-                while (left.Peek() != 1)
-                {
-                    right.Push(left.Pop());
-                }
-            
-
-                while (right.Count > 0)
-                {
-                    sb.Append(right.Pop());
-                }
-
-                while (left.Count > 1)
-                {
-                    sb.Append(PopBottomOfStack(left));
-                }
-            }
-        
-            
-            
-            
-
-            return sb.ToString();
-        }
-        private static void InsertAfter(ListNode n, int i){
+        private static void InsertAfter(ListNode n, long i){
 
             ListNode new_node = new ListNode {val = i, next = n.next};
             n.next = new_node;
+            lookup[i] = new_node;
         }
 
-        private static int DeleteAfter(ListNode n)
+        private static long DeleteAfter(ListNode n)
         {
             // n.next -> (delete.next->) p.next
             ListNode after = n.next;
-            int result = after.val;
+            long result = after.val;
             n.next = after.next;
+            lookup.Remove(after.val);
+            
             return result;
+            
+            
         }
 
 
@@ -428,7 +336,7 @@ namespace advent_2020
         }
 
 
-        private static void LLPrintState(int[] pickup, ListNode c_list, ListNode current_node, int dest)
+        private static void LLPrintState(long[] pickup, ListNode c_list, ListNode current_node, long dest)
         {
             /*
            
@@ -436,7 +344,7 @@ namespace advent_2020
             Console.WriteLine(
                 $"\t\t {ListNodeToString(c_list)} \t pickups[{a},{b},{c}] \t current_node = {current_node.val} dest = {dest}");
             */
-            int a, b, c;
+            long a, b, c;
             a = pickup[0];
             b = pickup[1];
             c = pickup[2];
@@ -464,8 +372,11 @@ namespace advent_2020
             return sb.ToString();
         }
 
-        private static (int, int) LLFinalPart2(ListNode current_node)
+        private static (long, long) LLFinalPart2(ListNode current_node)
         {
+            
+            
+            /*
             ListNode c_node;
             c_node = current_node;
             while (c_node.val != 1)
@@ -473,49 +384,20 @@ namespace advent_2020
                 c_node = c_node.next;
             }
 
-            int one;
-            int two;
+            long one;
+            long two;
             one = c_node.next.val;
             two = c_node.next.next.val;
             return (one, two);
+            */
+            ListNode is_one = lookup[1];
+            return (is_one.next.val, is_one.next.next.val);
         }
     }
-    public class ListNode : IEquatable<ListNode>
+    public class ListNode
     {
-        public bool Equals(ListNode other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return val == other.val && Equals(next, other.next);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ListNode) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (val * 397) ^ (next != null ? next.GetHashCode() : 0);
-            }
-        }
-
-        public static bool operator ==(ListNode left, ListNode right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ListNode left, ListNode right)
-        {
-            return !Equals(left, right);
-        }
-
-        public int val;
+        
+        public long val;
         public ListNode next;
     }
 
