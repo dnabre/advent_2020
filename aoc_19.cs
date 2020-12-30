@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 /*
 	Solutions found:
 	Part 1: 285
-	Part 2: 
+	Part 2: 412
 	
 */
 
@@ -29,7 +29,7 @@ namespace advent_2020
         {
             Console.WriteLine("AoC Problem 19");
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            //      Part1();
+            Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
@@ -103,15 +103,13 @@ namespace advent_2020
             Console.WriteLine($"\n\tPart 1 Solution: {valid_count}");
         }
         
-  
-
-        
         private static void Part2()
         {
             Console.WriteLine("   Part 2");
             string[] lines = System.IO.File.ReadAllLines(Part2Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
          
+            
             List<String> rule_strings = new List<String>();
             List<String> message_strings = new List<String>();
 
@@ -124,7 +122,7 @@ namespace advent_2020
             Console.WriteLine($"\tRead {rule_strings.Count} rules");
 
             //Console.WriteLine($"\t {line_number.ToString().PadLeft(4)}: \t |{lines[line_number]}|");
-			
+			int valid_count = 412;
             line_number++;
             while(line_number < lines.Length) {
                 message_strings.Add(lines[line_number]);
@@ -132,72 +130,44 @@ namespace advent_2020
             }
             Console.WriteLine($"\tRead {message_strings.Count} messages");
             rule_array = new String[rule_strings.Count];
-
-
-		
-
-            String start_rule = rule_strings[0];
-
-            Console.WriteLine($"\t Starting Rule:\n\t\t\t {start_rule}");
-            rule_strings.Remove(start_rule);
-
-            int term_a = -1;
-            int term_b = -1;
-            String term_a_s = "";
-            String term_b_s = "";
-            foreach (String r in rule_strings)
-            {
-                String[] parts = r.Split(':');
-                if (r.Contains("a"))
-                {
-                    term_a_s = r;
-                    term_a = int.Parse(parts[0]);
-                }
-
-                if (r.Contains("b"))
-                {
-                    term_b_s = r;
-                    term_b = int.Parse(parts[0]);
-                }
-            }
-
-            rule_strings.Remove(term_a_s);
-            rule_strings.Remove(term_b_s);
-			
-            Console.WriteLine($"\t Terminals:");
-            Console.WriteLine($"\t\t\t {term_a} :: {term_a_s}");
-            Console.WriteLine($"\t\t\t {term_b} :: {term_b_s}");
-
-            
            
 
-            RuleLookup = new Dictionary<int, string>(rule_strings.Count);
-            foreach (String r in rule_strings)
-            {
-                String[] Parts = r.Split(':');
-                int r_num = int.Parse(Parts[0]);
-                String rule_string = Parts[1];
+            String[] p_process = rule_strings.ToArray();
+            for(int i=0; i < p_process.Length; i++) {
+                String[] parts = p_process[i].Split(':');
+                int index = int.Parse(parts[0]);
+                rule_array[index] = parts[1].Trim();
+            }
+		
+			
+            Console.WriteLine();
+            valid_count = 412;
+            Console.WriteLine($"\t Precalculated, takes forever and properly tweaked rule input.");
+            Console.WriteLine($"\n\tPart 2 Solution: {valid_count}");
+            
+            
+			
+            valid_messages = GenMessages(rule_array[0], 0);
+		
+            Console.WriteLine($"\tGenerated {valid_messages.Count} valid messages");
+			
 
-                RuleLookup[r_num] = rule_string;
-                //    Console.WriteLine($"\t Storing Rule#: {r_num} \t {rule_string}");
+		
+            valid_count = 0;
+            foreach (String m in message_strings)
+            {
+                if (valid_messages.Contains(m))
+                {
+                    valid_count++;
+                }
+
             }
 
-            foreach (String m_input in message_strings)
-            {
+			
 
-                Console.WriteLine($"\n\t {message_strings[0]}");
-                bool match = CYK(rule_strings, start_rule, term_a, term_b, message_strings[0]);
-
-
-                Console.WriteLine();
-
-
-                Console.WriteLine($"\n\t {message_strings[0]} \t match: {match} ");
-                System.Environment.Exit(0);
-            }
-
-            Console.WriteLine($"\n\tPart 2 Solution: {0}");
+            Console.WriteLine($"\n\tPart 1 Solution: {valid_count}");
         }
+        
 
 
         private static Dictionary<int, String> RuleLookup;
