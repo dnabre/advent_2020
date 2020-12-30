@@ -29,7 +29,7 @@ namespace advent_2020
         {
             Console.WriteLine("AoC Problem 19");
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            //      Part1();
+       //      Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
@@ -109,11 +109,10 @@ namespace advent_2020
         private static void Part2()
         {
             Console.WriteLine("   Part 2");
-            string[] lines = System.IO.File.ReadAllLines(Part1Input);
+            string[] lines = System.IO.File.ReadAllLines(Part2Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
          
-            
-            List<String> rule_strings = new List<String>();
+ 			List<String> rule_strings = new List<String>();
             List<String> message_strings = new List<String>();
 
 
@@ -124,7 +123,6 @@ namespace advent_2020
             }	
             Console.WriteLine($"\tRead {rule_strings.Count} rules");
 
-	        
             //Console.WriteLine($"\t {line_number.ToString().PadLeft(4)}: \t |{lines[line_number]}|");
 			
             line_number++;
@@ -134,50 +132,48 @@ namespace advent_2020
             }
             Console.WriteLine($"\tRead {message_strings.Count} messages");
             rule_array = new String[rule_strings.Count];
-            
 
-	        
-	        
-            String[] p_process = rule_strings.ToArray();
 
-	       
-            for(int i=0; i < p_process.Length; i++) {
-                String[] parts = p_process[i].Split(':');
-                int index = int.Parse(parts[0]);
-                rule_array[index] = parts[1].Trim();
-            }
+			//Change two parsing rules for Part 2
+			for(int i=0; i < rule_array.Length; i++) {
+				if(rule_strings[i].StartsWith("8:")) {
+					rule_strings[i] = "8: 42 | 42 8";
+				}
+				if(rule_strings[i].StartsWith("11:")) {
+					rule_strings[i] = "11: 42 31 | 42 11 31";
+				}
+			}
+
+			String start_rule = rule_strings[0];
+
+			Console.WriteLine($"\t Starting Rule:\n\t\t\t {start_rule}");
+			rule_strings.Remove(start_rule);
+
+			String term_a="", term_b="";
+			foreach(String r in rule_strings) {
+				if(r.Contains("a")) { term_a = r;}
+				if(r.Contains("b")) { term_b = r;}
+			}
+			rule_strings.Remove(term_a);
+			rule_strings.Remove(term_b);
+			
+			Console.WriteLine($"\t Terminals:");
+			Console.WriteLine($"\t\t\t {term_a}");
+			Console.WriteLine($"\t\t\t {term_b}");
+
+			bool match = CYK(rule_strings, start_rule, term_a,term_b, message_strings[0]);
+
 		
-            Console.WriteLine($"\t Rule  8:{rule_array[8]} ");
-            Console.WriteLine($"\t Rule 11:{rule_array[11]} ");
             Console.WriteLine();
 			
-			
-            valid_messages = GenMessages(rule_array[0], 0);
-		
-            Console.WriteLine($"\tGenerated {valid_messages.Count} valid messages");
-			
-
-		    HashSet<int> v_length = new HashSet<int>();
-            foreach (String v in valid_messages)
-            {
-                v_length.Add(v.Length);
-            }
-            Console.WriteLine(Utility.HashSetToStringLine(v_length));
-            int valid_count = 0;
-            foreach (String m in message_strings)
-            {
-                if (valid_messages.Contains(m))
-                {
-                    valid_count++;
-                }
-
-            }
-
-			
-
-            Console.WriteLine($"\n\tPart 2 Solution: {valid_count}");
+		            
+            Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
         
+		private static bool CYK(List<String> rule_strings, String start_rule, String term_a, String term_b, test_string) {
+			return false;
+		}
+
         private static String[] rule_array;
         private static HashSet<String> valid_messages;
         
@@ -231,36 +227,11 @@ namespace advent_2020
                 foreach (String ru in parts)
                 {
                     HashSet<String> p_set;
-                    Console.WriteLine($"\t\t[p]->{ru}");
+                   // Console.WriteLine($"\t\t[p]->{ru}");
                     p_set = GenMessages(ru, -1);
                     result.UnionWith(p_set);
                 }
-                                
-                /*
-                HashSet<String> one = GenMessages(parts[0], -1);
-         
-                foreach (String o_s in one)
-                {
-                
-                    result.Add(o_s);
-                }
-               
-                
-                HashSet<String> two = GenMessages(parts[1], -1);
-
-                result = new HashSet<String>();
-                foreach (String o in one)
-                {
-                         result.Add(o);
-                    
-                }
-
-                foreach (String t in two)
-                {
-                    result.Add(t);
-                    
-                }
-                */
+                              
                 return result;
             }
 
@@ -271,7 +242,7 @@ namespace advent_2020
         if (t_num.Length == 1)
         {
             String g = t_num[0].Trim();
-            Console.WriteLine($"\t\t[g]-> {g}");
+        //    Console.WriteLine($"\t\t[g]-> {g}");
             return GenMessages(g, -1);
         }
 
@@ -288,7 +259,7 @@ namespace advent_2020
         while (stk.Count > 0)
         {
             String ru = stk.Pop();
-            Console.WriteLine($"\t\t[s]-> {ru}");
+          //  Console.WriteLine($"\t\t[s]-> {ru}");
             HashSet<String> n_s =GenMessages(ru, -1);
             
             HashSet<String> left = new HashSet<string>();
