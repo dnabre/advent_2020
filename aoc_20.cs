@@ -85,15 +85,26 @@ namespace advent_2020
 				adj_tiles[i] = next_to;
 				num_matches[i] = next_to.Count;
 		//		Console.WriteLine($"\t {n_tile.tile_id} could be adjacent to {next_to.Count} tiles");
-			}
-		//	Console.WriteLine();
+			} Console.WriteLine();
 			long result_product = 1;
 			for(int i=0; i < tile_list.Count; i++) {
 				if(num_matches[i] == 2) {
-		//			Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 2 other tiles)");
+					Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 2 other tiles)");
 					result_product = result_product * tile_list[i].tile_id;
 				}
 			}
+
+			int count_3 = 0;
+			for (int i = 0; i < tile_list.Count; i++)
+			{
+				if (num_matches[i] == 3)
+				{
+					Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 3 other tiles");
+					count_3++;
+				}
+			}
+
+			Console.WriteLine($"\n\t Found {count_3} border tiles out of 40");
             
             Console.WriteLine($"\n\tPart 1 Solution: {result_product}");
 			// 1760573689 is too low
