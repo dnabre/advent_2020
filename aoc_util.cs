@@ -311,7 +311,21 @@ namespace advent_2020
         
         }
         
-        
+        public static string LinkdedListToStringLine<T>(LinkedList<T> lst)
+        {
+            if (lst.Count == 0) return "[]";
+            var sb = new StringBuilder();
+            sb.Append("[");
+            foreach (var e in lst)
+            {
+                sb.Append(e);
+                sb.Append(",");
+            }
+
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append("]");
+            return sb.ToString();
+        } 
         
         public static string ListToStringLine<T>(List<T> lst)
         {
