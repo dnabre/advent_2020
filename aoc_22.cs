@@ -93,13 +93,14 @@ namespace advent_2020
                     crab_deck.Enqueue(m);
                 }
             }
-
-            (Queue<int> winner, String p) = (my_deck.Count > crab_deck.Count) ? (my_deck, "Player 1") : (crab_deck, "Player 2");
-            Console.WriteLine($"\n\tAfter Round {round}:");
-            Console.WriteLine($"\t My   Deck: {Utility.QueueToStringLine(my_deck)}");
-            Console.WriteLine($"\t Crab Deck: {Utility.QueueToStringLine(crab_deck)}");
-            long score = Score(winner);
-            Console.WriteLine($"\t{p} wins with score {score}");
+		//	(Queue<int>, String) ppair;
+           // (Queue<int> winner, String p)
+			var	ppair = (my_deck.Count > crab_deck.Count) ? (my_deck, "Player 1") : (crab_deck, "Player 2");
+       //     Console.WriteLine($"\n\tAfter Round {round}:");
+        //    Console.WriteLine($"\t My   Deck: {Utility.QueueToStringLine(my_deck)}");
+        //    Console.WriteLine($"\t Crab Deck: {Utility.QueueToStringLine(crab_deck)}");
+            long score = Score(ppair.Item1);
+         //   Console.WriteLine($"\t{p} wins with score {score}");
             
             
 
