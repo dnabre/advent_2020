@@ -23,6 +23,7 @@ namespace advent_2020
 
         public static void Run(string[] args)
         {
+
 			System.Diagnostics.Process.Start("clear");
 			
 	        Console.WriteLine("AoC Problem 20");
@@ -40,36 +41,59 @@ namespace advent_2020
 
 		private static int t_height = 10;
 		private static int t_width = 10;
-	
 
 
-        private static void Part1()
-        {
-            Console.WriteLine("   Part 1");
-            string[] lines = System.IO.File.ReadAllLines(TestInput1);
-            Console.WriteLine("\tRead {0} inputs", lines.Length);
+		private static void Part1()
+		{
+			Console.WriteLine("   Part 1");
+			string[] lines = System.IO.File.ReadAllLines(Part1Input);
+			Console.WriteLine("\tRead {0} inputs", lines.Length);
 
 			List<Tile> tile_list = ParseTiles(lines);
-
-			Tile first = tile_list[0];
-
+			List<List<int>> list_of_side_numbers = new List<List<int>>();
+			//Dictionary<int,Tile> id_to_tile = new Dictionary<int,Tile>();
+			foreach (Tile t in tile_list)
+			{
+			//	id_to_tile[t.tile_id] = t;
+			//	t.Print();
+				List<String> sides = t.GetSides();
+				List<int> nums = BinaryStringListToInt(sides);
+				t.side_nums = new HashSet<int>(nums);
+				list_of_side_numbers.Add(nums);
+			//	Console.WriteLine($"\t {Utility.ListToStringLine(nums)}");
+			}
 			Console.WriteLine();
-			first.Print();
-			Console.WriteLine();
+	
 
-			List<String> sides = first.GetSides();
-			foreach(String s in sides) {
-				Console.WriteLine($"\t {s}");
+			int[] num_matches = new int[tile_list.Count];
+			for(int i=0; i < tile_list.Count;i++) {
+
 			}
 
 
-			Console.WriteLine();
-			Console.WriteLine($"\tRead {tile_list.Count} tiles");
+			
+			Console.WriteLine("\n\n");
+			foreach (Tile t in tile_list)
+			{
+				Console.WriteLine($"\t Tile id: {t.tile_id}");
+				HashSet<int> my_sides = new HashSet<int>(t.side_nums);
+				foreach (Tile s in tile_list)
+				{
+					if (t == s) continue;
+					HashSet<int> s_set = new HashSet<int>(s.side_nums);
+					s_set.IntersectWith(my_sides);
+					if (s_set.Count > 0)
+					{
+						foreach (int bb in s_set)
+						{
+							Console.WriteLine($"\t\t shares side {bb} with {s.tile_id}");
+						}
+					}
+				}
+				
+			}
+			
 
-
-
-
-  
             
             Console.WriteLine($"\n\tPart 1 Solution: {0}");
         }
@@ -101,7 +125,8 @@ namespace advent_2020
 					id_nums[1] = ln[6];
 					id_nums[2] = ln[7];
 					id_nums[3] = ln[8];
-					current_tile.tile_id = int.Parse(id_nums);
+					current_tile.tile_id = int.Parse(new String(id_nums));
+
 					last_parsed_id = current_tile.tile_id;
 				//	Console.WriteLine($"\t id: {current_tile.tile_id}");
 				} else {
@@ -126,9 +151,11 @@ namespace advent_2020
 		}
 
 
-		        private class Tile {
+		      private class Tile {
 			public int tile_id;
 			public char[,] patch;
+			public HashSet<int> side_nums;
+
 		
 			public void Print() {
 				String id_tag = "id: ";
@@ -151,17 +178,29 @@ namespace advent_2020
 				StringBuilder right = new StringBuilder(10);
 
 				for(int x = 0; x < t_width; x++) {
-					top.Append(patch[x,0]);;
+					top.Append(patch[x,0]);
 					bottom.Append(patch[x,9]);
 					left.Append(patch[0,x]);
 					right.Append(patch[9,x]);
 				}
 				List<String> result = new List<String>(4);
+				char[] rev;
+				String ss;
+
 				result.Add(top.ToString());
 				result.Add(bottom.ToString());
 				result.Add(left.ToString());
 				result.Add(right.ToString());
-				List<String> bi_result = new List<String>(4);
+				List<String> r_strs = new List<String>();
+				foreach(String st in result) {
+					rev = st.ToCharArray();
+					Array.Reverse(rev);
+					ss = new String(rev);
+					r_strs.Add(ss);
+				}
+				result.AddRange(r_strs);
+
+				List<String> bi_result = new List<String>();
 				foreach(String s in result) {
 					bi_result.Add(HashDotToBinary(s));
 				}
@@ -182,13 +221,16 @@ namespace advent_2020
 			}
 			return new String(c_to);
 		}
-
 		private static List<int> BinaryStringListToInt(List<String> sides) {
-			List<int> result  = new List<int>(sides.Length);
-			
+                        List<int> result  = new List<int>(sides.Count);
+                        foreach (String s in sides)
+                        {
+                                int n = Convert.ToInt32(s, 2);
+                                result.Add(n);
+                        }
 
-
-		}
+                        return result;
+                }
     }
     
 }
