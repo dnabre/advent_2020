@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 /*
 	Solutions found:
-	Part 1: 
+	Part 1: 7492183537913
 	Part 2: 
 	
 */
@@ -24,7 +24,7 @@ namespace advent_2020
         public static void Run(string[] args)
         {
 
-			System.Diagnostics.Process.Start("clear");
+//			System.Diagnostics.Process.Start("clear");
 			
 	        Console.WriteLine("AoC Problem 20");
             var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -50,52 +50,54 @@ namespace advent_2020
 			Console.WriteLine("\tRead {0} inputs", lines.Length);
 
 			List<Tile> tile_list = ParseTiles(lines);
-			List<List<int>> list_of_side_numbers = new List<List<int>>();
-			//Dictionary<int,Tile> id_to_tile = new Dictionary<int,Tile>();
+			Console.WriteLine($"\tRead {tile_list.Count} tiles");
+			Dictionary<int,Tile> id_to_tile = new Dictionary<int,Tile>();
 			foreach (Tile t in tile_list)
 			{
-			//	id_to_tile[t.tile_id] = t;
-			//	t.Print();
-				List<String> sides = t.GetSides();
-				List<int> nums = BinaryStringListToInt(sides);
-				t.side_nums = new HashSet<int>(nums);
-				list_of_side_numbers.Add(nums);
-			//	Console.WriteLine($"\t {Utility.ListToStringLine(nums)}");
-			}
-			Console.WriteLine();
-	
+				id_to_tile[t.tile_id] = t;
 
+				//Console.WriteLine($"\t {t.tile_id} has {t.side_nums.Count} possible side numbers");
+			}
+			//Console.WriteLine();
+	
+			HashSet<int>[] adj_tiles = new HashSet<int>[tile_list.Count];
 			int[] num_matches = new int[tile_list.Count];
 			for(int i=0; i < tile_list.Count;i++) {
-
-			}
-
-
-			
-			Console.WriteLine("\n\n");
-			foreach (Tile t in tile_list)
-			{
-				Console.WriteLine($"\t Tile id: {t.tile_id}");
-				HashSet<int> my_sides = new HashSet<int>(t.side_nums);
-				foreach (Tile s in tile_list)
-				{
-					if (t == s) continue;
-					HashSet<int> s_set = new HashSet<int>(s.side_nums);
-					s_set.IntersectWith(my_sides);
-					if (s_set.Count > 0)
-					{
-						foreach (int bb in s_set)
-						{
-							Console.WriteLine($"\t\t shares side {bb} with {s.tile_id}");
+				Tile n_tile = tile_list[i];
+				HashSet<int> sides = n_tile.side_nums;
+				HashSet<int> next_to = new HashSet<int>(); //tile ids
+				for(int j=0; j < tile_list.Count; j++) {
+					if(i==j) continue;
+					Tile p_tile = tile_list[j];
+					HashSet<int> other_sides = p_tile.side_nums;
+					bool possible = false;
+					foreach(int my_side in sides) {
+						foreach(int other_s in other_sides) {
+							if(my_side == other_s) {
+								possible = true;
+								break;
+							}
 						}
+						if(possible==true) break;
 					}
+					if(possible) next_to.Add(p_tile.tile_id);
 				}
-				
+				adj_tiles[i] = next_to;
+				num_matches[i] = next_to.Count;
+		//		Console.WriteLine($"\t {n_tile.tile_id} could be adjacent to {next_to.Count} tiles");
 			}
-			
-
+		//	Console.WriteLine();
+			long result_product = 1;
+			for(int i=0; i < tile_list.Count; i++) {
+				if(num_matches[i] == 2) {
+		//			Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 2 other tiles)");
+					result_product = result_product * tile_list[i].tile_id;
+				}
+			}
             
-            Console.WriteLine($"\n\tPart 1 Solution: {0}");
+            Console.WriteLine($"\n\tPart 1 Solution: {result_product}");
+			// 1760573689 is too low
+			// 7492183537913
         }
         
         private static void Part2()
@@ -117,7 +119,9 @@ namespace advent_2020
 			Tile current_tile=null;
 			List<Tile> tile_list = new List<Tile>();
 			for(int i=0; i < lines.Length; i++) {
-				current_tile = new Tile();
+				//current_tile = new Tile();
+
+				int new_tile_id=-1;
 				String ln = lines[i];
 				if(ln.StartsWith("Tile")) {
 					char[] id_nums = new char[4];
@@ -125,9 +129,9 @@ namespace advent_2020
 					id_nums[1] = ln[6];
 					id_nums[2] = ln[7];
 					id_nums[3] = ln[8];
-					current_tile.tile_id = int.Parse(new String(id_nums));
+					new_tile_id= int.Parse(new String(id_nums));
 
-					last_parsed_id = current_tile.tile_id;
+					last_parsed_id = new_tile_id;
 				//	Console.WriteLine($"\t id: {current_tile.tile_id}");
 				} else {
 					char[,] patch = new char[t_width,t_height];
@@ -138,13 +142,16 @@ namespace advent_2020
 						}
 						i++;
 					}
-					current_tile.patch = patch;
-					current_tile.tile_id = last_parsed_id;
+
+					//current_tile.patch = patch;
+					//current_tile.tile_id = last_parsed_id;
+					current_tile = new Tile(last_parsed_id,patch);
+					
 					//current_tile.Print();
 					//Console.WriteLine();
 				
 					tile_list.Add(current_tile);
-					current_tile = new Tile();
+					current_tile = null;
 				}
 			}
 			return tile_list;
@@ -156,6 +163,16 @@ namespace advent_2020
 			public char[,] patch;
 			public HashSet<int> side_nums;
 
+
+				public Tile(int id, char[,] pp) {
+					this.tile_id = id;
+					this.patch = pp;
+				
+					List<String> side_strings = GetSides();
+						List<int> side_ints = BinaryStringListToInt(side_strings);
+					side_nums = new HashSet<int>(side_ints);
+
+				}
 		
 			public void Print() {
 				String id_tag = "id: ";
@@ -171,7 +188,7 @@ namespace advent_2020
 			}
 
 			public List<String> GetSides() {
-				//top,bottom,left,right;
+				
 				StringBuilder top = new StringBuilder(10);
 				StringBuilder bottom = new StringBuilder(10);
 				StringBuilder left = new StringBuilder(10);
