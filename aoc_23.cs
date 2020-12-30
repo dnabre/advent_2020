@@ -193,8 +193,24 @@ namespace advent_2020
             
             Console.WriteLine($"\t {first_n} * {second_n} = {ffinal}");
             Console.WriteLine($"\n\tPart 2 Solution: {ffinal}");
-      
+            Console.WriteLine(Convert.ToInt64(OneCup.next.val) * Convert.ToInt64(OneCup.next.next.val));
+
             
+            Console.Write("[ 1 \n ");
+            ListNode nn = OneCup;
+            do
+            {
+                ListNode ln = nn.next;
+                if (ln.val == 1)
+                {
+                    Console.WriteLine(ln.val);
+                    Console.WriteLine(ln.next.val);
+                    Console.WriteLine(ln.next.next.val);
+                }
+                    //   Console.Write($" {ln.val}, ");
+                nn = ln;
+            }while (nn.next != OneCup);
+            Console.WriteLine(" ]");
         }
 
         private static void run_turns(ListNode current, int moves, Dictionary<int, ListNode> map, int max)

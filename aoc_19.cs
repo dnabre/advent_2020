@@ -29,7 +29,7 @@ namespace advent_2020
         {
             Console.WriteLine("AoC Problem 19");
             var watch = System.Diagnostics.Stopwatch.StartNew();
-       //      Part1();
+            //      Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
@@ -112,7 +112,7 @@ namespace advent_2020
             string[] lines = System.IO.File.ReadAllLines(Part2Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
          
- 			List<String> rule_strings = new List<String>();
+            List<String> rule_strings = new List<String>();
             List<String> message_strings = new List<String>();
 
 
@@ -134,34 +134,32 @@ namespace advent_2020
             rule_array = new String[rule_strings.Count];
 
 
-			//Change two parsing rules for Part 2
-			for(int i=0; i < rule_array.Length; i++) {
-				if(rule_strings[i].StartsWith("8:")) {
-					rule_strings[i] = "8: 42 | 42 8";
-				}
-				if(rule_strings[i].StartsWith("11:")) {
-					rule_strings[i] = "11: 42 31 | 42 11 31";
-				}
-			}
+		
 
-			String start_rule = rule_strings[0];
+            String start_rule = rule_strings[0];
 
-			Console.WriteLine($"\t Starting Rule:\n\t\t\t {start_rule}");
-			rule_strings.Remove(start_rule);
+            Console.WriteLine($"\t Starting Rule:\n\t\t\t {start_rule}");
+            rule_strings.Remove(start_rule);
 
-			String term_a="", term_b="";
-			foreach(String r in rule_strings) {
-				if(r.Contains("a")) { term_a = r;}
-				if(r.Contains("b")) { term_b = r;}
-			}
-			rule_strings.Remove(term_a);
-			rule_strings.Remove(term_b);
+            String term_a="", term_b="";
+            foreach(String r in rule_strings) {
+                if(r.Contains("a")) { term_a = r;}
+                if(r.Contains("b")) { term_b = r;}
+            }
+            rule_strings.Remove(term_a);
+            rule_strings.Remove(term_b);
 			
-			Console.WriteLine($"\t Terminals:");
-			Console.WriteLine($"\t\t\t {term_a}");
-			Console.WriteLine($"\t\t\t {term_b}");
+            Console.WriteLine($"\t Terminals:");
+            Console.WriteLine($"\t\t\t {term_a}");
+            Console.WriteLine($"\t\t\t {term_b}");
 
-			bool match = CYK(rule_strings, start_rule, term_a,term_b, message_strings[0]);
+            
+           
+
+
+            
+            
+            //	bool match = CYK(rule_strings, start_rule, term_a,term_b, message_strings[0]);
 
 		
             Console.WriteLine();
@@ -170,9 +168,9 @@ namespace advent_2020
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
         
-		private static bool CYK(List<String> rule_strings, String start_rule, String term_a, String term_b, test_string) {
-			return false;
-		}
+        private static bool CYK(List<String> rule_strings, String start_rule, String term_a, String term_b, String test_string) {
+            return false;
+        }
 
         private static String[] rule_array;
         private static HashSet<String> valid_messages;
@@ -227,7 +225,7 @@ namespace advent_2020
                 foreach (String ru in parts)
                 {
                     HashSet<String> p_set;
-                   // Console.WriteLine($"\t\t[p]->{ru}");
+                    // Console.WriteLine($"\t\t[p]->{ru}");
                     p_set = GenMessages(ru, -1);
                     result.UnionWith(p_set);
                 }
@@ -236,65 +234,52 @@ namespace advent_2020
             }
 
             // Rule form is only "# #" now
-        result = new HashSet<String>();
-        rule = rule.Trim();
-        String[] t_num = rule.Split(' ');
-        if (t_num.Length == 1)
-        {
-            String g = t_num[0].Trim();
-        //    Console.WriteLine($"\t\t[g]-> {g}");
-            return GenMessages(g, -1);
-        }
-
-
-        Stack<String> stk = new Stack<string>();
-        HashSet<String> right = new HashSet<string>();
-        right.Add("");
-        foreach (String r in t_num)
-        {
-            String r2 = r.Trim();
-            stk.Push(r2);
-        }
-
-        while (stk.Count > 0)
-        {
-            String ru = stk.Pop();
-          //  Console.WriteLine($"\t\t[s]-> {ru}");
-            HashSet<String> n_s =GenMessages(ru, -1);
-            
-            HashSet<String> left = new HashSet<string>();
-            foreach (String l_s in n_s)
+            result = new HashSet<String>();
+            rule = rule.Trim();
+            String[] t_num = rule.Split(' ');
+            if (t_num.Length == 1)
             {
-                foreach (String e_s in right) 
+                String g = t_num[0].Trim();
+                //    Console.WriteLine($"\t\t[g]-> {g}");
+                return GenMessages(g, -1);
+            }
+
+
+            Stack<String> stk = new Stack<string>();
+            HashSet<String> right = new HashSet<string>();
+            right.Add("");
+            foreach (String r in t_num)
+            {
+                String r2 = r.Trim();
+                stk.Push(r2);
+            }
+
+            while (stk.Count > 0)
+            {
+                String ru = stk.Pop();
+                //  Console.WriteLine($"\t\t[s]-> {ru}");
+                HashSet<String> n_s =GenMessages(ru, -1);
+            
+                HashSet<String> left = new HashSet<string>();
+                foreach (String l_s in n_s)
                 {
-                    left.Add(l_s + e_s);
+                    foreach (String e_s in right) 
+                    {
+                        left.Add(l_s + e_s);
+                    }
+
                 }
 
+                right = left;
+
             }
 
-            right = left;
-
-        }
-
-        return right;
+            return right;
         
-            }
-
-    private static List<String> CrossProduct(List<String> one, List<String> two)
-    {
-    List<String> result = new List<string>();
-        foreach (String o in one)
-    {
-        foreach (String t in two)
-        {
-            String q = o + t;
-            if(q.Length <= 96)
-                result.Add(q);
         }
+
+ 
     }
-    return result;
-    } 
-}
     
     
     
