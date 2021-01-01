@@ -234,18 +234,7 @@ namespace advent_2020
 			}
 			return tile_list;
 		}
-			private class Piece {
-				public Tile o_tile;
-				char[,] patch;
-
-				public Piece(Tile tile, Tile_Flip flip, Tile_Rotate_Left rot) {
-					o_tile = tile;
-					patch = tile.GetOnlyPatch(flip,rot);
-
-
-				}
-			}
-
+		
 		      private class Tile {
 			public int tile_id;
 			public char[,] patch;
@@ -262,7 +251,7 @@ namespace advent_2020
 						}
 					}
 
-					
+
 
 
 
