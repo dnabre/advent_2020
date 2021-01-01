@@ -7,7 +7,7 @@ class MainClass
 {
     public static void Main(string[] args)
     {
-        AOC_20.Run(args);
+        AOC_22.Run(args);
     }
 
 
