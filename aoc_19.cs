@@ -192,8 +192,9 @@ namespace advent_2020
                     return false;
                 }
             }
-
+			RuleLookup = new Dictionary<int,String>();
             int previous_terms;
+			previous_terms = RuleLookup.Count;
             while (terms.Count > 1)
             {
                 previous_terms = terms.Count;
@@ -250,6 +251,7 @@ namespace advent_2020
 
                     
                     }
+
 
                     if (rule_number_match < 0)
                     {
