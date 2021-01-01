@@ -30,7 +30,7 @@ namespace advent_2020
         {
             Console.WriteLine("AoC Problem 22");
             var watch = Stopwatch.StartNew();
-        //    Part1();
+            Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
@@ -110,17 +110,17 @@ namespace advent_2020
             Console.WriteLine($"\n\tPart 1 Solution: {score}");
         }
 
-		private static Queue<int> Player1;
-		private static Queue<int> Player2;
+		
 
         private static void Part2()
         {
             Console.WriteLine("   Part 2");
             string[] lines = File.ReadAllLines(Part2Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
-			Player1 = new Queue<int>();
-			Player2 = new Queue<int>();
-
+        Queue<int> Player1 = new Queue<int>();
+        Queue<int> Player2 = new Queue<int>();
+			
+			
             Queue<int> activeQueue = Player1;
 
             for(int x = 1; x< lines.Length;x++)
@@ -141,7 +141,7 @@ namespace advent_2020
 			
 
    			CombatGame game = new CombatGame(Player1, Player2);
-            Winner winner = PlayUntilWin(Player1, Player2, game.SeenHandsPlayer1, game.SeenHandsPlayer2);
+            Winner winner = game.PlayUntilWin();
 
 
             int answer = 0;
@@ -174,67 +174,6 @@ namespace advent_2020
 			return sb.ToString();
 		}
 
-
- private static  Winner PlayUntilWin(Queue<int> Player1, Queue<int> Player2, HashSet<String> SeenHandsPlayer1, HashSet<String> SeenHandsPlayer2)
-        {
-            while ((Player1.Count > 0) && (Player2.Count > 0)) {
-			          if (SeenHandsPlayer1.Contains(FlatJoinString(Player1)) 
-						|| SeenHandsPlayer2.Contains(FlatJoinString(Player2)))
-                {
-                    // default to player 1
-                    return Winner.Player_1;
-                }
-				
-				SeenHandsPlayer1.Add(FlatJoinString(Player1));
-				SeenHandsPlayer2.Add(FlatJoinString(Player2));
-				
-				int p1_card = Player1.Dequeue();
-                int p2_card = Player2.Dequeue();
-
-               
-              
-                    if (Player1.Count >= p1_card && Player2.Count >= p2_card)
-                    {
-                        
-                    	Queue<int> player1_new_hand = new Queue<int>(Player1.Take(p1_card));
-                        Queue<int> player2_new_hand = new Queue<int>(Player2.Take(p2_card));
-
-						CombatGame new_game;
-						new_game = new CombatGame(player1_new_hand, player2_new_hand);
-                        Winner winner = PlayUntilWin(player1_new_hand,player1_new_hand,new_game.SeenHandsPlayer1,new_game.SeenHandsPlayer2);
-
-                        if (winner == Winner.Player_1)
-                        {
-                            
-                            Player1.Enqueue(p1_card);
-                            Player1.Enqueue(p2_card);
-							continue;
-                        } else
-                        {
-                            Player2.Enqueue(p2_card);
-                            Player2.Enqueue(p1_card);
-							continue;
-                        }
-                    }
-                
-
-                if (p1_card > p2_card)
-                {
-                    Player1.Enqueue(p1_card);
-                    Player1.Enqueue(p2_card);
-                } else
-                {
-                    Player2.Enqueue(p2_card);
-                    Player2.Enqueue(p1_card);
-                }
-            }
-			if(Player1.Count > 0) {
-				return Winner.Player_1;
-			} else {
-				return Winner.Player_2;
-			}
-
-        }
 
 
 
@@ -282,12 +221,73 @@ namespace advent_2020
 		}
 
 	
+	public   Winner PlayUntilWin()
+        {
+            while ((Player1.Count > 0) && (Player2.Count > 0)) {
+			          if (SeenHandsPlayer1.Contains(FlatJoinString(Player1)) 
+						|| SeenHandsPlayer2.Contains(FlatJoinString(Player2)))
+                {
+                    // default to player 1
+                    return Winner.Player_1;
+                }
+				
+				SeenHandsPlayer1.Add(FlatJoinString(Player1));
+				SeenHandsPlayer2.Add(FlatJoinString(Player2));
+				
+				int p1_card = Player1.Dequeue();
+                int p2_card = Player2.Dequeue();
+
+               
+              
+                    if (Player1.Count >= p1_card && Player2.Count >= p2_card)
+                    {
+                        
+                    	Queue<int> player1_new_hand = new Queue<int>(Player1.Take(p1_card));
+                        Queue<int> player2_new_hand = new Queue<int>(Player2.Take(p2_card));
+
+						CombatGame new_game;
+						new_game = new CombatGame(player1_new_hand, player2_new_hand);
+                        Winner winner = new_game.PlayUntilWin();
+
+                        if (winner == Winner.Player_1)
+                        {
+                            
+                            Player1.Enqueue(p1_card);
+                            Player1.Enqueue(p2_card);
+							continue;
+                        } else
+                        {
+                            Player2.Enqueue(p2_card);
+                            Player2.Enqueue(p1_card);
+							continue;
+                        }
+                    }
+                
+
+                if (p1_card > p2_card)
+                {
+                    Player1.Enqueue(p1_card);
+                    Player1.Enqueue(p2_card);
+                } else
+                {
+                    Player2.Enqueue(p2_card);
+                    Player2.Enqueue(p1_card);
+                }
+            }
+			if(Player1.Count > 0) {
+				return Winner.Player_1;
+			} else {
+				return Winner.Player_2;
+			}
+
+        }
 
 
-       
+
+       }
+       public enum Winner {
+	       Player_1, Player_2
+       }
     }
-	}
-	public enum Winner {
-		Player_1, Player_2
-	}
+	
 }
