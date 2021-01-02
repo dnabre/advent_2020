@@ -14,6 +14,12 @@ using System.Text.RegularExpressions;
 	Part 1: 7492183537913
 	Part 2: 
 	
+	
+	upper left corner is 1093
+	final answer is 2323
+	
+	1613, rotation 4
+	
 */
 
 namespace advent_2020
@@ -32,12 +38,12 @@ namespace advent_2020
 			
 	        Console.WriteLine("AoC Problem 20");
             var watch = System.Diagnostics.Stopwatch.StartNew();
-   //         Part1();
+            Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
             watch = System.Diagnostics.Stopwatch.StartNew();
-            Part2();
+  //          Part2();
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
@@ -93,8 +99,10 @@ namespace advent_2020
 			long result_product = 1;
 			for(int i=0; i < tile_list.Count; i++) {
 				if(num_matches[i] == 2) {
-			//		Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 2 other tiles)");
+					Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 2 other tiles)");
 					result_product = result_product * tile_list[i].tile_id;
+					
+					
 				}
 			}
 
@@ -377,3 +385,50 @@ namespace advent_2020
 	 
 
 }
+
+
+/**
+
+Tile 1093:
+#####.#...
+###.....#.
+#.#.###..#
+....##....
+###.....##
+.#......#.		<=  flipY(2203)
+#.........
+..#.......
+....#.....
+#.#.#.#...
+	/\
+	||	3187
+
+
+Tile 2203:
+..####.###
+..##....##
+...##.....
+....#..#.#
+..#...#.##
+#.#.......
+...###....
+#.....#..#
+.........#
+.###....#.
+
+
+	/\
+	||
+Tile 3187:
+#.#.#.#...
+......###.
+#.....####
+..#.#...#.
+#....#..#.
+#......#..
+#...##..#.
+#........#
+#.##.....#
+.##.#...#.
+
+*/
