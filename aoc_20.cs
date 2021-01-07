@@ -38,12 +38,12 @@ namespace advent_2020
 			
 	        Console.WriteLine("AoC Problem 20");
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            Part1();
+     //       Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
             watch = System.Diagnostics.Stopwatch.StartNew();
-  //          Part2();
+           Part2();
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
@@ -138,10 +138,11 @@ namespace advent_2020
 			{
 				id_to_tile[t.tile_id] = t;
 
-				//Console.WriteLine($"\t {t.tile_id} has {t.side_nums.Count} possible side numbers");
+			//	Console.WriteLine($"\t {t.tile_id} has {t.side_nums.Count} possible side numbers");
 			}
 			//Console.WriteLine();
 	
+			
 			HashSet<int>[] adj_tiles = new HashSet<int>[tile_list.Count];
 			int[] num_matches = new int[tile_list.Count];
 			for(int i=0; i < tile_list.Count;i++) {
@@ -166,10 +167,12 @@ namespace advent_2020
 				}
 				adj_tiles[i] = next_to;
 				num_matches[i] = next_to.Count;
-		//		Console.WriteLine($"\t {n_tile.tile_id} could be adjacent to {next_to.Count} tiles");
-			} Console.WriteLine();
+			//	Console.WriteLine($"\t {n_tile.tile_id} could be adjacent to {next_to.Count} tiles");
+			}
+			//Console.WriteLine();
 			
-
+			
+			
 			List<Tile> corners = new List<Tile>(4);
 			List<Tile> edges = new List<Tile>(4*10);
 			for(int i=0; i < tile_list.Count; i++) {
