@@ -11,4 +11,8 @@
       <DebugType>none</DebugType>
     </PropertyGroup>
 
+    <ItemGroup>
+      <None Remove="aoc_19_rules_2.txt" />
+    </ItemGroup>
+
 </Project>
