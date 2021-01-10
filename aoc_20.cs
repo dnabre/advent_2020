@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 
 /*
@@ -97,24 +98,17 @@ namespace advent_2020
 		//		Console.WriteLine($"\t {n_tile.tile_id} could be adjacent to {next_to.Count} tiles");
 			} Console.WriteLine();
 			long result_product = 1;
+			
+			
 			for(int i=0; i < tile_list.Count; i++) {
 				if(num_matches[i] == 2) {
 					Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 2 other tiles)");
 					result_product = result_product * tile_list[i].tile_id;
-					
-					
+			
 				}
 			}
 
-			int count_3 = 0;
-			for (int i = 0; i < tile_list.Count; i++)
-			{
-				if (num_matches[i] == 3)
-				{
-			//		Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 3 other tiles");
-					count_3++;
-				}
-			}
+		
 
 			//Console.WriteLine($"\n\t Found {count_3} border tiles out of 40");
             
@@ -170,24 +164,44 @@ namespace advent_2020
 			//	Console.WriteLine($"\t {n_tile.tile_id} could be adjacent to {next_to.Count} tiles");
 			}
 			//Console.WriteLine();
-			
-			
+
+			Tile UpperLeft=null;
 			
 			List<Tile> corners = new List<Tile>(4);
 			List<Tile> edges = new List<Tile>(4*10);
-			for(int i=0; i < tile_list.Count; i++) {
-				if(num_matches[i] == 2) {
-					Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 2 other tiles)");
-					tile_list[i].type = Tile_Type.Corner;
+			for (int i = 0; i < tile_list.Count; i++)
+			{
+				
+				
+				if (num_matches[i] == 2)
+				{
+					if (tile_list[i].tile_id == 1613)
+						UpperLeft = tile_list[i];
+					
 					corners.Add(tile_list[i]);
-
-				} else if (num_matches[i]==3) {
-					edges.Add(tile_list[i]);
-					tile_list[i].type = Tile_Type.Border;
+					Console.WriteLine(tile_list[i].tile_id);
 				}
+
 			}
 
-			
+			Console.WriteLine();
+			UpperLeft.Print();
+
+			foreach (Tile_Flip f in Enum.GetValues(typeof(Tile_Flip)))
+	
+			{
+				foreach (Tile_Rotate_Left r in Enum.GetValues(typeof(Tile_Rotate_Left)))
+				{
+					Console.WriteLine($"{f},{r}");
+					Console.WriteLine();
+
+					char[,] g = UpperLeft.GetOrient(f, r);
+
+					Tile.PrintPatch(g);
+				}
+
+
+			}
 
 
 
@@ -196,8 +210,7 @@ namespace advent_2020
 
 
 
-           
-            Console.WriteLine($"\n\tPart 2 Solution: {0}");
+			Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
 
 
@@ -262,13 +275,64 @@ namespace advent_2020
 						}
 					}
 
-
-
-
-
 					return n_patch;
 				}
 
+				public char[,] GetOrient(Tile_Flip flip, Tile_Rotate_Left rot)
+				{
+					char[,] grid = (char[,]) patch.Clone();
+					while (rot != Tile_Rotate_Left.None)
+					{
+					
+						char[,] new_grid = new char[t_width, t_height];
+						for (int y = 0; y < t_height; y++)
+						{
+							for (int x = 0; x < t_width; x++)
+							{
+								new_grid[  y , t_height -1 -x  ] = grid[x,y];
+							}
+						}
+
+						grid = new_grid;
+					rot--;
+					
+					}
+
+
+
+				
+					if ((flip == Tile_Flip.X_Flip) || (flip == Tile_Flip.XY_Flip))
+					{
+						char[,] new_grid = new char[t_width, t_height];
+						for (int y = 0; y < t_height; y++)
+						{
+							for (int x = 0; x < t_width; x++)
+							{
+								new_grid[t_width -1 - x, y] = grid[x, y];
+							}
+						}
+
+						grid = new_grid;
+					}
+
+					if ((flip == Tile_Flip.Y_Flip) || (flip == Tile_Flip.XY_Flip))
+					{
+						char[,] new_grid = new char[t_width, t_height];
+						for (int y = 0; y < t_height; y++)
+						{
+							for (int x = 0; x < t_width; x++)
+							{
+								new_grid[x, t_height -1 - y] = grid[x, y];
+							}
+						}
+
+						grid = new_grid;
+					}
+
+
+					return grid;
+				}
+ 				
 
 				public Tile(int id, char[,] pp) {
 					this.tile_id = id;
@@ -279,18 +343,23 @@ namespace advent_2020
 					side_nums = new HashSet<int>(side_ints);
 
 				}
-		
+
+				static public void PrintPatch(char[,] pp)
+				{
+					for(int y=0; y < t_height; y++) {
+						Console.Write($"\t ");
+						for(int x=0; x < t_width; x++) {
+							Console.Write(pp[x,y]);
+						}
+						Console.WriteLine();
+					}	
+				}
+				
 			public void Print() {
 				String id_tag = "id: ";
 
 				Console.WriteLine($"\t {id_tag.PadRight(5)}{tile_id.ToString().PadLeft(5)}");
-				for(int y=0; y < t_height; y++) {
-					Console.Write($"\t ");
-					for(int x=0; x < t_width; x++) {
-						Console.Write(patch[x,y]);
-					}
-					Console.WriteLine();
-				}
+				PrintPatch(this.patch);
 			}
 
 			public List<String> GetSides() {
