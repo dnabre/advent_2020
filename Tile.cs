@@ -4,19 +4,57 @@ using System.Text;
 
 namespace advent_2020
 {
-    public class Tile
+    public class Tile : IEquatable<Tile>
     {
+        public bool Equals(Tile other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Utility.Array2DEqual(this.patch, other.patch) && (this.tile_id == other.tile_id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Tile) obj);
+        }
+ 
+        
+        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((patch != null ? patch.GetHashCode() : 0) * 397) ^ tile_id;
+            }
+        }
+
+        public static bool operator ==(Tile left, Tile right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Tile left, Tile right)
+        {
+            return !Equals(left, right);
+        }
+
         private static readonly int t_width = 10;
         private static readonly int t_height = 10;
         public static Dictionary<char, char> ToBinary;
-        public Tile_Flip flip = Tile_Flip.None;
+        
+        
+      
 
         public int left, right, down, up;
         public char[,] patch;
-        public Tile_Rotate_Left rot = Tile_Rotate_Left.None;
+      
   
         public int tile_id;
 
+        public HashSet<Tile> adj_tiles;
 
         public Tile(int id, char[,] pp)
         {
@@ -25,9 +63,7 @@ namespace advent_2020
 
             SetOrient(Tile_Flip.None, Tile_Rotate_Left.None);
             List<int> side_ints = GetPossibleSides();
-          //  side_nums = new HashSet<int>(side_ints);
-
-            
+            adj_tiles = new HashSet<Tile>(4);
         }
 
         private static int BinaryStringToInt(string s)
@@ -234,10 +270,11 @@ namespace advent_2020
         
         public List<int> GetPossibleSides()
         {
-            List<int> result = GetCurrentSides();
+            
+            HashSet<int> result = new HashSet<int>(GetCurrentSides());
 
 
-            List<int> r_sides = new List<int>();
+            HashSet<int> r_sides = new HashSet<int>();
            foreach (int s in result)
            {
                String ss = Convert.ToString(s, 2);
@@ -249,10 +286,10 @@ namespace advent_2020
                r_sides.Add(n_s);
            }
    
-            result.AddRange(r_sides);
+            result.UnionWith(r_sides);
 
            
-            return result;
+            return new List<int>(result);
         }
 
         public List<int> GetSideNums()
@@ -289,5 +326,21 @@ namespace advent_2020
 
             return result;
         }
+
+
+        public static String[] Tile_UpperLeft_Raw =
+        {
+            "Tile 1613:",
+            "####...#..",
+            "#.#.......",
+            "..........",
+            "#....#####",
+            "#..#....##",
+            "...#..#...",
+            ".....#...#",
+            ".#......##",
+            "##....#..#",
+            "....#..###"
+        };
     }
 }
