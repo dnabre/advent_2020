@@ -281,6 +281,43 @@ namespace advent_2020
 
             return (x % m + m) % m;
         }
+
+        public static string DictHashToStringLine<K, V,T>(Dictionary<K, V> dict, HashSet<T> h_set)
+        {
+            if (dict.Count == 0) return "[]";
+            
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            K index;
+            V value;
+            HashSet<T> hash;
+            
+            K[] key_a = dict.Keys.ToArray();
+            Array.Sort(key_a);
+            
+            for (int i = 0; i < dict.Count; i++)
+            {
+                index = key_a[i];
+                if (dict.ContainsKey(index))
+                {
+                    value = dict[index];
+                    hash = value as HashSet<T>;
+                    String b;
+                    b = Utility.HashSetToStringLine(hash);
+                    sb.Append($"({index}:{b}), ");
+            
+                }
+            }
+
+            sb.Remove(sb.Length - 2, 2);
+
+            sb.Append("]");
+
+            return $"{sb}";
+            
+        }
+        
+        
         public static string DictToStringLine<K, V>(Dictionary<K, V> dict)
         {    if (dict.Count == 0) return "[]";
 
@@ -298,6 +335,7 @@ namespace advent_2020
                 if (dict.ContainsKey(index))
                 {
                     value = dict[index];
+                    
                     sb.Append($"({index}:{value}), ");
             
                 }
