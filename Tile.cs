@@ -4,12 +4,16 @@ using System.Text;
 
 namespace advent_2020
 {
-    public class Tile : IEquatable<Tile>
+    public class Tile : IEquatable<Tile>,IComparable<Tile>, IComparable
     {
         public bool Equals(Tile other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
+            if (!ReferenceEquals(this.adj_tiles, other.adj_tiles)) return false;
+            if (!ReferenceEquals(this.match_sides, other.match_sides)) return false;
+            if (!ReferenceEquals(this.unmatched_sides, other.unmatched_sides)) return false;
+            if (!ReferenceEquals(this.side_for_tile, other.side_for_tile)) return false;
             return Utility.Array2DEqual(this.patch, other.patch) && (this.tile_id == other.tile_id);
         }
 
@@ -55,7 +59,12 @@ namespace advent_2020
         public int tile_id;
 
         public HashSet<Tile> adj_tiles;
-
+        public Dictionary<Tile, HashSet<int>> side_for_tile;
+        
+        public HashSet<int> unmatched_sides;
+        public HashSet<int> match_sides;
+       
+        
         public Tile(int id, char[,] pp)
         {
             tile_id = id;
@@ -63,7 +72,10 @@ namespace advent_2020
 
             SetOrient(Tile_Flip.None, Tile_Rotate_Left.None);
             List<int> side_ints = GetPossibleSides();
-            adj_tiles = new HashSet<Tile>(4);
+            adj_tiles = null;
+            unmatched_sides= null;
+            match_sides = null;
+            side_for_tile = null;
         }
 
         private static int BinaryStringToInt(string s)
@@ -143,10 +155,10 @@ namespace advent_2020
         public void PrintSides()
         {
             Console.WriteLine("\t ---sides----");
-            Console.WriteLine($"\t left   : {Convert.ToString(left, 2).PadLeft(t_width, '0')} : {left}");
-            Console.WriteLine($"\t right : {Convert.ToString(right, 2).PadLeft(t_width, '0')} : {right}");
-            Console.WriteLine($"\t up    : {Convert.ToString(up, 2).PadLeft(t_width, '0')} : {up}");
-            Console.WriteLine($"\t down  : {Convert.ToString(down, 2).PadLeft(t_width, '0')} : {down}");
+            Console.WriteLine($"\t left".PadRight(7,' ') +$" : {Convert.ToString(left, 2).PadLeft(t_width, '0')} : {left}");
+            Console.WriteLine($"\t right".PadRight(7,' ') +$" : {Convert.ToString(right, 2).PadLeft(t_width, '0')} : {right}");
+            Console.WriteLine($"\t up".PadRight(7,' ') +$" : {Convert.ToString(up, 2).PadLeft(t_width, '0')} : {up}");
+            Console.WriteLine($"\t down".PadRight(7,' ') +$" : {Convert.ToString(down, 2).PadLeft(t_width, '0')} : {down}");
             Console.WriteLine("\t ------------");
         }
 
@@ -301,10 +313,10 @@ namespace advent_2020
         private static string HashDotToBinary(string s)
         {
             char[] from = s.ToCharArray();
-            char[] c_to = new char[from.Length];
-            for (int i = 0; i < from.Length; i++)
+            char[] c_to = new char[@from.Length];
+            for (int i = 0; i < @from.Length; i++)
             {
-                char ch = from[i];
+                char ch = @from[i];
                 if (ch == '#')
                     c_to[i] = '1';
                 else
@@ -342,5 +354,143 @@ namespace advent_2020
             "##....#..#",
             "....#..###"
         };
+
+        
+
+        public static List<Tile> ParseTiles(String[] lines) {
+
+            int last_parsed_id = -1;
+            Tile current_tile=null;
+            List<Tile> tile_list = new List<Tile>();
+            for(int i=0; i < lines.Length; i++) {
+                //current_tile = new Tile();
+
+                int new_tile_id=-1;
+                String ln = lines[i];
+                if(ln.StartsWith("Tile")) {
+                    char[] id_nums = new char[4];
+                    id_nums[0] = ln[5];
+                    id_nums[1] = ln[6];
+                    id_nums[2] = ln[7];
+                    id_nums[3] = ln[8];
+                    new_tile_id= int.Parse(new String(id_nums));
+
+                    last_parsed_id = new_tile_id;
+                    //	Console.WriteLine($"\t id: {current_tile.tile_id}");
+                } else {
+                    char[,] patch = new char[AOC_20.t_width,AOC_20.t_height];
+                    for(int y=0; y < AOC_20.t_height; y++) {
+                        char[] c_line = lines[i].ToCharArray();
+                        for(int x=0; x < AOC_20.t_width; x++) {
+                            patch[x,y] = c_line[x];
+                        }
+                        i++;
+                    }
+
+                    //current_tile.patch = patch;
+                    //current_tile.tile_id = last_parsed_id;
+                    current_tile = new Tile(last_parsed_id,patch);
+					
+                    //current_tile.Print();
+                    //Console.WriteLine();
+				
+                    tile_list.Add(current_tile);
+                    current_tile = null;
+                }
+            }
+            return tile_list;
+        }
+
+        public override string ToString()
+        {
+            return $"|{this.tile_id}|";
+        }
+
+        static public List<Tile> SwapTile(List<Tile> tile_list, int id, Tile UpperLeft)
+        {
+                Tile Tile_1613 = null;
+                foreach (Tile t_tile in tile_list)
+                {
+                    if (t_tile.tile_id == 1613)
+                    {
+                        Tile_1613 = t_tile;
+                        break;
+                    }
+                }
+
+                if (Tile_1613 == null) return tile_list;
+                tile_list.Remove(Tile_1613);
+                tile_list.Add(UpperLeft);
+                return tile_list;
+        }
+
+        public static void PrintTileGrid(Tile[,] grid)
+        {
+            for (int y = 0; y < 12; y++)
+            {
+
+                for (int x = 0; x < 12; x++)
+                {
+                    Tile n_tile = grid[x, y];
+                    String r;
+                    if (n_tile == null)
+                    {
+                        r = "NULL";
+                    }
+                    else
+                    {
+                        r = $"{n_tile.tile_id}";
+                    }
+
+                    Console.Write($"| {r}");
+                }
+
+                Console.WriteLine();
+                Console.WriteLine($"------------------------------------------------------------------------");
+
+            }
+        }
+
+        public int CompareTo(Tile other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            int tileIdComparison = tile_id.CompareTo(other.tile_id);
+            if (tileIdComparison != 0) return tileIdComparison;
+            int rightComparison = right.CompareTo(other.right);
+            if (rightComparison != 0) return rightComparison;
+            int leftComparison = left.CompareTo(other.left);
+            if (leftComparison != 0) return leftComparison;
+            int downComparison = down.CompareTo(other.down);
+            if (downComparison != 0) return downComparison;
+            return up.CompareTo(other.up);
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            return obj is Tile other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(Tile)}");
+        }
+
+        public static bool operator <(Tile left, Tile right)
+        {
+            return Comparer<Tile>.Default.Compare(left, right) < 0;
+        }
+
+        public static bool operator >(Tile left, Tile right)
+        {
+            return Comparer<Tile>.Default.Compare(left, right) > 0;
+        }
+
+        public static bool operator <=(Tile left, Tile right)
+        {
+            return Comparer<Tile>.Default.Compare(left, right) <= 0;
+        }
+
+        public static bool operator >=(Tile left, Tile right)
+        {
+            return Comparer<Tile>.Default.Compare(left, right) >= 0;
+        }
     }
 }
