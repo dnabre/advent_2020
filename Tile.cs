@@ -373,9 +373,9 @@ namespace advent_2020
 
         public List<int> GetPossibleSides()
         {
-            HashSet<int> result = new HashSet<int>(GetCurrentSides());
+            List<int> c_sides = GetCurrentSides();
             HashSet<int> r_sides = new HashSet<int>();
-            foreach (int s in result)
+            foreach (int s in c_sides)
             {
                 String ss = Convert.ToString(s, 2);
                 ss = ss.PadLeft(t_width, '0');
@@ -383,10 +383,9 @@ namespace advent_2020
                 rev = ss.ToCharArray();
                 Array.Reverse(rev);
                 int n_s = Convert.ToInt32(new String(rev), 2);
-                r_sides.Add(n_s);
+                r_sides.Add(Math.Max(s,n_s));
             }
-            result.UnionWith(r_sides);
-            return new List<int>(result);
+            return new List<int>(r_sides);
         }
 
 
