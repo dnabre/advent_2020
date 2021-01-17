@@ -162,13 +162,19 @@ namespace advent_2020
             {
                 IdLookup[t.tile_id] = t;
             }
-        
+            HashSet<int> all_sides = new HashSet<int>();
             Dictionary<int,HashSet<int>> Adjacency_Sets = new Dictionary<int, HashSet<int>>();
             foreach (Tile t in tile_list)
             {
                 Adjacency_Sets[t.tile_id] = new HashSet<int>(8);
+                List<int> sides = t.GetPossibleSides();
+                all_sides.UnionWith(sides);
+                Console.WriteLine($" {t} has {sides.Count} unique sides");
             }
-       
+
+            Console.WriteLine();
+            Console.WriteLine($"There are {Adjacency_Sets.Count} Tiles");
+            Console.WriteLine($"There are globally {all_sides.Count} unique sides");
             
             
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
