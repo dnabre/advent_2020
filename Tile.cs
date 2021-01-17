@@ -5,7 +5,7 @@ using System.Text;
 
 namespace advent_2020
 {
-    public class Tile : IEquatable<Tile>, IComparable<Tile>, IComparable
+    public class Tile : IEquatable<Tile>, IComparable<Tile>, IComparable, ICloneable
     {
         private static readonly int t_width = 10;
         private static readonly int t_height = 10;
@@ -106,6 +106,32 @@ namespace advent_2020
             }
         }
 
+        public object Clone()
+        {
+            Tile n_tile = new Tile(this.tile_id, (char[,]) patch.Clone());
+            n_tile.adj_tiles = new HashSet<Tile>(this.adj_tiles);
+            n_tile.match_sides = new HashSet<int>(this.match_sides);
+            n_tile.side_for_tile = new Dictionary<Tile, HashSet<int>>();
+            foreach (Tile k_tile in this.side_for_tile.Keys)
+            {
+                Tile key = k_tile;
+                HashSet<int> value = null;
+                if (this.side_for_tile.ContainsKey(key))
+                {
+                    value = new HashSet<int>(this.side_for_tile[key]);
+                }
+
+                n_tile.side_for_tile[key] = value;
+
+            }
+
+
+
+            n_tile.unmatched_sides = new HashSet<int>(this.unmatched_sides);
+            n_tile.SetOrient(Tile_Flip.None, Tile_Rotate_Left.None);
+            return n_tile;
+        }
+
         public static bool operator ==(Tile left, Tile right)
         {
             return Equals(left, right);
@@ -153,6 +179,10 @@ namespace advent_2020
             return t;
         }
 
+        
+        
+        
+        
         public char[,] GetOrient(Orientation o)
         {
             return GetOrient(o.flip, o.rot);
@@ -252,13 +282,82 @@ namespace advent_2020
             down = Convert.ToInt32(sb_down.ToString(), 2);
         }
 
-        public static void PrintPatch(char[,] pp)
+
+        public void PrintPatchWithSides()
         {
+
+            Utility.BarPrint();
             for (int y = 0; y < t_height; y++)
             {
                 Console.Write("\t ");
-                for (int x = 0; x < t_width; x++) Console.Write(pp[x, y]);
+                for (int x = 0; x < t_width; x++) Console.Write(this.patch[x, y]);
+                if (y == 0)
+                {
+                    Console.WriteLine($"\t tile_id".PadRight(7, ' ')
+                                      + $" : {Convert.ToString(left, 2).PadLeft(t_width, '0')} : {this.tile_id}");
 
+                }else  if (y == 1)
+                {
+                
+
+                    Console.WriteLine($"\t left".PadRight(7, ' ')
+                                      + $" : {Convert.ToString(left, 2).PadLeft(t_width, '0')} : {left}"
+                                      + $"({ReverseSideNumber(this.left)}".PadLeft(7, ' ') + ")");
+                } else if (y == 2)
+                {
+
+                    Console.WriteLine($"\t right".PadRight(7, ' ')
+                                      + $" : {Convert.ToString(right, 2).PadLeft(t_width, '0')} : {right}"
+                                      + $"({ReverseSideNumber(this.right)}".PadLeft(7, ' ') + ")");
+                } else if (y == 3)
+                {
+
+                    Console.WriteLine($"\t up".PadRight(7, ' ')
+                                      + $" : {Convert.ToString(up, 2).PadLeft(t_width, '0')} : {up}"
+                                      + $"({ReverseSideNumber(this.up)}".PadLeft(7, ' ') + ")");
+                } else if (y == 4)
+                {
+
+
+                    Console.WriteLine($"\t down".PadRight(7, ' ')
+                                      + $" : {Convert.ToString(down, 2).PadLeft(t_width, '0')} : {down}"
+                                      + $"({ReverseSideNumber(this.down)}".PadLeft(7, ' ') + ")");
+                } else if (y == 5)
+                {
+                    Console.WriteLine($"\t adj".PadRight(7, ' ') + " : "
+                                                                       + Utility.HashSetToStringLine(this.adj_tiles));
+                } else if (y==6) {
+                    Console.WriteLine($"\t match_sides".PadRight(7, ' ') + " : "
+                                                                         + Utility.HashSetToStringLine(this.match_sides));
+                } else if (y==7) {
+                    Console.WriteLine($"\t unmatch_sides".PadRight(7, ' ') + " : "
+                                                                           + Utility.HashSetToStringLine(this.unmatched_sides));
+
+                } else if (y==8) {
+                    Console.WriteLine($"\t this.right = {this.right}  rev(UpperLeft.right) = {Tile.ReverseSideNumber(this.right)}");
+                }else
+                {
+
+
+                    Console.WriteLine();
+                }
+            }
+            Utility.BarPrint();
+        }
+        
+        public static void PrintPatch(char[,] pp)
+        {
+            StringBuilder line; 
+            for (int y = 0; y < t_height; y++)
+            {
+                Console.Write("");
+                line = new StringBuilder();
+                for (int x = 0; x < t_width; x++)
+                {
+                    line.Append(pp[x, y]);
+                }
+                Console.Write(line.ToString().PadRight(28,' '));
+                
                 Console.WriteLine();
             }
         }
@@ -267,7 +366,7 @@ namespace advent_2020
         {
             string id_tag = "id: ";
 
-            Console.WriteLine($"\t {id_tag.PadRight(5)}{tile_id.ToString().PadLeft(5)}");
+            Console.WriteLine($"{id_tag.PadRight(5)}{tile_id.ToString().PadLeft(5)}");
             PrintPatch(patch);
         }
 
@@ -293,7 +392,7 @@ namespace advent_2020
                         char b = ToBinary[p];
                         sb.Append(b);
                     } 
-                        //sb.Append(ToBinary[patch[0, y]]);
+                    //sb.Append(ToBinary[patch[0, y]]);
 
                     break;
                 case Directions.RIGHT:
@@ -333,6 +432,30 @@ namespace advent_2020
 
             foreach (Tile a_tile in this.adj_tiles)
             {
+                if (!this.side_for_tile.ContainsKey(a_tile))
+                {
+                    Console.WriteLine($"\n \t Error finding adj tile to {this}, looking for {a_tile}");
+                    this.PrintPatchWithSides();
+                    Console.WriteLine();
+                    a_tile.PrintPatchWithSides();
+                    Console.WriteLine();
+                    Console.WriteLine($"\t\t dict count : {side_for_tile.Count}");
+                    Console.WriteLine();
+                    
+
+                    foreach (Tile Key in this.side_for_tile.Keys)
+                    {
+                        
+                        Console.WriteLine($"\t\t key= {Key} side_for_tile[key] ");
+                    }
+
+
+                    foreach (HashSet<int> hh in this.side_for_tile.Values)
+                    {
+                        Console.WriteLine($"\t\t {Utility.HashSetToStringLine(hh)}");
+                    }
+                }
+                Console.WriteLine(this.side_for_tile[a_tile]);
                 HashSet<int> side_nums = this.side_for_tile[a_tile];
                 if (
                     side_nums.Contains(this.right)
@@ -368,7 +491,14 @@ namespace advent_2020
                 }
                 else
                 {
+                    HashSet<int> c_sides = new HashSet<int>(GetCurrentSides());
                     edge_match = GetSideNum(pp, edge);
+
+                    c_sides.Remove(edge_match);
+                    Console.WriteLine(
+                        $"\t possible :  {(tile_match,edge_match)} \t {Utility.HashSetToStringLine(c_sides)} | {Utility.HashSetToStringLine(this.match_sides)}  ");
+                    
+                    
                     if (unmatched_sides.Contains(edge_match))
                     {
                         return o;
@@ -567,6 +697,26 @@ namespace advent_2020
         public static bool operator >=(Tile left, Tile right)
         {
             return Comparer<Tile>.Default.Compare(left, right) >= 0;
+        }
+
+
+        public static void PrintTileDetailed(Tile UpperLeft)
+        {
+            Utility.BarPrint();
+            UpperLeft.Print();
+            UpperLeft.PrintSides();
+            Utility.BarPrint();
+            Console.WriteLine($"\t adj_tile: {Utility.HashSetToStringLine(UpperLeft.adj_tiles)}  {UpperLeft.adj_tiles.Count} {UpperLeft.GetPossibleSides().Count} ");
+           
+            Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(UpperLeft.match_sides)}");
+            Console.WriteLine($"\t unmatch_sides: {Utility.HashSetToStringLine(UpperLeft.unmatched_sides)}");
+            Console.WriteLine(
+                $"\t UpperLeft.right = {UpperLeft.right}  rev(UpperLeft.right) = {Tile.ReverseSideNumber(UpperLeft.right)}");
+                       
+            Utility.BarPrint();
+
+         
+
         }
     }
 }
