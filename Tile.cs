@@ -6,15 +6,45 @@ using System.Text;
 namespace advent_2020
 { 
     
-    public class Tile 
+    public class Tile : IEquatable<Tile>
     {
-        
-        
-        
-        
+        public bool Equals(Tile other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return tile_id == other.tile_id && Equals(patch, other.patch);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Tile) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (tile_id * 397) ^ (patch != null ? patch.GetHashCode() : 0);
+            }
+        }
+
+        public static bool operator ==(Tile left, Tile right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Tile left, Tile right)
+        {
+            return !Equals(left, right);
+        }
+
+
         public static Dictionary<Direction, Direction> OppositeDirection;
-        private static readonly int t_width = 10;
-        private static readonly int t_height = 10;
+        public static readonly int t_width = 10;
+        public static readonly int t_height = 10;
         public static Dictionary<char, char> ToBinary;
 
 
@@ -121,12 +151,43 @@ namespace advent_2020
             return r;
         }
 
-        
+
+        public static char[,] OrientPatch(char[,] patch, Orientation o)
+        {
+            return OrientPatch(patch, o.flip, o.rot);
+        }
+
         
 
-        public static char[,]  OrientPatc(char[,] patch, Tile_Flip flip, Tile_Rotate_Left rot)
+        public static char[,]  OrientPatch(char[,] patch, Tile_Flip flip, Tile_Rotate_Left rot)
         {
             char[,] grid = (char[,]) patch.Clone();
+            
+
+          
+            if (flip == Tile_Flip.X_Flip)
+            {
+                char[,] new_grid = new char[t_width, t_height];
+                for (int y = 0; y < t_height; y++)
+                for (int x = 0; x < t_width; x++)
+                    new_grid[t_width - 1 - x, y] = grid[x, y];
+
+                grid = new_grid;
+            }
+          
+
+            
+            /*
+            if (flip == Tile_Flip.Y_Flip || flip == Tile_Flip.XY_Flip)
+            {
+                char[,] new_grid = new char[t_width, t_height];
+                for (int y = 0; y < t_height; y++)
+                for (int x = 0; x < t_width; x++)
+                    new_grid[x, t_height - 1 - y] = grid[x, y];
+
+                grid = new_grid;
+            }*/
+            
             while (rot != Tile_Rotate_Left.None)
             {
                 char[,] new_grid = new char[t_width, t_height];
@@ -138,25 +199,7 @@ namespace advent_2020
                 rot--;
             }
 
-            if (flip == Tile_Flip.X_Flip || flip == Tile_Flip.XY_Flip)
-            {
-                char[,] new_grid = new char[t_width, t_height];
-                for (int y = 0; y < t_height; y++)
-                for (int x = 0; x < t_width; x++)
-                    new_grid[t_width - 1 - x, y] = grid[x, y];
-
-                grid = new_grid;
-            }
-
-            if (flip == Tile_Flip.Y_Flip || flip == Tile_Flip.XY_Flip)
-            {
-                char[,] new_grid = new char[t_width, t_height];
-                for (int y = 0; y < t_height; y++)
-                for (int x = 0; x < t_width; x++)
-                    new_grid[x, t_height - 1 - y] = grid[x, y];
-
-                grid = new_grid;
-            }
+            
             return grid;
         }
         
