@@ -162,98 +162,21 @@ namespace advent_2020
             {
                 IdLookup[t.tile_id] = t;
             }
-
-
-            char[,] test_grid = new char[t_width, t_height];
-            String line  = "abcdefghij";
-            String line2 = "ABCDEFGHIK";
-            char[] a_line = line.ToCharArray();
-            char[] b_line = line2.ToCharArray();
-            for (int y = 0; y <t_height; y++)
+        
+            Dictionary<int,HashSet<int>> Adjacency_Sets = new Dictionary<int, HashSet<int>>();
+            foreach (Tile t in tile_list)
             {
-                for (int x= 0; x < t_width; x++)
-                {
-                    if (y % 2 == 0)
-                    {
-                        test_grid[x, y] = a_line[x];
-                    }
-                    else
-                    {
-                        test_grid[x, y] = b_line[x];
-                    }
-
-                }
-            }
-            Console.WriteLine();
-            Utility.PrintMap(test_grid);
-            Console.WriteLine();  
-            Console.WriteLine();
-            char[,] o_grid = new char[t_width,t_height];
-            
-            HashSet<String> s_orients = new HashSet<string>(8);
-            Dictionary<String, List<Orientation>>  s_o  = new Dictionary<String,List<Orientation>>();
-            foreach (Orientation o in Orientation.AllOrientations)
-            {
-                o_grid  = Tile.OrientPatch(test_grid, o);
-
-                String fl = FlatGrid(o_grid);
-                s_orients.Add(fl);
-                if (s_o.ContainsKey(fl))
-                {
-                    s_o[fl].Add(o);
-                }
-                else
-                {
-                    s_o[fl] = new List<Orientation>();
-                    s_o[fl].Add(o);
-                }
-                
-                Utility.BarPrint();
-                Utility.PrintMap(o_grid);
-
-                Console.WriteLine(o);
-                Utility.BarPrint();
-                if (o.rot == Tile_Rotate_Left.Three)
-                {
-                    Console.WriteLine();  
-                    Console.WriteLine();
-                    Utility.PrintMap(test_grid);
-                    Console.WriteLine("\t ^^ original ^^");  
-                    Console.WriteLine();  
-                   
-                }
-                                
-
-            }
-            Console.WriteLine("\n");
-            Console.WriteLine(s_orients.Count);
-            foreach (String s in s_orients)
-            {
-                Console.WriteLine(s);
-                Console.Write("\t");
-                Console.WriteLine(Utility.ListToStringLine(s_o[s]));
+                Adjacency_Sets[t.tile_id] = new HashSet<int>(8);
             }
        
+            
+            
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
 
 
 
 
-        private static String FlatGrid(char[,] g)
-        {
-            StringBuilder sb = new StringBuilder(t_width*t_height);
-            for (int y = 0; y <t_height; y++)
-            {
-                
-                for (int x= 0; x < t_width; x++)
-                {
-                    sb.Append(g[x, y]);
-                }
-            }
-
-            return sb.ToString();
-        }
 
 
       
