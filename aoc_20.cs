@@ -203,7 +203,7 @@ namespace advent_2020
                     {
                         HashSet<int> matching_side_for_o_tile = new HashSet<int>(t_tile.GetCurrentSides());
                         matching_side_for_o_tile.IntersectWith(TileToPossibleSides[o_tile]);
-                        matching_side_for_o_tile.TrimExcess();
+                        
                         if (matching_side_for_o_tile.Count > 0)
                         {
                             t_tile.adj_tiles.Add(o_tile);
@@ -220,9 +220,7 @@ namespace advent_2020
                     }
                 }
 
-                t_tile.adj_tiles.TrimExcess();
-                t_tile.match_sides.TrimExcess();
-                t_tile.unmatched_sides.TrimExcess();
+                
             }
 
             Dictionary<int, List<Tile>> Tiles_By_Count = new Dictionary<int, List<Tile>>();
@@ -253,95 +251,121 @@ namespace advent_2020
             // After here we no longer refer to tile_list 
             tile_list = null;
 
-            Console.WriteLine($"\t ########## First Row".PadRight(60, '#'));
-
+            //    Console.WriteLine($"\t ########## First Row".PadRight(60, '#'));
+            Console.WriteLine();
+            int g_col = 0;
+            int g_row = 0;
+            Tile UL_corner = UpperLeft;
+            UpperLeft = null;
             // First Row
-           
-                       final_tile_grid[0, 0] = UpperLeft; // Figured out which tile and orientation by hand from found corners
-                       Used_Tiles.Add(UpperLeft);
-              /*
-                       UpperLeft.Print();
-                       UpperLeft.PrintSides();
-                       BarPrint();
-                       Console.WriteLine($"\t adj_tile: {Utility.HashSetToStringLine(UpperLeft.adj_tiles)}  {UpperLeft.adj_tiles.Count} {UpperLeft.GetPossibleSides().Count} ");
-                        Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(UpperLeft.match_sides)}");
-                       Console.WriteLine($"\t unmatch_sides: {Utility.HashSetToStringLine(UpperLeft.unmatched_sides)}");
-                       Console.WriteLine(
-                           $"\t UpperLeft.right = {UpperLeft.right}  rev(UpperLeft.right) = {Tile.ReverseSideNumber(UpperLeft.right)}");
 
-                       
-                       foreach (Tile a_tile in UpperLeft.adj_tiles)
-                       {
-                           HashSet<int> other_side_nums = UpperLeft.side_for_tile[a_tile];
-                           Console.WriteLine($"\t UL-> {a_tile} : {Utility.HashSetToStringLine(other_side_nums)}");
-                       }
-
-                */
-              /*
-                 BarPrint();
-                 
-                 Tile NextRight = IdToTile[1361];
-                     
-                 NextRight.Print();
-                 NextRight.PrintSides();
-                 BarPrint();
-                 Console.WriteLine($"\t adj_tile: {Utility.HashSetToStringLine(NextRight.adj_tiles)}  {NextRight.adj_tiles.Count} {NextRight.GetPossibleSides().Count} ");
-           
-                 Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(NextRight.match_sides)}");
-                 Console.WriteLine($"\t unmatch_sides: {Utility.HashSetToStringLine(NextRight.unmatched_sides)}");
-
-                 foreach (Tile a_tile in NextRight.adj_tiles)
-                 {
-                     HashSet<int> other_side_nums = NextRight.side_for_tile[a_tile];
-                     Console.WriteLine($"\t UL-> {a_tile} : {Utility.HashSetToStringLine(other_side_nums)}");
-                 }
-                 
-                 BarPrint();
-                    */
-
-                 Tile to_right = UpperLeft.GetMatchingTileTo(Directions.RIGHT);
-                
-                 Console.WriteLine($"\t Found tile to right: {to_right}");
-
-                 Orientation right_tile_o;
-                 Console.WriteLine($"\t getting orientation of {to_right}");
-                 right_tile_o = to_right.GetWhereEdge(Directions.UP, Directions.LEFT, Tile.ReverseSideNumber(UpperLeft.right));
-                 if (right_tile_o.Equals(Orientation.InvalidOrientation))
-                 {
-                     Console.Write($"Unable to find orientation for {right_tile_o}  from GetWhereEdge({Directions.UP},{Directions.LEFT}, {Tile.ReverseSideNumber(UpperLeft.right)}");
-                     System.Environment.Exit(0);
-                 }
-                 Console.WriteLine(right_tile_o);
-               
-                 
-            
-            
-            
-            /*
-            List<Tile> s_edges = new List<Tile>();
-            var et = edges_tiles.ToArray();
-            s_edges.Add(et[14]);
-            s_edges.Add(et[8]);
-            s_edges.Add(et[4]);
-            s_edges.Add(et[20]);
-            
-            
-            foreach (Tile c_tile in s_edges)
+            final_tile_grid[g_col, g_row] =
+                UL_corner; // Figured out which tile and orientation by hand from found corners
+            g_col++;
+            if (g_col == 12)
             {
-                Console.WriteLine(
-                    $"\t ==> {c_tile.tile_id}  | edge  | ");
-                Console.WriteLine($"t\t side_for_tile: {Utility.DictHashToStringLine(c_tile.side_for_tile, new HashSet<int>())}");
-                Console.WriteLine($"\t\t unmatched edges : {Utility.HashSetToStringLine(c_tile.unmatched_sides)}");
-                
+                g_col = 0;
+                g_row++;
             }
-*/
-        
 
-         
+            Used_Tiles.Add(UpperLeft);
+
+
             
+                        /*
+            UL_corner = IdToTile[2153];
+            UL_corner.SetOrient(Tile_Flip.X_Flip, Tile_Rotate_Left.Two);
+            Tile r_tile = IdToTile[3019];
+            
+            Console.WriteLine();
+            UL_corner.Print();
+            
+            Console.WriteLine();
+            r_tile.Print();
+            
+            Console.WriteLine();
+            //   Tile n_tile = (Tile) r_tile.Clone();
+            
+          
+            Console.WriteLine();
+            UL_corner.PrintPatchWithSides();
+            Console.WriteLine("\t  ^^ tile to left ^^");
+            r_tile.PrintPatchWithSides();
+            Console.WriteLine("\t  ^^ original ^^");
+            
+                
+                
+                
+              
+            foreach (Orientation o in Orientation.AllOrientations)
+            {
+                if (o.Equals(Orientation.GroundTile)) continue;
+                Tile n_tile = (Tile) r_tile.Clone();
+                n_tile.SetOrient(o);
+                if (n_tile.left != 875) continue;
+                if (n_tile.match_sides.Contains(n_tile.up)) continue;
+                if (n_tile.match_sides.Contains(Tile.ReverseSideNumber(n_tile.up))) continue;
+                Console.WriteLine($"\t {o} last up: {n_tile.up} left: {n_tile.left}");
+                n_tile.PrintPatchWithSides();
+                   
+            }
 
-            Console.WriteLine($"\n\tPart 2 Solution: {0}");
-        }
+
+            
+            System.Environment.Exit(0);
+            */
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                    do {
+
+
+
+
+
+            Tile to_right = UL_corner.GetMatchingTileTo(Directions.RIGHT);
+
+            Console.WriteLine($"\t Found tile to right: {to_right}");
+
+            Orientation orient_t_r;
+            Console.Write($"\t getting orientation of {to_right} -> ");
+            orient_t_r = to_right.GetWhereEdge(Directions.UP, Directions.LEFT,
+                Tile.ReverseSideNumber(UL_corner.right));
+            if (orient_t_r.Equals(Orientation.InvalidOrientation))
+            {
+                Console.Write(
+                    $"Unable to find orientation for {orient_t_r}  from GetWhereEdge({Directions.UP},{Directions.LEFT}, {Tile.ReverseSideNumber(UL_corner.right)}");
+                System.Environment.Exit(0);
+            }
+
+            Console.WriteLine(orient_t_r);
+            to_right.SetOrient(orient_t_r);
+
+            Used_Tiles.Add(to_right);
+            final_tile_grid[g_col, g_row] = to_right;
+            g_col++;
+            if (g_col == 12)
+            {
+                Console.WriteLine($"\t _-=> grid g_col={g_col}, g_row={g_row}");
+                g_col = 0;
+                g_row++;
+                System.Environment.Exit(0);
+            }
+
+            UL_corner = to_right;
+       } while ((g_col < 12) && (g_row < 12));
+
+
+
+
+        Console.WriteLine($"\n\tPart 2 Solution: {0}");
+    }
 
 
 
@@ -349,33 +373,30 @@ namespace advent_2020
     
 
 
-        private static void BarPrint()
+      
+
+    private static int CountSeaMonstersInImage(char[, ] lines)
+    {
+    char[] agg = new char[lines.GetLength(0) * lines.GetLength(1)];
+
+    int index = 0;
+        for(int y= 0; y<lines.GetLength(1);
+    y++)
+    {
+        for (int x = 0; x < lines.GetLength(0); x++)
         {
-            Console.WriteLine("\t".PadRight(60, '#'));
-        }
-
-        private static int CountSeaMonstersInImage(char[, ] lines)
-        {
-            char[] agg = new char[lines.GetLength(0) * lines.GetLength(1)];
-
-            int index = 0;
-            for(int y= 0; y<lines.GetLength(1);
-                y++)
-            {
-                for (int x = 0; x < lines.GetLength(0); x++)
-                {
-                    agg[index] = lines[x, y];
-                    index++;
-                }
-            }
-            String s_agg = new String(agg);
-
-            var pattern = @"(?<=#.{77})#.{4}#{2}.{4}#{2}.{4}#{3}(?=.{77}#.{2}#.{2}#.{2}#.{2}#.{2}#)";
-            Regex rx = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-            var matches = rx.Matches(s_agg);
-            return matches.Count;
+            agg[index] = lines[x, y];
+            index++;
         }
     }
+    String s_agg = new String(agg);
+
+    var pattern = @"(?<=#.{77})#.{4}#{2}.{4}#{2}.{4}#{3}(?=.{77}#.{2}#.{2}#.{2}#.{2}#.{2}#)";
+    Regex rx = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    var matches = rx.Matches(s_agg);
+        return matches.Count;
+    }
+}
 
 }
