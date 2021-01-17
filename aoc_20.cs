@@ -53,7 +53,6 @@ namespace advent_2020
 
         public static int t_height = 10;
         public static int t_width = 10;
-        public static List<Orientation> all_orientations;
         public static Dictionary<Directions, Directions> MatchingDirection;
 
         public static List<Tile> tile_list;
@@ -76,14 +75,6 @@ namespace advent_2020
             Tile.ToBinary['#'] = '1';
             Tile.ToBinary['.'] = '0';
 
-            all_orientations = new List<Orientation>();
-            foreach (Tile_Flip f in Enum.GetValues(typeof(Tile_Flip)))
-            {
-                foreach (Tile_Rotate_Left r in Enum.GetValues(typeof(Tile_Rotate_Left)))
-                {
-                    all_orientations.Add(new Orientation(f, r));
-                }
-            }
 
             IdToTile = new Dictionary<int, Tile>(144);
             UpperLeft = Tile.ParseTiles(Tile.Tile_UpperLeft_Raw).First();
@@ -268,20 +259,27 @@ namespace advent_2020
            
                        final_tile_grid[0, 0] = UpperLeft; // Figured out which tile and orientation by hand from found corners
                        Used_Tiles.Add(UpperLeft);
-              
+              /*
                        UpperLeft.Print();
                        UpperLeft.PrintSides();
                        BarPrint();
                        Console.WriteLine($"\t adj_tile: {Utility.HashSetToStringLine(UpperLeft.adj_tiles)}  {UpperLeft.adj_tiles.Count} {UpperLeft.GetPossibleSides().Count} ");
-           
-                       Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(UpperLeft.match_sides)}");
+                        Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(UpperLeft.match_sides)}");
                        Console.WriteLine($"\t unmatch_sides: {Utility.HashSetToStringLine(UpperLeft.unmatched_sides)}");
                        Console.WriteLine(
                            $"\t UpperLeft.right = {UpperLeft.right}  rev(UpperLeft.right) = {Tile.ReverseSideNumber(UpperLeft.right)}");
-                       
-                 BarPrint();
 
-                 UpperLeft = null;
+                       
+                       foreach (Tile a_tile in UpperLeft.adj_tiles)
+                       {
+                           HashSet<int> other_side_nums = UpperLeft.side_for_tile[a_tile];
+                           Console.WriteLine($"\t UL-> {a_tile} : {Utility.HashSetToStringLine(other_side_nums)}");
+                       }
+
+                */
+              /*
+                 BarPrint();
+                 
                  Tile NextRight = IdToTile[1361];
                      
                  NextRight.Print();
@@ -292,10 +290,30 @@ namespace advent_2020
                  Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(NextRight.match_sides)}");
                  Console.WriteLine($"\t unmatch_sides: {Utility.HashSetToStringLine(NextRight.unmatched_sides)}");
 
+                 foreach (Tile a_tile in NextRight.adj_tiles)
+                 {
+                     HashSet<int> other_side_nums = NextRight.side_for_tile[a_tile];
+                     Console.WriteLine($"\t UL-> {a_tile} : {Utility.HashSetToStringLine(other_side_nums)}");
+                 }
+                 
                  BarPrint();
-            
-            
-            
+                    */
+
+                 Tile to_right = UpperLeft.GetMatchingTileTo(Directions.RIGHT);
+                
+                 Console.WriteLine($"\t Found tile to right: {to_right}");
+
+                 Orientation right_tile_o;
+                 Console.WriteLine($"\t getting orientation of {to_right}");
+                 right_tile_o = to_right.GetWhereEdge(Directions.UP, Directions.LEFT, Tile.ReverseSideNumber(UpperLeft.right));
+                 if (right_tile_o.Equals(Orientation.InvalidOrientation))
+                 {
+                     Console.Write($"Unable to find orientation for {right_tile_o}  from GetWhereEdge({Directions.UP},{Directions.LEFT}, {Tile.ReverseSideNumber(UpperLeft.right)}");
+                     System.Environment.Exit(0);
+                 }
+                 Console.WriteLine(right_tile_o);
+               
+                 
             
             
             
