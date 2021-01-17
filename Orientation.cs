@@ -15,6 +15,7 @@
         {
             return $"({flip},{rot})";
         }
+        public static readonly Orientation GroundTile = new Orientation(Tile_Flip.None,Tile_Rotate_Left.None);
     }
     
     public enum Tile_Flip {
