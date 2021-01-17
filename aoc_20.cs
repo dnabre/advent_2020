@@ -40,23 +40,20 @@ namespace advent_2020
             Init();
             Console.WriteLine("AoC Problem 20");
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            //  Part1();
+      //       Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
             watch = System.Diagnostics.Stopwatch.StartNew();
-            Part2();
+         Part2();
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
         }
 
-        public static int t_height = 10;
-        public static int t_width = 10;
-        public static Dictionary<Directions, Directions> MatchingDirection;
-
+  
         public static List<Tile> tile_list;
-        public static Dictionary<int, Tile> IdToTile;
+        public static Dictionary<int, Tile> IdLookup;
         public static Tile UpperLeft;
         public static Tile[,] final_tile_grid;
         public static HashSet<Tile> Used_Tiles; // Tiles that have been place in final_tile_grid
@@ -65,21 +62,10 @@ namespace advent_2020
         {
             Used_Tiles = new HashSet<Tile>();
             final_tile_grid = new Tile[12, 12];
-            MatchingDirection = new Dictionary<Directions, Directions>(4);
-            MatchingDirection[Directions.LEFT] = Directions.RIGHT;
-            MatchingDirection[Directions.RIGHT] = Directions.LEFT;
-            MatchingDirection[Directions.UP] = Directions.DOWN;
-            MatchingDirection[Directions.DOWN] = Directions.UP;
-
-            Tile.ToBinary = new Dictionary<char, char>();
-            Tile.ToBinary['#'] = '1';
-            Tile.ToBinary['.'] = '0';
-
-
-            IdToTile = new Dictionary<int, Tile>(144);
+            IdLookup = new Dictionary<int, Tile>(144);
             UpperLeft = Tile.ParseTiles(Tile.Tile_UpperLeft_Raw).First();
-            UpperLeft.SetOrient(Tile_Flip.None, Tile_Rotate_Left.Two);
-
+            
+            //UpperLeft.SetOrient(Tile_Flip.None, Tile_Rotate_Left.Two);
         }
 
         private static void Part1()
@@ -171,200 +157,11 @@ namespace advent_2020
             Console.WriteLine($"\tRead {tile_list.Count} tiles");
             foreach (Tile t in tile_list)
             {
-                IdToTile[t.tile_id] = t;
+                IdLookup[t.tile_id] = t;
             }
 
-            Dictionary<int, HashSet<int>> PossibleSidesByID = new Dictionary<int, HashSet<int>>();
-            Dictionary<Tile, HashSet<int>> TileToPossibleSides = new Dictionary<Tile, HashSet<int>>();
-            foreach (Tile t_tile in tile_list)
-            {
-                int id = t_tile.tile_id;
-                HashSet<int> sides = new HashSet<int>(t_tile.GetPossibleSides());
-                PossibleSidesByID[id] = sides;
-                TileToPossibleSides[t_tile] = sides;
-            }
-
-            foreach (Tile t_tile in tile_list)
-            {
-                HashSet<int> unmatched_sides = new HashSet<int>(t_tile.GetPossibleSides());
-                HashSet<int> sides_that_match = new HashSet<int>();
-                HashSet<Tile> tiles_that_match = new HashSet<Tile>();
-                t_tile.adj_tiles = new HashSet<Tile>(4);
-                t_tile.side_for_tile = new Dictionary<Tile, HashSet<int>>();
-                t_tile.match_sides = new HashSet<int>();
-                t_tile.unmatched_sides = new HashSet<int>(t_tile.GetPossibleSides());
-                foreach (Tile o_tile in tile_list)
-                {
-                    if (t_tile.Equals(o_tile))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        HashSet<int> matching_side_for_o_tile = new HashSet<int>(t_tile.GetCurrentSides());
-                        matching_side_for_o_tile.IntersectWith(TileToPossibleSides[o_tile]);
-                        
-                        if (matching_side_for_o_tile.Count > 0)
-                        {
-                            t_tile.adj_tiles.Add(o_tile);
-                            t_tile.side_for_tile[o_tile] = matching_side_for_o_tile;
-                            foreach (int side_num in matching_side_for_o_tile)
-                            {
-                                t_tile.match_sides.Add(side_num);
-                                t_tile.unmatched_sides.Remove(side_num);
-                                t_tile.unmatched_sides.Remove(Tile.ReverseSideNumber(side_num));
-                            }
-
-                            sides_that_match.UnionWith(matching_side_for_o_tile);
-                        }
-                    }
-                }
-
-                
-            }
-
-            Dictionary<int, List<Tile>> Tiles_By_Count = new Dictionary<int, List<Tile>>();
-            List<Tile> tiles_that_match_too_many = new List<Tile>();
-
-            for (int c = 0; c < 5; c++)
-            {
-                List<Tile> c_list = new List<Tile>();
-                foreach (Tile t_tile in tile_list)
-                {
-                    if (t_tile.adj_tiles.Count == c)
-                    {
-                        c_list.Add(t_tile);
-                    }
-                    else if ((c == 4) && (t_tile.adj_tiles.Count > 4))
-                    {
-                        tiles_that_match_too_many.Add(t_tile);
-                    }
-                }
-
-                Tiles_By_Count[c] = c_list;
-            }
-
-            // Categorize Tiles
-            List<Tile> corner_tiles = Tiles_By_Count[2];
-            List<Tile> edges_tiles = Tiles_By_Count[3];
-            List<Tile> center_tiles = Tiles_By_Count[4];
-            // After here we no longer refer to tile_list 
-            tile_list = null;
-
-            //    Console.WriteLine($"\t ########## First Row".PadRight(60, '#'));
-            Console.WriteLine();
-            int g_col = 0;
-            int g_row = 0;
-            Tile UL_corner = UpperLeft;
-            UpperLeft = null;
-            // First Row
-
-            final_tile_grid[g_col, g_row] =
-                UL_corner; // Figured out which tile and orientation by hand from found corners
-            g_col++;
-            if (g_col == 12)
-            {
-                g_col = 0;
-                g_row++;
-            }
-
-            Used_Tiles.Add(UpperLeft);
-
-
             
-                        /*
-            UL_corner = IdToTile[2153];
-            UL_corner.SetOrient(Tile_Flip.X_Flip, Tile_Rotate_Left.Two);
-            Tile r_tile = IdToTile[3019];
-            
-            Console.WriteLine();
-            UL_corner.Print();
-            
-            Console.WriteLine();
-            r_tile.Print();
-            
-            Console.WriteLine();
-            //   Tile n_tile = (Tile) r_tile.Clone();
-            
-          
-            Console.WriteLine();
-            UL_corner.PrintPatchWithSides();
-            Console.WriteLine("\t  ^^ tile to left ^^");
-            r_tile.PrintPatchWithSides();
-            Console.WriteLine("\t  ^^ original ^^");
-            
-                
-                
-                
-              
-            foreach (Orientation o in Orientation.AllOrientations)
-            {
-                if (o.Equals(Orientation.GroundTile)) continue;
-                Tile n_tile = (Tile) r_tile.Clone();
-                n_tile.SetOrient(o);
-                if (n_tile.left != 875) continue;
-                if (n_tile.match_sides.Contains(n_tile.up)) continue;
-                if (n_tile.match_sides.Contains(Tile.ReverseSideNumber(n_tile.up))) continue;
-                Console.WriteLine($"\t {o} last up: {n_tile.up} left: {n_tile.left}");
-                n_tile.PrintPatchWithSides();
-                   
-            }
-
-
-            
-            System.Environment.Exit(0);
-            */
-            
-            
-            
-            
-            
-            
-            
-            
-            
-                    do {
-
-
-
-
-
-            Tile to_right = UL_corner.GetMatchingTileTo(Directions.RIGHT);
-
-            Console.WriteLine($"\t Found tile to right: {to_right}");
-
-            Orientation orient_t_r;
-            Console.Write($"\t getting orientation of {to_right} -> ");
-            orient_t_r = to_right.GetWhereEdge(Directions.UP, Directions.LEFT,
-                Tile.ReverseSideNumber(UL_corner.right));
-            if (orient_t_r.Equals(Orientation.InvalidOrientation))
-            {
-                Console.Write(
-                    $"Unable to find orientation for {orient_t_r}  from GetWhereEdge({Directions.UP},{Directions.LEFT}, {Tile.ReverseSideNumber(UL_corner.right)}");
-                System.Environment.Exit(0);
-            }
-
-            Console.WriteLine(orient_t_r);
-            to_right.SetOrient(orient_t_r);
-
-            Used_Tiles.Add(to_right);
-            final_tile_grid[g_col, g_row] = to_right;
-            g_col++;
-            if (g_col == 12)
-            {
-                Console.WriteLine($"\t _-=> grid g_col={g_col}, g_row={g_row}");
-                g_col = 0;
-                g_row++;
-                System.Environment.Exit(0);
-            }
-
-            UL_corner = to_right;
-       } while ((g_col < 12) && (g_row < 12));
-
-
-
-
-        Console.WriteLine($"\n\tPart 2 Solution: {0}");
+            Console.WriteLine($"\n\tPart 2 Solution: {0}");
     }
 
 

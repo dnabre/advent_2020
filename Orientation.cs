@@ -57,8 +57,7 @@ namespace advent_2020
             }
             return $"({flip},{rot})";
         }
-        public static readonly Orientation GroundTile = new Orientation(Tile_Flip.None,Tile_Rotate_Left.None);
-        public static readonly List<Orientation> AllOrientations ;
+     public static readonly List<Orientation> AllOrientations ;
         public static readonly Orientation InvalidOrientation;
         
         static Orientation()
@@ -82,9 +81,6 @@ namespace advent_2020
     public enum Tile_Rotate_Left{
         None, One, Two, Three
     }
-
-    public enum Directions
-    {
-        LEFT,RIGHT,UP,DOWN
-    }
+    
+   
 }
