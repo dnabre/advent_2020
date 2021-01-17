@@ -221,11 +221,14 @@ namespace advent_2020
                             {
                                 t_tile.match_sides.Add(side_num);
                                 t_tile.unmatched_sides.Remove(side_num);
+                                t_tile.unmatched_sides.Remove(Tile.ReverseSideNumber(side_num));
                             }
+
                             sides_that_match.UnionWith(matching_side_for_o_tile);
                         }
                     }
                 }
+
                 t_tile.adj_tiles.TrimExcess();
                 t_tile.match_sides.TrimExcess();
                 t_tile.unmatched_sides.TrimExcess();
@@ -262,23 +265,66 @@ namespace advent_2020
             Console.WriteLine($"\t ########## First Row".PadRight(60, '#'));
 
             // First Row
+           
+                       final_tile_grid[0, 0] = UpperLeft; // Figured out which tile and orientation by hand from found corners
+                       Used_Tiles.Add(UpperLeft);
+              
+                       UpperLeft.Print();
+                       UpperLeft.PrintSides();
+                       BarPrint();
+                       Console.WriteLine($"\t {Utility.HashSetToStringLine(UpperLeft.adj_tiles)}  {UpperLeft.adj_tiles.Count} {UpperLeft.GetPossibleSides().Count} ");
+           
+                       Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(UpperLeft.match_sides)}");
+                       Console.WriteLine($"\t unmatch_sides: {Utility.HashSetToStringLine(UpperLeft.unmatched_sides)}");
 
-            final_tile_grid[0, 0] = UpperLeft; // Figured out which tile and orientation by hand from found corners
-            Used_Tiles.Add(UpperLeft);
+                       Tile to_left = UpperLeft;
+                       for (int c = 1; c < 11; c++)
+                       {
+                           Tile edge_tile = null;
+                           Orientation o = new Orientation(Tile_Flip.None,Tile_Rotate_Left.None);
+                           foreach (Tile e_tile in edges_tiles)
+                           {
+                               if (e_tile.GetEdgeOrient(Directions.RIGHT, Directions.UP, to_left.right, out o))
+                               {
+                                   
+                               }
+                               
+                           }
+                           
+                           
+                           
+                       }
+         
+            
+            
+            
+            
+            
+            
+            
+            
+            /*
+            List<Tile> s_edges = new List<Tile>();
+            var et = edges_tiles.ToArray();
+            s_edges.Add(et[14]);
+            s_edges.Add(et[8]);
+            s_edges.Add(et[4]);
+            s_edges.Add(et[20]);
+            
+            
+            foreach (Tile c_tile in s_edges)
+            {
+                Console.WriteLine(
+                    $"\t ==> {c_tile.tile_id}  | edge  | ");
+                Console.WriteLine($"t\t side_for_tile: {Utility.DictHashToStringLine(c_tile.side_for_tile, new HashSet<int>())}");
+                Console.WriteLine($"\t\t unmatched edges : {Utility.HashSetToStringLine(c_tile.unmatched_sides)}");
+                
+            }
+*/
+        
 
-            UpperLeft.Print();
-            UpperLeft.PrintSides();
-            BarPrint();
-            Console.WriteLine($"\t {Utility.HashSetToStringLine(UpperLeft.adj_tiles)}  {UpperLeft.adj_tiles.Count} {UpperLeft.GetPossibleSides().Count} ");
-
-            Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(UpperLeft.match_sides)}");
-            Console.WriteLine($"\t unmatch_sides: {Utility.HashSetToStringLine(UpperLeft.unmatched_sides)}");
-
-            Console.WriteLine($"\t side_for_tile: {Utility.DictHashToStringLine(UpperLeft.side_for_tile, new HashSet<int>())}");
-
-
-
-
+         
+            
 
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
