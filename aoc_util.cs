@@ -11,7 +11,7 @@ using System.Text;
 
 namespace advent_2020
 {
-    internal static class Utility
+    public static class Utility
     {
         public static T[] HashSetToArray<T>(HashSet<T> h_set)
         {
@@ -434,10 +434,9 @@ namespace advent_2020
                 }
 
             }
-            
-            
-            
-            
+
         }
+       
+
     }
 }
