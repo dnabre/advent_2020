@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace advent_2020
@@ -84,6 +85,11 @@ namespace advent_2020
             return n;
         }
 
+        public char[,] GetOnlyPatch(Orientation o)
+        {
+            return GetOnlyPatch(o.flip, o.rot);
+        }
+        
         public char[,] GetOnlyPatch(Tile_Flip flip, Tile_Rotate_Left rot)
         {
             char[,] n_patch = new char[t_width - 1, t_height - 1];
@@ -249,6 +255,55 @@ namespace advent_2020
             return BinaryStringToInt(s);
         }
 
+        public bool GetEdgeOrient(Directions m_facing, Directions e_facing, int side_id, out Orientation orient)
+        {
+            int m_side_num = Tile.ReverseSideNumber(side_id);
+            int[] edge_nums = unmatched_sides.ToArray();
+            int edge_num_1 = edge_nums[0];
+            int edge_num_2 = edge_nums[1];
+          
+
+            foreach (Orientation o in AOC_20.all_orientations)
+            {
+                char[,] patch = this.GetOnlyPatch(o);
+                int m_side;
+                int e_side;
+                switch (m_facing)
+                {
+                    case Directions.RIGHT:
+                        m_side = GetSideNum(patch, Directions.LEFT);
+                        e_side = GetSideNum(patch, Directions.UP);
+                        break;
+                    case Directions.LEFT:
+                        m_side = GetSideNum(patch, Directions.RIGHT);
+                        e_side = GetSideNum(patch, Directions.DOWN);
+
+                        break;
+                    case Directions.DOWN:
+                        m_side = GetSideNum(patch, Directions.UP);
+                        e_side = GetSideNum(patch, Directions.LEFT);
+
+                        break;
+                    case Directions.UP:
+                        m_side = GetSideNum(patch, Directions.DOWN);
+                        e_side = GetSideNum(patch, Directions.RIGHT);
+                        break;
+                    default:
+                        m_side = -1;
+                        e_side = -1;
+                        break;
+                    
+                }
+                if ((m_side == m_side_num) &&
+                    ((edge_num_1 == e_side) || (edge_num_2 == e_side)))
+                {
+                    orient = o;
+                    return true;
+                }
+            }
+            orient = new Orientation(Tile_Flip.None, Tile_Rotate_Left.None);
+            return false;
+        }
 
         public bool GetOrientWhere(Directions facing, int side_id, out Orientation orient)
         {
@@ -287,16 +342,16 @@ namespace advent_2020
 
 
             HashSet<int> r_sides = new HashSet<int>();
-           foreach (int s in result)
-           {
-               String ss = Convert.ToString(s, 2);
-               ss = ss.PadLeft(t_width, '0');
-               char[] rev;
-               rev = ss.ToCharArray();
-               Array.Reverse(rev);
-               int n_s = Convert.ToInt32(new String(rev), 2);
-               r_sides.Add(n_s);
-           }
+            foreach (int s in result)
+            {
+                String ss = Convert.ToString(s, 2);
+                ss = ss.PadLeft(t_width, '0');
+                char[] rev;
+                rev = ss.ToCharArray();
+                Array.Reverse(rev);
+                int n_s = Convert.ToInt32(new String(rev), 2);
+                r_sides.Add(n_s);
+            }
    
             result.UnionWith(r_sides);
 
@@ -408,20 +463,20 @@ namespace advent_2020
 
         static public List<Tile> SwapTile(List<Tile> tile_list, int id, Tile UpperLeft)
         {
-                Tile Tile_1613 = null;
-                foreach (Tile t_tile in tile_list)
+            Tile Tile_1613 = null;
+            foreach (Tile t_tile in tile_list)
+            {
+                if (t_tile.tile_id == 1613)
                 {
-                    if (t_tile.tile_id == 1613)
-                    {
-                        Tile_1613 = t_tile;
-                        break;
-                    }
+                    Tile_1613 = t_tile;
+                    break;
                 }
+            }
 
-                if (Tile_1613 == null) return tile_list;
-                tile_list.Remove(Tile_1613);
-                tile_list.Add(UpperLeft);
-                return tile_list;
+            if (Tile_1613 == null) return tile_list;
+            tile_list.Remove(Tile_1613);
+            tile_list.Add(UpperLeft);
+            return tile_list;
         }
 
         public static void PrintTileGrid(Tile[,] grid)
