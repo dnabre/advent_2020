@@ -63,6 +63,7 @@ namespace advent_2020
         static Orientation()
         {
             InvalidOrientation = new Orientation((Tile_Flip)(-1),(Tile_Rotate_Left)(-1),true);
+
             
             AllOrientations = new List<Orientation>();
             foreach (Tile_Flip f in Enum.GetValues(typeof(Tile_Flip)))
@@ -72,11 +73,12 @@ namespace advent_2020
                     Orientation.AllOrientations.Add(new Orientation(f, r));
                 }
             }
+            ;
         }
     }
     
     public enum Tile_Flip {
-        None, X_Flip, Y_Flip, XY_Flip
+        None, X_Flip
     }
     public enum Tile_Rotate_Left{
         None, One, Two, Three

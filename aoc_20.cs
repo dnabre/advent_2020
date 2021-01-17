@@ -33,6 +33,9 @@ namespace advent_2020
         private const string TestInput1 = "aoc_20_test_1.txt";
         private const string TestInput2 = "aoc_20_test_2.txt";
 
+        private static readonly int t_width = Tile.t_width;
+        private static readonly int t_height = Tile.t_height;
+        
         public static void Run(string[] args)
         {
 
@@ -40,12 +43,12 @@ namespace advent_2020
             Init();
             Console.WriteLine("AoC Problem 20");
             var watch = System.Diagnostics.Stopwatch.StartNew();
-      //       Part1();
+            //       Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
             watch = System.Diagnostics.Stopwatch.StartNew();
-         Part2();
+            Part2();
             watch.Stop();
             long time_part_2 = watch.ElapsedMilliseconds;
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
@@ -149,7 +152,7 @@ namespace advent_2020
             Console.WriteLine("   Part 2");
             string[] lines = System.IO.File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
-
+            Console.WriteLine();
 
             tile_list = Tile.ParseTiles(lines);
             tile_list = Tile.SwapTile(tile_list, 1613, UpperLeft);
@@ -160,40 +163,123 @@ namespace advent_2020
                 IdLookup[t.tile_id] = t;
             }
 
+
+            char[,] test_grid = new char[t_width, t_height];
+            String line  = "abcdefghij";
+            String line2 = "ABCDEFGHIK";
+            char[] a_line = line.ToCharArray();
+            char[] b_line = line2.ToCharArray();
+            for (int y = 0; y <t_height; y++)
+            {
+                for (int x= 0; x < t_width; x++)
+                {
+                    if (y % 2 == 0)
+                    {
+                        test_grid[x, y] = a_line[x];
+                    }
+                    else
+                    {
+                        test_grid[x, y] = b_line[x];
+                    }
+
+                }
+            }
+            Console.WriteLine();
+            Utility.PrintMap(test_grid);
+            Console.WriteLine();  
+            Console.WriteLine();
+            char[,] o_grid = new char[t_width,t_height];
             
+            HashSet<String> s_orients = new HashSet<string>(8);
+            Dictionary<String, List<Orientation>>  s_o  = new Dictionary<String,List<Orientation>>();
+            foreach (Orientation o in Orientation.AllOrientations)
+            {
+                o_grid  = Tile.OrientPatch(test_grid, o);
+
+                String fl = FlatGrid(o_grid);
+                s_orients.Add(fl);
+                if (s_o.ContainsKey(fl))
+                {
+                    s_o[fl].Add(o);
+                }
+                else
+                {
+                    s_o[fl] = new List<Orientation>();
+                    s_o[fl].Add(o);
+                }
+                
+                Utility.BarPrint();
+                Utility.PrintMap(o_grid);
+
+                Console.WriteLine(o);
+                Utility.BarPrint();
+                if (o.rot == Tile_Rotate_Left.Three)
+                {
+                    Console.WriteLine();  
+                    Console.WriteLine();
+                    Utility.PrintMap(test_grid);
+                    Console.WriteLine("\t ^^ original ^^");  
+                    Console.WriteLine();  
+                   
+                }
+                                
+
+            }
+            Console.WriteLine("\n");
+            Console.WriteLine(s_orients.Count);
+            foreach (String s in s_orients)
+            {
+                Console.WriteLine(s);
+                Console.Write("\t");
+                Console.WriteLine(Utility.ListToStringLine(s_o[s]));
+            }
+       
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
-    }
+        }
 
 
 
 
-    
+        private static String FlatGrid(char[,] g)
+        {
+            StringBuilder sb = new StringBuilder(t_width*t_height);
+            for (int y = 0; y <t_height; y++)
+            {
+                
+                for (int x= 0; x < t_width; x++)
+                {
+                    sb.Append(g[x, y]);
+                }
+            }
+
+            return sb.ToString();
+        }
 
 
       
 
-    private static int CountSeaMonstersInImage(char[, ] lines)
-    {
-    char[] agg = new char[lines.GetLength(0) * lines.GetLength(1)];
-
-    int index = 0;
-        for(int y= 0; y<lines.GetLength(1);
-    y++)
-    {
-        for (int x = 0; x < lines.GetLength(0); x++)
+        private static int CountSeaMonstersInImage(char[, ] lines)
         {
-            agg[index] = lines[x, y];
-            index++;
+            char[] agg = new char[lines.GetLength(0) * lines.GetLength(1)];
+
+            int index = 0;
+            for(int y= 0; y<lines.GetLength(1);
+                y++)
+            {
+                for (int x = 0; x < lines.GetLength(0); x++)
+                {
+                    agg[index] = lines[x, y];
+                    index++;
+                }
+            }
+            String s_agg = new String(agg);
+
+            var pattern = @"(?<=#.{77})#.{4}#{2}.{4}#{2}.{4}#{3}(?=.{77}#.{2}#.{2}#.{2}#.{2}#.{2}#)";
+            Regex rx = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            var matches = rx.Matches(s_agg);
+            return matches.Count;
         }
     }
-    String s_agg = new String(agg);
-
-    var pattern = @"(?<=#.{77})#.{4}#{2}.{4}#{2}.{4}#{3}(?=.{77}#.{2}#.{2}#.{2}#.{2}#.{2}#)";
-    Regex rx = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-    var matches = rx.Matches(s_agg);
-        return matches.Count;
-    }
-}
 
 }
