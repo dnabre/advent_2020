@@ -272,31 +272,27 @@ namespace advent_2020
                        UpperLeft.Print();
                        UpperLeft.PrintSides();
                        BarPrint();
-                       Console.WriteLine($"\t {Utility.HashSetToStringLine(UpperLeft.adj_tiles)}  {UpperLeft.adj_tiles.Count} {UpperLeft.GetPossibleSides().Count} ");
+                       Console.WriteLine($"\t adj_tile: {Utility.HashSetToStringLine(UpperLeft.adj_tiles)}  {UpperLeft.adj_tiles.Count} {UpperLeft.GetPossibleSides().Count} ");
            
                        Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(UpperLeft.match_sides)}");
                        Console.WriteLine($"\t unmatch_sides: {Utility.HashSetToStringLine(UpperLeft.unmatched_sides)}");
+                       Console.WriteLine(
+                           $"\t UpperLeft.right = {UpperLeft.right}  rev(UpperLeft.right) = {Tile.ReverseSideNumber(UpperLeft.right)}");
+                       
+                 BarPrint();
 
-                       Tile to_left = UpperLeft;
-                       for (int c = 1; c < 11; c++)
-                       {
-                           Tile edge_tile = null;
-                           Orientation o = new Orientation(Tile_Flip.None,Tile_Rotate_Left.None);
-                           foreach (Tile e_tile in edges_tiles)
-                           {
-                               if (e_tile.GetEdgeOrient(Directions.RIGHT, Directions.UP, to_left.right, out o))
-                               {
-                                   
-                               }
-                               
-                           }
-                           
-                           
-                           
-                       }
-         
-            
-            
+                 UpperLeft = null;
+                 Tile NextRight = IdToTile[1361];
+                     
+                 NextRight.Print();
+                 NextRight.PrintSides();
+                 BarPrint();
+                 Console.WriteLine($"\t adj_tile: {Utility.HashSetToStringLine(NextRight.adj_tiles)}  {NextRight.adj_tiles.Count} {NextRight.GetPossibleSides().Count} ");
+           
+                 Console.WriteLine($"\t match_sides: {Utility.HashSetToStringLine(NextRight.match_sides)}");
+                 Console.WriteLine($"\t unmatch_sides: {Utility.HashSetToStringLine(NextRight.unmatched_sides)}");
+
+                 BarPrint();
             
             
             

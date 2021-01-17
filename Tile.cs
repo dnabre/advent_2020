@@ -272,21 +272,21 @@ namespace advent_2020
                 {
                     case Directions.RIGHT:
                         m_side = GetSideNum(patch, Directions.LEFT);
-                        e_side = GetSideNum(patch, Directions.UP);
+                        e_side = GetSideNum(patch, e_facing);
                         break;
                     case Directions.LEFT:
                         m_side = GetSideNum(patch, Directions.RIGHT);
-                        e_side = GetSideNum(patch, Directions.DOWN);
+                        e_side = GetSideNum(patch, e_facing);
 
                         break;
                     case Directions.DOWN:
                         m_side = GetSideNum(patch, Directions.UP);
-                        e_side = GetSideNum(patch, Directions.LEFT);
+                        e_side = GetSideNum(patch, e_facing);
 
                         break;
                     case Directions.UP:
                         m_side = GetSideNum(patch, Directions.DOWN);
-                        e_side = GetSideNum(patch, Directions.RIGHT);
+                        e_side = GetSideNum(patch, e_facing);
                         break;
                     default:
                         m_side = -1;
