@@ -6,64 +6,15 @@ using System.Text;
 namespace advent_2020
 { 
     
-    public class Tile : IEquatable<Tile>
+    public class Tile : IEquatable<Tile>, IComparable<Tile>, IComparable
     {
-        public bool Equals(Tile other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return tile_id == other.tile_id && Equals(patch, other.patch);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Tile) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (tile_id * 397) ^ (patch != null ? patch.GetHashCode() : 0);
-            }
-        }
-
-        public static bool operator ==(Tile left, Tile right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(Tile left, Tile right)
-        {
-            return !Equals(left, right);
-        }
-
 
         public static Dictionary<Direction, Direction> OppositeDirection;
         public static readonly int t_width = 10;
         public static readonly int t_height = 10;
         public static Dictionary<char, char> ToBinary;
-
-
-        static Tile()
-        {
-            Tile.ToBinary= new Dictionary<char, char>(2);
-            ToBinary['#'] = '1';
-            ToBinary['.'] = '0';
-            
-            
-            Tile.OppositeDirection  = new Dictionary<Direction, Direction>();
-            Tile.OppositeDirection[Direction.LEFT] = Direction.RIGHT;
-            Tile.OppositeDirection[Direction.RIGHT] = Direction.LEFT;
-            Tile.OppositeDirection[Direction.UP] = Direction.DOWN;
-            Tile.OppositeDirection[Direction.DOWN] = Direction.UP;
-            
-        }
-
-      
+              
+        
 
         public static String[] Tile_UpperLeft_Raw =
         {
@@ -80,16 +31,43 @@ namespace advent_2020
             "....#..###"
         };
 
+        
+        static Tile()
+        {
+            Tile.ToBinary= new Dictionary<char, char>(2);
+            ToBinary['#'] = '1';
+            ToBinary['.'] = '0';
+            
+            
+            Tile.OppositeDirection  = new Dictionary<Direction, Direction>();
+            Tile.OppositeDirection[Direction.LEFT] = Direction.RIGHT;
+            Tile.OppositeDirection[Direction.RIGHT] = Direction.LEFT;
+            Tile.OppositeDirection[Direction.UP] = Direction.DOWN;
+            Tile.OppositeDirection[Direction.DOWN] = Direction.UP;
+            
+        }
 
-
-        
-        
-        
-        
         public int tile_id;
         public char[,] patch;
         public Dictionary<Direction, int> side_numbers;
+        public List<Tile> Adjacent_Tiles;
+        public Dictionary<Tile, int> Adj_Tile_Side_map;
+
         
+        
+        public Tile(int id, char[,] pp)
+        {
+            tile_id = id;
+            patch = pp;
+            side_numbers = GetSides();
+        
+            List<int> side_ints = GetPossibleSides();
+        }
+
+        
+        
+        
+  
         
         public int Left
         {
@@ -116,16 +94,6 @@ namespace advent_2020
             
             get => side_numbers[Direction.UP];
             set => side_numbers[Direction.UP]= value;
-        }
-
-
-        public Tile(int id, char[,] pp)
-        {
-            tile_id = id;
-            patch = pp;
-            side_numbers = GetSides();
-        
-            List<int> side_ints = GetPossibleSides();
         }
 
        
@@ -175,18 +143,6 @@ namespace advent_2020
                 grid = new_grid;
             }
           
-
-            
-            /*
-            if (flip == Tile_Flip.Y_Flip || flip == Tile_Flip.XY_Flip)
-            {
-                char[,] new_grid = new char[t_width, t_height];
-                for (int y = 0; y < t_height; y++)
-                for (int x = 0; x < t_width; x++)
-                    new_grid[x, t_height - 1 - y] = grid[x, y];
-
-                grid = new_grid;
-            }*/
             
             while (rot != Tile_Rotate_Left.None)
             {
@@ -466,7 +422,72 @@ namespace advent_2020
             return tile_list;
         }
 
+        public bool Equals(Tile other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return tile_id == other.tile_id && Equals(patch, other.patch);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Tile) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (tile_id * 397) ^ (patch != null ? patch.GetHashCode() : 0);
+            }
+        }
+
+        public static bool operator ==(Tile left, Tile right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Tile left, Tile right)
+        {
+            return !Equals(left, right);
+        }
        
+        public int CompareTo(Tile other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return tile_id.CompareTo(other.tile_id);
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            return obj is Tile other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(Tile)}");
+        }
+
+        public static bool operator <(Tile left, Tile right)
+        {
+            return Comparer<Tile>.Default.Compare(left, right) < 0;
+        }
+
+        public static bool operator >(Tile left, Tile right)
+        {
+            return Comparer<Tile>.Default.Compare(left, right) > 0;
+        }
+
+        public static bool operator <=(Tile left, Tile right)
+        {
+            return Comparer<Tile>.Default.Compare(left, right) <= 0;
+        }
+
+        public static bool operator >=(Tile left, Tile right)
+        {
+            return Comparer<Tile>.Default.Compare(left, right) >= 0;
+        }
 
     }
     public  enum Direction
