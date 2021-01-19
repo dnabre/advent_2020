@@ -163,18 +163,61 @@ namespace advent_2020
                 IdLookup[t.tile_id] = t;
             }
             HashSet<int> all_sides = new HashSet<int>();
-            Dictionary<int,HashSet<int>> Adjacency_Sets = new Dictionary<int, HashSet<int>>();
-            foreach (Tile t in tile_list)
+           
+            Dictionary<Tile,int> IndexLookup = new Dictionary<Tile, int>(tile_list.Count);
+            
+            HashSet<int>[] PossibleSides = new HashSet<int>[tile_list.Count];
+            Tile[] tile_array = tile_list.ToArray();
+            for (int i = 0; i < tile_array.Length; i++)
             {
-                Adjacency_Sets[t.tile_id] = new HashSet<int>(8);
-                List<int> sides = t.GetPossibleSides();
-                all_sides.UnionWith(sides);
-                Console.WriteLine($" {t} has {sides.Count} unique sides");
+                Tile c_tile = tile_array[i];
+                IndexLookup[c_tile] = i;
+                HashSet<int> c_possible_side_set = new HashSet<int>(c_tile.GetPossibleSides());
+                PossibleSides[i] = c_possible_side_set;
             }
 
-            Console.WriteLine();
-            Console.WriteLine($"There are {Adjacency_Sets.Count} Tiles");
-            Console.WriteLine($"There are globally {all_sides.Count} unique sides");
+
+            for (int i = 0; i < tile_array.Length; i++)
+            {
+                Tile c_tile = tile_array[i];
+                c_tile.Adjacent_Tiles = new List<Tile>(4);
+                c_tile.Adj_Tile_Side_map = new Dictionary<Tile, int>();
+                for (int j = 0; j < tile_array.Length; j++)
+                {
+                    if (i == j) continue;
+                    Tile o_tile = tile_array[j];
+                    HashSet<int> c_sides = new HashSet<int>(PossibleSides[i]);
+                    c_sides.IntersectWith(PossibleSides[j]);
+                    if (c_sides.Count == 0)
+                    {
+                        //tiles aren't related 
+                        continue;
+                    }
+                    else
+                    {
+                        if (c_sides.Count != 1)
+                        {
+                            Console.WriteLine($" When building adjaceny set between {c_tile} and {o_tile} got more"
+                                              + $" than one matching side {Utility.HashSetToStringLine(c_sides)}");
+                        }
+                        else
+                        {
+                            int side = c_sides.ToArray()[0];
+                            c_tile.Adjacent_Tiles.Add(o_tile);
+                            c_tile.Adj_Tile_Side_map[o_tile] = side;
+                        }
+                    }
+                }
+            }
+
+            foreach (Tile c_tile in tile_list)
+            {
+                Console.WriteLine($"{c_tile}, {c_tile.Adjacent_Tiles.Count}:" +
+                               $"{Utility.DictToStringLine(c_tile.Adj_Tile_Side_map)}");
+
+            }
+            
+            
             
             
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
