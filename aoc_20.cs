@@ -172,12 +172,71 @@ namespace advent_2020
 
             Tile.PlaceTilesInGrid();
             
-        
-            
-         
-            
 
+    
+            for (int x = 0; x < 11; x++)
+            {
+                Tile l_tile = final_tile_grid[x, 0];
+                Tile r_tile = final_tile_grid[x + 1, 0];
+                if (r_tile.oriented) continue;
+                Orientation oo;
+                oo = r_tile.OrientTileOnEdge(Direction.LEFT, l_tile.Right, Direction.UP);
+                if (oo.Equals(Orientation.InvalidOrientation))
+                {
+                    Console.WriteLine($"{l_tile} -> {r_tile} bad orient: {oo}");
+                    System.Environment.Exit(0);
+                }
 
+                r_tile.SetOrient(oo.flip,oo.rot);
+                r_tile.oriented = true;
+           
+            }
+            Console.Write($"\n\t Oriented First Row \n");
+
+            for (int y = 0; y < 11; y++)
+            {
+                Tile u_tile = final_tile_grid[0,y];
+                Tile d_tile = final_tile_grid[0, y+1];
+                if (d_tile.oriented) continue;
+                Orientation oo;
+                oo = d_tile.OrientTileOnEdge(Direction.UP, u_tile.Down, Direction.LEFT);
+                if (oo.Equals(Orientation.InvalidOrientation))
+                {
+                    Console.WriteLine($"{u_tile} -> {d_tile} bad orient: {oo}");
+                    System.Environment.Exit(0);
+                }
+
+                d_tile.SetOrient(oo.flip, oo.rot);
+                d_tile.oriented = true;
+
+            }
+
+            Console.WriteLine("Oriented left columnn");
+
+            for (int y = 1; y < 12; y++)
+            {
+                for (int x = 1; x < 12; x++)
+                {
+                    Tile c_tile = final_tile_grid[x, y];
+                    if (c_tile.oriented) continue;
+                    Tile u_tile = final_tile_grid[x, y - 1];
+                    Tile l_tile = final_tile_grid[x - 1, y];
+                    Orientation oo;
+                    oo = c_tile.OrientTile(Direction.UP, u_tile.Down, Direction.LEFT, l_tile.Right);
+                    if (oo.Equals(Orientation.InvalidOrientation))
+                    {
+                        Console.WriteLine($"{c_tile} -> up: {u_tile} left: {l_tile}bad orient: {oo}");
+                        System.Environment.Exit(0);
+                    }
+                    c_tile.SetOrient(oo.flip, oo.rot);
+                    c_tile.oriented = true;
+                }
+                
+            }
+           
+
+            
+            
             PrintGrid(final_tile_grid);
 
 
@@ -186,12 +245,6 @@ namespace advent_2020
 
 
 
-
-        private static void BuildTileGrid()
-        {
-            
-            
-        }
 
 
 
@@ -210,7 +263,14 @@ namespace advent_2020
                     }
                     else
                     {
-                        Console.Write("#|");
+                        if (final_tile_grid[x, y].oriented)
+                        {
+                            Console.Write("o|");
+                        }
+                        else
+                        {
+                            Console.Write("#|");
+                        }
                     }
                 }
                 Console.WriteLine();

@@ -422,7 +422,7 @@ namespace advent_2020
 
             for (int y = 0; y < size_a.h; y++)
             {
-                Console.WriteLine("\t");
+                Console.Write("\t");
                 for (int x = 0; x < size_a.w; x++)
                 {
                     Console.Write(left[x, y]);
@@ -433,6 +433,7 @@ namespace advent_2020
                     Console.Write(right[x, y]);
                 }
 
+                Console.WriteLine();
             }
 
         }
