@@ -35,7 +35,7 @@ namespace advent_2020
 
         private static readonly int t_width = Tile.t_width;
         private static readonly int t_height = Tile.t_height;
-        
+
         public static void Run(string[] args)
         {
 
@@ -54,21 +54,23 @@ namespace advent_2020
             Console.WriteLine($"Execution time, Part 1: {time_part_1} ms\t Part 2: {time_part_2} ms");
         }
 
-  
+
         public static List<Tile> tile_list;
         public static Dictionary<int, Tile> IdLookup;
         public static Tile UpperLeft;
         public static Tile[,] final_tile_grid;
         public static HashSet<Tile> Used_Tiles; // Tiles that have been place in final_tile_grid
-
+        public static List<Tile> corner_tiles;
+        
         private static void Init()
         {
             Used_Tiles = new HashSet<Tile>();
             final_tile_grid = new Tile[12, 12];
             IdLookup = new Dictionary<int, Tile>(144);
             UpperLeft = Tile.ParseTiles(Tile.Tile_UpperLeft_Raw).First();
-            
-            //UpperLeft.SetOrient(Tile_Flip.None, Tile_Rotate_Left.Two);
+            corner_tiles = new List<Tile>(4);
+            UpperLeft.SetOrient(Tile_Flip.None, Tile_Rotate_Left.Two);
+            UpperLeft.oriented = true;
         }
 
         private static void Part1()
@@ -154,6 +156,8 @@ namespace advent_2020
             Console.WriteLine("\tRead {0} inputs", lines.Length);
             Console.WriteLine();
 
+            
+            
             tile_list = Tile.ParseTiles(lines);
             tile_list = Tile.SwapTile(tile_list, 1613, UpperLeft);
 
@@ -162,73 +166,59 @@ namespace advent_2020
             {
                 IdLookup[t.tile_id] = t;
             }
-            HashSet<int> all_sides = new HashSet<int>();
-           
-            Dictionary<Tile,int> IndexLookup = new Dictionary<Tile, int>(tile_list.Count);
+
+          
+            Tile.SetupAdjacents(tile_list);
+
+            Tile.PlaceTilesInGrid();
             
-            HashSet<int>[] PossibleSides = new HashSet<int>[tile_list.Count];
-            Tile[] tile_array = tile_list.ToArray();
-            for (int i = 0; i < tile_array.Length; i++)
-            {
-                Tile c_tile = tile_array[i];
-                IndexLookup[c_tile] = i;
-                HashSet<int> c_possible_side_set = new HashSet<int>(c_tile.GetPossibleSides());
-                PossibleSides[i] = c_possible_side_set;
-            }
+        
+            
+         
+            
 
 
-            for (int i = 0; i < tile_array.Length; i++)
-            {
-                Tile c_tile = tile_array[i];
-                c_tile.Adjacent_Tiles = new List<Tile>(4);
-                c_tile.Adj_Tile_Side_map = new Dictionary<Tile, int>();
-                for (int j = 0; j < tile_array.Length; j++)
-                {
-                    if (i == j) continue;
-                    Tile o_tile = tile_array[j];
-                    HashSet<int> c_sides = new HashSet<int>(PossibleSides[i]);
-                    c_sides.IntersectWith(PossibleSides[j]);
-                    if (c_sides.Count == 0)
-                    {
-                        //tiles aren't related 
-                        continue;
-                    }
-                    else
-                    {
-                        if (c_sides.Count != 1)
-                        {
-                            Console.WriteLine($" When building adjaceny set between {c_tile} and {o_tile} got more"
-                                              + $" than one matching side {Utility.HashSetToStringLine(c_sides)}");
-                        }
-                        else
-                        {
-                            int side = c_sides.ToArray()[0];
-                            c_tile.Adjacent_Tiles.Add(o_tile);
-                            c_tile.Adj_Tile_Side_map[o_tile] = side;
-                        }
-                    }
-                }
-            }
+            PrintGrid(final_tile_grid);
 
-            foreach (Tile c_tile in tile_list)
-            {
-                Console.WriteLine($"{c_tile}, {c_tile.Adjacent_Tiles.Count}:" +
-                               $"{Utility.DictToStringLine(c_tile.Adj_Tile_Side_map)}");
 
-            }
-            
-            
-            
-            
             Console.WriteLine($"\n\tPart 2 Solution: {0}");
         }
 
 
 
 
+        private static void BuildTileGrid()
+        {
+            
+            
+        }
 
 
-      
+
+        private static void PrintGrid(Tile[,] map)
+        {
+            Console.WriteLine("\t " + "".PadLeft(25, '-'));
+
+            for (int y = 0; y < 12; y++)
+            {
+                Console.Write("\t |");
+                for (int x = 0; x < 12; x++)
+                {
+                    if (final_tile_grid[x, y] == null)
+                    {
+                        Console.Write("-|");
+                    }
+                    else
+                    {
+                        Console.Write("#|");
+                    }
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine("\t " + "".PadLeft(25, '-'));
+
+        }
+
 
         private static int CountSeaMonstersInImage(char[, ] lines)
         {

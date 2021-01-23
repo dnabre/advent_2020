@@ -13,9 +13,11 @@ namespace advent_2020
         public static readonly int t_width = 10;
         public static readonly int t_height = 10;
         public static Dictionary<char, char> ToBinary;
-              
-        
 
+        public (int, int) grid = (-1,-1);
+        public bool pinned = false;
+        public bool oriented = false;
+        
         public static String[] Tile_UpperLeft_Raw =
         {
             "Tile 1613:",
@@ -50,7 +52,7 @@ namespace advent_2020
         public int tile_id;
         public char[,] patch;
         public Dictionary<Direction, int> side_numbers;
-        public List<Tile> Adjacent_Tiles;
+        public HashSet<Tile> Adjacent_Tiles;
         public Dictionary<Tile, int> Adj_Tile_Side_map;
 
         
@@ -63,9 +65,21 @@ namespace advent_2020
         
             List<int> side_ints = GetPossibleSides();
         }
+        
 
-        
-        
+        public void Pin(int x, int y)
+        {
+            if (this.pinned)
+            {
+                Console.WriteLine(
+                    $"Error {this} is already pinned at [{this.grid}] trying to pin at ({x},{y}) instead");
+                System.Environment.Exit(-1);
+            }
+            grid = (x, y);
+            pinned = true;
+            AOC_20.final_tile_grid[x, y] = this;
+            AOC_20.Used_Tiles.Add(this);
+        }
         
   
         
@@ -108,7 +122,7 @@ namespace advent_2020
             string t = Convert.ToString(s, 2).PadLeft(t_width, '0');
             return t;
         }
-
+        
        
         public static int ReverseSideNumber(int s)
         {
@@ -125,7 +139,13 @@ namespace advent_2020
             return OrientPatch(patch, o.flip, o.rot);
         }
 
-        
+        public void SetOrient(Tile_Flip flip, Tile_Rotate_Left rot)
+        {
+            // Set grid to a new rotated version of it
+            this.patch = OrientPatch(this.patch, flip, rot);
+            // Update Side
+            side_numbers = GetSides();
+        }
 
         public static char[,]  OrientPatch(char[,] patch, Tile_Flip flip, Tile_Rotate_Left rot)
         {
@@ -326,7 +346,11 @@ namespace advent_2020
             
         }
 
-
+        public bool IsAdjacent(Tile a_tile)
+        {
+            return Adjacent_Tiles.Contains(a_tile);
+        }
+        
         public List<int> GetPossibleSides()
         {
             List<int> c_sides = GetCurrentSides();
@@ -404,6 +428,159 @@ namespace advent_2020
             return $"|{this.tile_id}|";
         }
 
+
+        static public Tile GetCornerTile(Tile a_tile)
+        {
+            foreach (Tile c_tile in AOC_20.corner_tiles)
+            {
+                if (c_tile.pinned) continue;
+                if (c_tile.IsAdjacent(a_tile))
+                {
+                    return c_tile;
+                }
+            }
+            throw new Exception($"No corner list found adjacent to {a_tile}");
+            
+        }
+        
+        static public Tile GetTileAdjacentToBoth(Tile a_tile, Tile b_tile)
+        {
+            HashSet<Tile> a_set = new HashSet<Tile>(a_tile.Adjacent_Tiles);
+
+            a_set.IntersectWith(b_tile.Adjacent_Tiles);
+            if (a_set.Count  == 0)
+            {
+                throw new Exception(
+                    $"Can't find tile adjancent. Intersection: {Utility.HashSetToStringLine(a_set)}" +
+                    $" from {a_tile}:{Utility.HashSetToStringLine(a_tile.Adjacent_Tiles)} and " +
+                    $"{b_tile}:{Utility.HashSetToStringLine(b_tile.Adjacent_Tiles)}");
+            }
+
+            foreach (Tile n_tile in a_set)
+            {
+                if (n_tile.pinned) continue;
+                return n_tile;
+            }
+            throw new Exception(
+                $"Can't find tile adjancent. Intersection: {Utility.HashSetToStringLine(a_set)}" +
+                $" from {a_tile}:{Utility.HashSetToStringLine(a_tile.Adjacent_Tiles)} and " +
+                $"{b_tile}:{Utility.HashSetToStringLine(b_tile.Adjacent_Tiles)}");
+        }
+
+
+        static public Tile GetTileAdjacentToTileAndEdge(Tile a_tile)
+        {
+            foreach (Tile c_tile in a_tile.Adjacent_Tiles)
+            {
+                if (AOC_20.Used_Tiles.Contains(c_tile)) continue;
+                if (c_tile.Adjacent_Tiles.Count == 3)
+                {
+                    return c_tile;
+                }  
+            }
+            
+            throw new Exception($"Tile adjacent to {a_tile}:{Utility.HashSetToArray(a_tile.Adjacent_Tiles)} "
+                        +"and border not found.");
+            
+        }
+
+        static public void PlaceTilesInGrid()
+        {
+            {
+                AOC_20.UpperLeft.Pin(0, 0);
+                Tile r_tile = AOC_20.IdLookup[1361];
+                Tile d_tile = AOC_20.IdLookup[3769];
+                r_tile.Pin(1, 0);
+                d_tile.Pin(0, 1);
+            }
+            
+            for (int x = 2; x < 12 - 1; x++)
+            {
+                Tile n_tile;
+                Tile l_tile = AOC_20.final_tile_grid[x - 1, 0];
+                n_tile = Tile.GetTileAdjacentToTileAndEdge(l_tile);
+                n_tile.Pin(x,0);
+            }
+            Tile.GetCornerTile(AOC_20.final_tile_grid[12 -1 -1 ,0]).Pin(11, 0);
+           
+          
+            for (int y = 2; y < 12 -1 ; y++)
+            {
+                Tile a_tile = AOC_20.final_tile_grid[0, y - 1];
+                Tile n_tile = Tile.GetTileAdjacentToTileAndEdge(a_tile);
+                n_tile.Pin(0,y);
+            }
+            Tile.GetCornerTile(AOC_20.final_tile_grid[0,12 -1 -1]).Pin(0,11);
+
+            for (int y = 1; y < 12; y++)
+            {
+                for (int x = 1; x < 12; x++)
+                {
+                    Tile up_tile = AOC_20.final_tile_grid[x, y-1];
+                    Tile left_tile = AOC_20.final_tile_grid[x - 1, y];
+                    Tile n_tile = Tile.GetTileAdjacentToBoth(up_tile, left_tile);
+                    n_tile.Pin(x,y);
+                }
+            }
+        }
+
+        static public void SetupAdjacents(List<Tile> tile_list)
+        {
+            
+            HashSet<int>[] PossibleSides = new HashSet<int>[tile_list.Count];
+            Tile[] tile_array = tile_list.ToArray();
+            for (int i = 0; i < tile_array.Length; i++)
+            {
+                Tile c_tile = tile_array[i];
+                HashSet<int> c_possible_side_set = new HashSet<int>(c_tile.GetPossibleSides());
+                PossibleSides[i] = c_possible_side_set;
+            }
+
+            
+            for (int i = 0; i < tile_array.Length; i++)
+            {
+                Tile c_tile = tile_array[i];
+                c_tile.Adjacent_Tiles = new HashSet<Tile>(4);
+                c_tile.Adj_Tile_Side_map = new Dictionary<Tile, int>();
+                
+                for (int j = 0; j < tile_array.Length; j++)
+                {
+                    if (i == j) continue;
+                    Tile o_tile = tile_array[j];
+                    HashSet<int> c_sides = new HashSet<int>(PossibleSides[i]);
+                    c_sides.IntersectWith(PossibleSides[j]);
+               
+                    if (c_sides.Count == 0)
+                    {
+                        //tiles aren't related 
+                        continue;
+                    } else {
+                        if (c_sides.Count != 1)
+                        {
+                            Console.WriteLine($" When building adjaceny set between {c_tile} and {o_tile} got more"
+                                              + $" than one matching side {Utility.HashSetToStringLine(c_sides)}");
+                        }
+                        else
+                        {
+                            int side = c_sides.ToArray()[0];
+                            c_tile.Adjacent_Tiles.Add(o_tile);
+                            c_tile.Adj_Tile_Side_map[o_tile] = side;
+                        }
+                    }
+                }
+
+                if (c_tile.Adjacent_Tiles.Count == 2)
+                {
+                    
+                   AOC_20.corner_tiles.Add(c_tile);
+                }
+            }
+            
+
+        }
+      
+        
+        
         static public List<Tile> SwapTile(List<Tile> tile_list, int id, Tile UpperLeft)
         {
             Tile Tile_1613 = null;
@@ -495,6 +672,6 @@ namespace advent_2020
         LEFT,RIGHT,UP,DOWN
     }
 
-  
+    
 
 }
