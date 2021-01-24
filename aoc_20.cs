@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 /*
 	Solutions found:
 	Part 1: 7492183537913
-	Part 2: 
+	Part 2: 2323
 	
 	
 	upper left corner is 1093
@@ -30,7 +30,9 @@ namespace advent_2020
         private static readonly int t_width = Tile.t_width;
         private static readonly int t_height = Tile.t_height;
 
-
+        public static char[,] sea_monster;
+        
+        
         public static List<Tile> tile_list;
         public static Dictionary<int, Tile> IdLookup;
         public static Tile UpperLeft;
@@ -63,6 +65,22 @@ namespace advent_2020
             corner_tiles = new List<Tile>(4);
             UpperLeft.SetOrient(Tile_Flip.None, Tile_Rotate_Left.Two);
             UpperLeft.oriented = true;
+            sea_monster = new char[20, 3];
+            string[] m = {
+                " #  #  #  #  #  #   " ,
+                "#    ##    ##    ###",
+                "                  # ",    
+            };
+            
+            for (int y = 0; y < 3; y++)
+            {
+                char[] c_a = m[y].ToCharArray();
+                for (int x = 0; x < 20; x++)
+                {
+                    sea_monster[x, y] = c_a[x];
+                }
+            }
+
         }
 
         private static void Part1()
@@ -230,22 +248,15 @@ namespace advent_2020
                 }
             }
 
-            Utility.PrintMap(render);
+            //  Utility.PrintMap(render);
 
 
-            int m = CountSeaMonstersInImage(render);
-            Console.WriteLine($"\n\t answer: {answer}");
-            Console.WriteLine($"\t monster: {m}");
-            for (int n = 0; n < 50; n++)
-                if (answer - n * 15 == 2323)
-                {
-                    Console.WriteLine($"m should be {n}");
-                    m = n;
-                    break;
-                }
 
-            answer = answer - m * 15;
-
+            char[,] render2 = Tile.OrientPatch(render, Tile_Flip.None, Tile_Rotate_Left.Two);
+            int m = FindSeaMonster(render2);
+            answer = answer - (15 * m);  
+                   
+           
             Console.WriteLine($"\n\tPart 2 Solution: {answer}");
         }
 
@@ -277,28 +288,39 @@ namespace advent_2020
         }
 
 
-        private static int CountSeaMonstersInImage(char[,] lines)
+        public static int FindSeaMonster(char[,] rend)
         {
-            char[] agg = new char[lines.GetLength(0) * lines.GetLength(1)];
-
-            int index = 0;
-            for (int y = 0;
-                y < lines.GetLength(1);
-                y++)
-            for (int x = 0; x < lines.GetLength(0); x++)
+            int found = 0;
+            for (int b_y = 0; b_y+3 < (12*8); b_y++)
             {
-                agg[index] = lines[x, y];
-                index++;
+                for (int b_x = 0; b_x+20 < (12 * 8); b_x++)
+                {
+                    bool match = true;
+                    
+                    for (int y = 0; y < 3; y++)
+                    {
+                        for (int x = 0; x < 20; x++)
+                        {
+                            char r = rend[b_x + x, b_y + y];
+                            char m = sea_monster[x, y];
+                            if ((m == '#') && (r != '#'))
+                            {
+                                match = false;
+                                break;
+                            }
+
+                            if (!match) break;
+
+                        }
+                    }
+
+                    if (match) found++;
+
+                }
             }
 
-            string s_agg = new string(agg);
-
-            string pattern = @"(?<=#.{77})#.{4}#{2}.{4}#{2}.{4}#{3}(?=.{77}#.{2}#.{2}#.{2}#.{2}#.{2}#)";
-            Regex rx = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-            MatchCollection matches = rx.Matches(s_agg);
-            
-            return matches.Count;
+            return found;
         }
+      
     }
 }
