@@ -269,14 +269,17 @@ namespace advent_2020
         public static char[,] OrientPatch(char[,] patch, Tile_Flip flip, Tile_Rotate_Left rot)
         {
             char[,] grid = (char[,]) patch.Clone();
-
-
+            int height = patch.GetLength(1);
+            int width = patch.GetLength(0);
+    
+            
+            
             if (flip == Tile_Flip.X_Flip)
             {
-                char[,] new_grid = new char[t_width, t_height];
-                for (int y = 0; y < t_height; y++)
-                for (int x = 0; x < t_width; x++)
-                    new_grid[t_width - 1 - x, y] = grid[x, y];
+                char[,] new_grid = new char[width, height];
+                for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    new_grid[width - 1 - x, y] = grid[x, y];
 
                 grid = new_grid;
             }
@@ -284,10 +287,10 @@ namespace advent_2020
 
             while (rot != Tile_Rotate_Left.None)
             {
-                char[,] new_grid = new char[t_width, t_height];
-                for (int y = 0; y < t_height; y++)
-                for (int x = 0; x < t_width; x++)
-                    new_grid[y, t_height - 1 - x] = grid[x, y];
+                char[,] new_grid = new char[width,height];
+                for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    new_grid[y, height - 1 - x] = grid[x, y];
 
                 grid = new_grid;
                 rot--;

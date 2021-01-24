@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 /*
 	Solutions found:
 	Part 1: 2679568 
+	Part 2: Finished 2021/01/23 05:49PM MST
 	
 */
 
