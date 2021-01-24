@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 /*
 	Solutions found:
 	Part 1: 7492183537913
 	Part 2: 2323
-	
-	
-	upper left corner is 1093
-	final answer is 2323
-	
-	1613, rotation 4
+
 	
 */
 
@@ -31,8 +25,8 @@ namespace advent_2020
         private static readonly int t_height = Tile.t_height;
 
         public static char[,] sea_monster;
-        
-        
+
+
         public static List<Tile> tile_list;
         public static Dictionary<int, Tile> IdLookup;
         public static Tile UpperLeft;
@@ -45,7 +39,7 @@ namespace advent_2020
             Init();
             Console.WriteLine("AoC Problem 20");
             Stopwatch watch = Stopwatch.StartNew();
-            //       Part1();
+            Part1();
             watch.Stop();
             long time_part_1 = watch.ElapsedMilliseconds;
             Console.Write("\n");
@@ -66,21 +60,18 @@ namespace advent_2020
             UpperLeft.SetOrient(Tile_Flip.None, Tile_Rotate_Left.Two);
             UpperLeft.oriented = true;
             sea_monster = new char[20, 3];
-            string[] m = {
-                " #  #  #  #  #  #   " ,
+            string[] m =
+            {
+                " #  #  #  #  #  #   ",
                 "#    ##    ##    ###",
-                "                  # ",    
+                "                  # "
             };
-            
+
             for (int y = 0; y < 3; y++)
             {
                 char[] c_a = m[y].ToCharArray();
-                for (int x = 0; x < 20; x++)
-                {
-                    sea_monster[x, y] = c_a[x];
-                }
+                for (int x = 0; x < 20; x++) sea_monster[x, y] = c_a[x];
             }
-
         }
 
         private static void Part1()
@@ -95,8 +86,6 @@ namespace advent_2020
             foreach (Tile t in tile_list)
                 id_to_tile[t.tile_id] = t;
 
-            //Console.WriteLine($"\t {t.tile_id} has {t.side_nums.Count} possible side numbers");
-            //Console.WriteLine();
 
             HashSet<int>[] adj_tiles = new HashSet<int>[tile_list.Count];
             int[] num_matches = new int[tile_list.Count];
@@ -128,7 +117,7 @@ namespace advent_2020
 
                 adj_tiles[i] = next_to;
                 num_matches[i] = next_to.Count;
-                //		Console.WriteLine($"\t {n_tile.tile_id} could be adjacent to {next_to.Count} tiles");
+    
             }
 
             Console.WriteLine();
@@ -138,16 +127,13 @@ namespace advent_2020
             for (int i = 0; i < tile_list.Count; i++)
                 if (num_matches[i] == 2)
                 {
-                    Console.WriteLine($"\t Tile {tile_list[i].tile_id} is only adjacent to 2 other tiles)");
-                    result_product = result_product * tile_list[i].tile_id;
+                 result_product = result_product * tile_list[i].tile_id;
                 }
 
 
-            //Console.WriteLine($"\n\t Found {count_3} border tiles out of 40");
 
             Console.WriteLine($"\n\tPart 1 Solution: {result_product}");
-            // 1760573689 is too low
-            // 7492183537913
+  
         }
 
         private static void Part2()
@@ -155,7 +141,7 @@ namespace advent_2020
             Console.WriteLine("   Part 2");
             string[] lines = File.ReadAllLines(Part1Input);
             Console.WriteLine("\tRead {0} inputs", lines.Length);
-            Console.WriteLine();
+       
 
 
             tile_list = Tile.ParseTiles(lines);
@@ -187,7 +173,6 @@ namespace advent_2020
                 r_tile.oriented = true;
             }
 
-            Console.Write("\n\t Oriented First Row \n");
 
             for (int y = 0; y < 11; y++)
             {
@@ -206,7 +191,7 @@ namespace advent_2020
                 d_tile.oriented = true;
             }
 
-            Console.WriteLine("Oriented left columnn");
+
 
             for (int y = 1; y < 12; y++)
             for (int x = 1; x < 12; x++)
@@ -248,15 +233,12 @@ namespace advent_2020
                 }
             }
 
-            //  Utility.PrintMap(render);
-
 
 
             char[,] render2 = Tile.OrientPatch(render, Tile_Flip.None, Tile_Rotate_Left.Two);
             int m = FindSeaMonster(render2);
-            answer = answer - (15 * m);  
-                   
-           
+            answer = answer - 15 * m;
+
             Console.WriteLine($"\n\tPart 2 Solution: {answer}");
         }
 
@@ -291,36 +273,29 @@ namespace advent_2020
         public static int FindSeaMonster(char[,] rend)
         {
             int found = 0;
-            for (int b_y = 0; b_y+3 < (12*8); b_y++)
+            for (int b_y = 0; b_y + 3 < 12 * 8; b_y++)
+            for (int b_x = 0; b_x + 20 < 12 * 8; b_x++)
             {
-                for (int b_x = 0; b_x+20 < (12 * 8); b_x++)
+                bool match = true;
+
+                for (int y = 0; y < 3; y++)
+                for (int x = 0; x < 20; x++)
                 {
-                    bool match = true;
-                    
-                    for (int y = 0; y < 3; y++)
+                    char r = rend[b_x + x, b_y + y];
+                    char m = sea_monster[x, y];
+                    if (m == '#' && r != '#')
                     {
-                        for (int x = 0; x < 20; x++)
-                        {
-                            char r = rend[b_x + x, b_y + y];
-                            char m = sea_monster[x, y];
-                            if ((m == '#') && (r != '#'))
-                            {
-                                match = false;
-                                break;
-                            }
-
-                            if (!match) break;
-
-                        }
+                        match = false;
+                        break;
                     }
 
-                    if (match) found++;
-
+                    if (!match) break;
                 }
+
+                if (match) found++;
             }
 
             return found;
         }
-      
     }
 }
