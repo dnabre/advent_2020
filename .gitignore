@@ -3,3 +3,4 @@ main.exe
 bin
 obj
 advent_2020.csproj
+data/
